@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Script to compute KLD divergence in parallel
+# uses a downsampled version of the training data
 
 import numpy as np
 import pandas as pd
@@ -74,7 +75,7 @@ def KLdivergence(x, y):
 
 def compute_kld(sdf, tdf):
     kl_sample_n = 10000
-    n_iters = 200
+    n_iters = 180
     eta = 0.0000000001
     kld_list = []
     for i in range(n_iters):
@@ -88,12 +89,14 @@ def main():
     working_dir = os.path.join(git_root_dir, 'data/derived/data-shifts')
     os.makedirs(working_dir, exist_ok=True)
 
-    revisions_features_filepath = os.path.join(git_root_dir, "data/raw/editquality/datasets/enwiki.labeled_revisions.20k_2015.damaging.tsv")
+    derived_data_dir = os.path.join(git_root_dir, 'data/derived')
+    train_downsampled_dir = os.path.join(derived_data_dir, 'ores-train-resampling')
+    revisions_features_filepath = os.path.join(train_downsampled_dir, "enwiki.labeled_revisions.20k_2015.downsampled.damaging.tsv")
     features_df = pd.read_csv(revisions_features_filepath, sep='\t', header=0)
     sdf = features_df.drop(columns='damaging')
 
     # load all the month feature dataframes
-    month_sample_features_dir = os.path.join(git_root_dir, "data/derived/stub-history-all-revisions/month_sample/revscoring_features")
+    month_sample_features_dir = os.path.join(derived_data_dir, "stub-history-all-revisions/month_sample/revscoring_features")
     year = 2014
     month = 4
     month_id_list = []
@@ -125,7 +128,7 @@ def main():
         
     # save the KL divergence computed
     # along with the month_id
-    output_filepath = os.path.join(working_dir, 'month_sample_training_kld_200.csv')
+    output_filepath = os.path.join(working_dir, 'month_sample_training_downsampled_kld_180.csv')
     with open(output_filepath, 'w') as outfile:
         for i, result in enumerate(result_arrs):
             month_id = month_id_list[i]
