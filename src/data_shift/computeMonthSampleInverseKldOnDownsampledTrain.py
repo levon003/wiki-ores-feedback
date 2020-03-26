@@ -24,6 +24,7 @@ from itertools import groupby
 from collections import Counter
 import time
 from multiprocessing import Pool
+from scipy.spatial import cKDTree as KDTree
 
 
 def KLdivergence(x, y):
@@ -48,7 +49,8 @@ def KLdivergence(x, y):
     
     https://gist.github.com/atabakd/ed0f7581f8510c8587bc2f41a094b518
     """
-    from scipy.spatial import cKDTree as KDTree
+
+    eta = 0.0000000001
 
     # Check the dimensions are consistent
     x = np.atleast_2d(x)
@@ -57,8 +59,9 @@ def KLdivergence(x, y):
     n,d = x.shape
     m,dy = y.shape
 
-    assert(d == dy)
-
+    assert d == dy
+    assert n != 0
+    assert n != 1
 
     # Build a KD tree representation of the samples and find the nearest neighbour
     # of each point in x.
@@ -69,10 +72,12 @@ def KLdivergence(x, y):
     # sample itself.
     r = xtree.query(x, k=2, eps=.01, p=2)[0][:,1]
     s = ytree.query(x, k=1, eps=.01, p=2)[0]
-
+    s[s == 0] = eta
+    
     # There is a mistake in the paper. In Eq. 14, the right side misses a negative sign
     # on the first term of the right hand side.
-    return -np.log(r/s).sum() * d / n + np.log(m / (n - 1.))
+    ratio = r/s
+    return -np.log(ratio, where=ratio > 0).sum() * d / n + np.log(m / (n - 1.))
 
 
 def compute_kld(sdf, tdf):
