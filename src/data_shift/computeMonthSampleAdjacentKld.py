@@ -93,7 +93,7 @@ def KLdivergence(x, y):
 
 def compute_kld(sdf, tdf):
     kl_sample_n = 10000
-    n_iters = 20
+    n_iters = 180
     eta = 0.0000000001
     kld_list = []
     for i in range(n_iters):
@@ -140,7 +140,7 @@ def main():
         
     # save the KL divergence computed
     # along with the month_id
-    output_filepath = os.path.join(working_dir, 'month_sample_adjacent_kld_20.csv')
+    output_filepath = os.path.join(working_dir, 'month_sample_adjacent_kld_180.csv')
     with open(output_filepath, 'w') as outfile:
         for i, result in enumerate(result_arrs):
             month_id = month_id_list[i]
