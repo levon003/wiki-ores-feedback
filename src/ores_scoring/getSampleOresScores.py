@@ -33,19 +33,24 @@ def main():
     
     # read in the sample dataframe
     revision_sample_dir = os.path.join(derived_data_dir, 'revision_sample')
-    sample1_filepath = os.path.join(revision_sample_dir, 'sample2_1M.pkl')
-    rev_df = pd.read_pickle(sample1_filepath)
+    sample_filepath = os.path.join(revision_sample_dir, 'sample3_all.pkl')
+    rev_df = pd.read_pickle(sample_filepath)
     
+    # shuffle the rows
+    rev_df = rev_df.sample(frac=1)
+    
+    # extract the revision ids to retrieve
     rev_id_list = rev_df.rev_id
     print(f"Attempting to retrieve ORES scores for {len(rev_id_list)} rev_ids.")
     
+    # establish the session and create the score iterator
     session = oresapi.Session("https://ores.wikimedia.org", 
                               user_agent="levon003@umn.edu - ores.api for UMN research",
                               parallel_requests=2, batch_size=50)
     scores = session.score("enwiki", ["damaging", "goodfaith"], rev_id_list)
     
     scores_list = []
-    ores_score_filepath = os.path.join(working_dir, 'sample2_ores_scores.csv')
+    ores_score_filepath = os.path.join(working_dir, 'sample3_ores_scores.csv')
     with open(ores_score_filepath, 'w') as outfile:
         total_processed = 0
         for rev_id, score in tqdm(zip(rev_id_list, scores), total=len(rev_id_list)):
@@ -65,7 +70,7 @@ def main():
             total_processed += 1
     
     # save out the scores list so it can be inspected
-    scores_pickle_filepath = os.path.join(working_dir, 'sample2_scores_list.pkl')
+    scores_pickle_filepath = os.path.join(working_dir, 'sample3_scores_list.pkl')
     with open(scores_pickle_filepath, 'wb') as outfile:
         pickle.dump(scores_list, outfile)
         
