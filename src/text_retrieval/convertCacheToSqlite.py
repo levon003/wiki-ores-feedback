@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Creates an sqlite3 table that contains revision content text and comment text
+# reads a revscoring cache file as the source of the text data
 
 # After creating the table, I manually created these indices on the table:
 # CREATE INDEX revisionText_revId ON revisionText (rev_id);
@@ -141,11 +142,19 @@ def process_cache_to_sqlite(cache_filepath, output_filepath):
         print("Processes started.")
         rev_ids = []
         skipped_count = 0
+        total_processed = 0
         with open(cache_filepath, 'r') as infile:
-            for line in tqdm(infile, desc='Reading cache file', total=23157371, disable=None):
+            for line in tqdm(infile, desc='Reading cache file', total=33964442, disable=None):
                 if len(line) > 120:  # short lines definitely don't have the required cache entry
                     result = pool.apply_async(process_cache_line, (result_queue, line,))
                     results.append(result)
+                    total_processed += 1
+                    
+                    # process intermediates to avoid blow-up of memory
+                    if len(results) >= 100001:
+                        for result in tqdm(results, desc=f"Joining processed lines ({total_processed})", disable=None):
+                            result.get()
+                        results = []
         
         # wait for all remaining tasks to terminate
         for result in tqdm(results, desc="Joining processed lines", disable=None):
@@ -162,11 +171,11 @@ def main():
     derived_data_dir = os.path.join('/export/scratch2/levon003/repos/wiki-ores-feedback', "data", "derived")
     labeled_revs_dir = os.path.join(derived_data_dir, 'labeled-revs')
     sample3_dir = os.path.join(labeled_revs_dir, 'sample3-features')
-    cache_filepath = os.path.join(sample3_dir, 'sample3.mock.w_cache.text.2020-07-23T13:08:38Z.json')
+    cache_filepath = os.path.join(sample3_dir, 'sample3.mock.w_cache.text.2020-08-01T05:40:00Z.json')
 
     revision_sample_dir = os.path.join(derived_data_dir, 'revision_sample')
     audit_dir = os.path.join(derived_data_dir, 'audit')
-    text_output_filepath = os.path.join(audit_dir, 'text_2020-07-23T13:08:38Z.sqlite')
+    text_output_filepath = os.path.join(audit_dir, 'text_2020-08-01T05:40:00Z.sqlite')
             
     process_cache_to_sqlite(cache_filepath, text_output_filepath)
 
