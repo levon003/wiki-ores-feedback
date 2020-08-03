@@ -106,16 +106,24 @@ def create_diff_for_revision(prev_rev_id, rev_id, db_filepath):
 
 def process_texts_to_diff_info(rev_id_pairs, db_filepath, output_filepath):    
     s = datetime.now()
-    with mp.Pool(processes=31) as pool:
-        results = []
-        for pair in tqdm(rev_id_pairs, desc='Spooling tasks'):
-            prev_rev_id, curr_rev_id = pair
-            result = pool.apply_async(create_diff_for_revision, (prev_rev_id, curr_rev_id, db_filepath))
-            results.append(result)
-        
-        # wait for all remaining tasks to terminate
-        with open(output_filepath, 'w') as outfile:
-            for result in tqdm(results, desc="Joining processed tasks", disable=None):
+    # wait for all remaining tasks to terminate
+    with open(output_filepath, 'w') as outfile:
+        with mp.Pool(processes=31) as pool:
+            results = []
+            total_processed = 0
+            for pair in tqdm(rev_id_pairs, desc='Spooling tasks'):
+                prev_rev_id, curr_rev_id = pair
+                result = pool.apply_async(create_diff_for_revision, (prev_rev_id, curr_rev_id, db_filepath))
+                results.append(result)
+                total_processed += 1
+                
+                if len(results) >= 100000:
+                    for result in tqdm(results, desc=f"Joining processed tasks ({total_processed} total)", disable=None):
+                        result_dict = result.get()
+                        outfile.write(json.dumps(result_dict) + '\n')
+                    results = []
+
+            for result in tqdm(results, desc="Joining processed tasks (final)", disable=None):
                 result_dict = result.get()
                 outfile.write(json.dumps(result_dict) + '\n')
     print(f"Diffs computed and saved in {datetime.now() - s}.")
@@ -126,8 +134,8 @@ def main():
     revision_sample_dir = os.path.join(derived_data_dir, 'revision_sample')
     audit_dir = os.path.join(derived_data_dir, 'audit')
     
-    db_filepath = os.path.join(audit_dir, 'text_2020-07-23T13:08:38Z.sqlite')
-    diff_output_filepath = os.path.join(audit_dir, 'diff_2020-07-23T13:08:38Z.ldjson')
+    db_filepath = os.path.join(audit_dir, 'text_2020-08-01T05:40:00Z.sqlite')
+    diff_output_filepath = os.path.join(audit_dir, 'diff_2020-08-01T05:40:00Z.ldjson')
     
     # read in the sample dataframe
     s = datetime.now()
