@@ -1,3 +1,5 @@
+# Simple script that reads from a CSV file of integer pairs, inserting them into a sqlite database
+
 import sqlite3
 from tqdm import tqdm
 from datetime import datetime

@@ -63,6 +63,7 @@ def main():
     )
     try:
         with open(os.path.join(audit_dir, 'doc_corr_2020-08-01T05:40:00Z.csv'), 'w') as outfile:
+            outfile.write("token_index,token_count,raw_misalignment_r,raw_misalignment_p,binary_misalignment_r,binary_misalignment_p\n")
             for i in tqdm(range(50000,150000), desc='Computing corrs'):
                 token_indicator_arr = create_array(i, db)
                 token_count = np.sum(token_indicator_arr)
@@ -74,9 +75,6 @@ def main():
     finally:
         db.close()
 
-    
-    
-    
-            
+
 if __name__ == "__main__":
     main()

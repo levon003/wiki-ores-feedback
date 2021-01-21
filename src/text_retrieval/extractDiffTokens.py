@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Extract diff info from revisions
 # Seems to run at about 2500 revisions per minute (before the addition of the content tokens list to the output)
+# Revised estimate: Processes 40-60 per second, but with periods of slowdown due to I/O
 
 import numpy as np
 import pandas as pd
