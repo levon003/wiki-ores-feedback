@@ -7,6 +7,7 @@ The web interface is built using a React front-end and a Flask back-end.
 The Flask back-end uses SQLite as its database.
 The React front-end is based directly on the [Devias Kit - React Admin Dashboard](https://material-ui.com/store/items/devias-kit/) code.
 
+To prepare for development, install `node` and `yarn` (`npm install -g yarn`). Then, from this directory, run `npm install`.
 
 To start the development backend: `yarn start-flask`
 
