@@ -7,6 +7,7 @@ import {
 import Page from 'src/components/Page';
 import RevisionViewer from './RevisionViewer';
 import MisalignmentFilter from './MisalignmentFilter';
+import FilterControls from './FilterControls';
 
 import LatestProducts from './LatestProducts';
 import Sales from './Sales';
@@ -38,6 +39,12 @@ const Dashboard = () => {
           direction="column"
           spacing={1}
         >
+          <Grid
+            item
+            xs={12}
+          >
+            <FilterControls />
+          </Grid>
           <Grid
             item
             xs={12}
