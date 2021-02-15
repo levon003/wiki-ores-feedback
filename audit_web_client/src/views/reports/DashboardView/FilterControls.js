@@ -80,6 +80,58 @@ const FilterControls = ({ className, ...rest }) => {
       experienced: true,
       bots: false
   });
+  const [filteredUsernames, setFilteredUsernames] = useState([]);
+  
+  const getUserFilterSummary = () => {
+      if (filteredUsernames.length > 0) {
+          // For now, explicit username filters overrule everything
+          // i.e. show all revisions from specified usernames, even if they wouldn't meet the filter criteria
+          return "Only these users: " + filteredUsernames.join(', ');
+      }
+      
+      const total_checked = userTypeFilter.unregistered + userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced + userTypeFilter.bots;
+      if (total_checked == 0) {
+          return "No users";
+      } else if (userTypeFilter.unregistered && total_checked == 1) {
+          return "Only unregistered users";
+      } else if (userTypeFilter.unregistered && userTypeFilter.bots && total_checked == 2) {
+          return "All unregistered and bot users";
+      } else if (total_checked == 1) {
+          if (userTypeFilter.newcomers) {
+              return "Only newcomers";
+          } else if (userTypeFilter.learners) {
+              return "Only learners";
+          } else if (userTypeFilter.experienced) {
+              return "Only experienced users";
+          } else if (userTypeFilter.bots) {
+              return "Only bots";
+          }
+      } else {
+          var bot_string = userTypeFilter.bots ? "" : "non-bot ";
+          var registered_string = userTypeFilter.unregistered ? "" : "registered "
+          
+          var registered_count = userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced;
+          var exception_string = "";
+          if (registered_count > 0 && registered_count < 3) {
+              exception_string = " except";
+              var first_exception = true;
+              if (!userTypeFilter.newcomers) {
+                  exception_string += " newcomers";
+                  first_exception = false;
+              }
+              if (!userTypeFilter.learners) {
+                  exception_string += first_exception ? " learners" : " and learners";
+                  first_exception = false;
+              }
+              if (!userTypeFilter.experienced) {
+                  exception_string += first_exception ? " experienced users" : " and experienced users";
+              }
+          }
+          
+          const summary_string = "All " + bot_string + registered_string + "users" + exception_string;
+          return summary_string;
+      }
+  };
     
   const handleToggle = (value) => () => {
       if (value == 'registered') {
@@ -127,6 +179,22 @@ const FilterControls = ({ className, ...rest }) => {
     setUserTypeAnchorEl(null);
   };
     
+  const handleUsernameFilterChange = (event, value, reason) => {
+      setFilteredUsernames(value);
+  };
+    
+  const handleUserFilterReset = (event) => {
+      setFilteredUsernames([]);
+      setUserTypeFilter({
+          unregistered: true,
+          registered: false,
+          newcomers: true,
+          learners: true,
+          experienced: true,
+          bots: false,
+      });
+  };
+    
   const open = Boolean(userTypeAnchorEl);
   const id = open ? 'simple-popover' : undefined;
     
@@ -150,9 +218,10 @@ const FilterControls = ({ className, ...rest }) => {
             flexDirection="row"
             flexWrap="nowrap"
           >
-            <Button variant="contained" color="primary" onClick={handleClick}>
-                Filter users by type
-            </Button>
+            <Chip clickable onClick={handleClick} label={getUserFilterSummary()} />
+            <Tooltip title="Help tooltip for the user filter controls goes here.">
+              <HelpOutlineIcon aria-label="User filter controls help" />
+            </Tooltip>
             <Popover
               id={id}
               open={open}
@@ -223,6 +292,26 @@ const FilterControls = ({ className, ...rest }) => {
                     
                   </List>
                 </List>
+                <Autocomplete
+                  multiple
+                  freeSolo
+                  id="username-filter-autocomplete"
+                  onChange={handleUsernameFilterChange}
+                  options={filteredUsernames}
+                  value={filteredUsernames}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Filter to specific users"
+                    />
+                  )}
+                />
+                <Button
+                  onClick={handleUserFilterReset}
+                >
+                Reset to defaults
+                </Button>
               </Paper>
             </Popover>
                 <Autocomplete
@@ -244,13 +333,11 @@ const FilterControls = ({ className, ...rest }) => {
                   )}
                   style={{ width: 500 }}
                   renderInput={(params) => (
-                    <TextField {...params} variant="outlined" label="Filter users by type" placeholder="" />
+                    <TextField {...params} variant="outlined" label="Filter view with checkboxes" placeholder="" />
                   )}
                 />
             
-            <Tooltip title="Help tooltip for the user filter controls goes here.">
-              <HelpOutlineIcon aria-label="User filter controls help" />
-            </Tooltip>
+            
           </Box>
         </Box>
       </Box>
