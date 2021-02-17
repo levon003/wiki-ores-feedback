@@ -4,6 +4,8 @@ import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PropTypes from 'prop-types';
+import Chart from "react-google-charts";
+
 import {
   Box,
   Button,
@@ -27,6 +29,7 @@ import { ResponsiveLine } from '@nivo/line';
 import { ResponsiveSankey } from '@nivo/sankey'
 import { ResponsiveBar } from '@nivo/bar'
 import PredictionResponseFlowchart from './PredictionResponseFlowchart';
+import { AlignCenter } from 'react-feather';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -46,6 +49,45 @@ const MisalignmentFilter = ({ className, ...rest }) => {
   const classes = useStyles();
   
   return (
+//     <Chart
+//     style={{
+//       position: 'relative', left: '20%', top: '0%',
+//       // transform: 'translate(-50%, -50%)'
+//   }}
+//   width={600}
+//   height={'400px'}
+//   chartType="Sankey"
+//   loader={<div>Loading Chart</div>}
+//   options={{
+//     sankey: {
+//       link: { 
+//         color: { fill: '#a6cee3'},
+//         // colors: ['#ed5353', '#ed5353','#ed9853','#ed9853', '#edde53', '#edde53', '#39d44e', '#39d44e'],
+//         // colorMode: 'gradient',
+//       },
+//       node: {
+//         colors: ['#ed5353', '#ed5353','#39d44e','#ed9853', '#edde53', '#39d44e'],
+//         label: { color: '#2e49bf' },
+//         width: 40,
+//         nodePadding: 50,
+//         label: {fontSize: 15}
+//       },
+     
+//     },
+//   }}
+//   data={[
+//     ['From', 'To', 'Weight'],
+//     ['Very likely have problems', 'Reverted', 95],
+//     ['Very likely have problems', 'Not Reverted', 10],
+//     ['Likely have problems', 'Reverted', 97],
+//     ['Likely have problems', 'Not Reverted', 20],
+//     ['May have problems', 'Not Reverted', 86],
+//     ['May have problems', 'Reverted', 16],
+//     ['Very likely good', 'Reverted', 5],
+//     ['Very likely good', 'Not Reverted', 100],
+//   ]}
+//   rootProps={{ 'data-testid': '1' }}
+// /> 
     <Card
       className={clsx(classes.root, className)}
       {...rest}
