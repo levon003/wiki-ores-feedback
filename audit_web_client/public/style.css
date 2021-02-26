@@ -1,0 +1,39 @@
+.diff-marker {
+    display: grid;
+	justify-content: right;
+	align-content: center;
+	grid-template-columns: repeat(4, 50px);
+	grid-template-rows: minmax(120px, auto) repeat(5, 100px);
+	margin: 100px auto;	
+}
+
+.diff-content {
+    display: grid;
+	justify-content: right;
+	align-content: center;
+	grid-template-columns: repeat(4, 100px);
+	grid-template-rows: minmax(120px, auto) repeat(5, 100px);
+	font-size: 30x;
+	margin: 100px auto;	
+}
+
+
+.diff-marker2 {
+    display: grid;
+	justify-content: left;
+	align-content: center;
+	grid-template-columns: repeat(4, 100px);
+	grid-template-rows: minmax(120px, auto) repeat(5, 100px);
+	margin: 100px auto;	
+}
+
+.diff-content2 {
+    display: grid;
+	justify-content: right;
+	align-content: center;
+	grid-template-columns: repeat(4, 100px);
+	grid-template-rows: minmax(120px, auto) repeat(5, 100px);
+	font-size: 30x;
+	margin: 100px auto;	
+}
+
