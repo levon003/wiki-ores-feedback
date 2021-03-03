@@ -13,13 +13,11 @@ def redirect_to_index():
 def redirect_to_index_from_path(path):
     return send_from_directory('www', 'index.html')
 
-@bp.route('/api', methods=('GET', 'POST'))
-def index():
-    if request.method == 'POST':
-        
-        return {'key': 'value'}
-        
-        raise ValueError("POST not yet implemented")
-    # TODO remove me or implement with more formal debug functionality
-    return {'value': 201}
+@bp.route('/api', methods=('GET',))
+def get_api_route_description():
+    return "API not yet designed for public access; documentation forthcoming."
+
+@bp.route('/api/login', methods=('GET', 'POST'))
+def login():
+    return {'value': 'login'}
 
