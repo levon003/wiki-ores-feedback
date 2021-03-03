@@ -1,11 +1,19 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, make_response
+    Blueprint, flash, g, redirect, render_template, request, url_for, make_response, send_from_directory
 )
 from werkzeug.exceptions import abort
 
 bp = Blueprint('index', __name__)
 
-@bp.route('/', methods=('GET', 'POST'))
+@bp.route('/')
+def redirect_to_index():
+    return send_from_directory('www', 'index.html')
+
+@bp.route('/app/<path:path>')
+def redirect_to_index_from_path(path):
+    return send_from_directory('www', 'index.html')
+
+@bp.route('/api', methods=('GET', 'POST'))
 def index():
     if request.method == 'POST':
         
