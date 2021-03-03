@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const FilterControls = ({ className, ...rest }) => {
+const FilterControls = ({ className, onChange, ...rest }) => {
 
   const classes = useStyles();
     
@@ -134,6 +134,8 @@ const FilterControls = ({ className, ...rest }) => {
   };
     
   const handleToggle = (value) => () => {
+      // TODO call onChange() with the new state;
+      
       if (value == 'registered') {
           if (userTypeFilter.registered) {
               // registered turning off, so deactivate all subs

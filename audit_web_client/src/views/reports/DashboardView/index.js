@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Grid,
@@ -28,6 +28,19 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes = useStyles();
 
+  const [globalFilterState, setGlobalFilterState] = useState();
+  const [revisions, setRevisions] = useState();
+    
+    
+  const handleStateUpdate = (new_state) => () => {
+      setGlobalFilterState(new_state);
+      // TODO do a GET request to the backend with the new filters
+      // Get the new revisions and save them
+      //fetch().then({
+      //    setRevisions(...data from backend...)
+      //})
+  };
+    
   return (
     <Page
       className={classes.root}
@@ -43,19 +56,25 @@ const Dashboard = () => {
             item
             xs={12}
           >
-            <FilterControls />
+            <FilterControls 
+                onChange={handleStateUpdate}
+            />
           </Grid>
           <Grid
             item
             xs={12}
           >
-            <MisalignmentFilter />
+            <MisalignmentFilter 
+              onChange={handleStateUpdate}
+            />
           </Grid>
           <Grid
             item
             xs={12}
           >
-            <RevisionViewer />
+            <RevisionViewer 
+              revisions={revisions}
+            />
           </Grid>
         </Grid>
       </Container>
