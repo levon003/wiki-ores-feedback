@@ -2,7 +2,7 @@
 # Temp deployment script
 
 REMOTE="levon003@login.toolforge.org:/data/project/ores-inspect/www/python/src"
-CHMOD="--chmod=u+rwx,g+rwx,o+rx"
+CHMOD="--chmod=u+rwx,g+rwx,o+rx --perms"
 rsync ${CHMOD} flask/app.py ${REMOTE}
 rsync ${CHMOD} flask/api/*.py ${REMOTE}/api
 rsync -r ${CHMOD} build/ ${REMOTE}/api/www
