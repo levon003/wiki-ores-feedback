@@ -1,0 +1,21 @@
+.bar:hover {
+    fill: #D3D3D3;
+    opacity: 1;
+    /* transform: scale(1.1);; */
+}
+
+.wrapTxt {
+    position: relative;
+  }
+  .wrapTxt .mask {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+.svgText {
+    pointer-events: none;
+}
