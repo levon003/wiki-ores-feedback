@@ -3,7 +3,7 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 
 import sqlalchemy as sa
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, TIMESTAMP, Float
 
 
 def get_engine():
@@ -46,6 +46,24 @@ def create_tables(engine):
         Column('category_id', None, ForeignKey('category_name.category_id')),
     )
 
+    revision = Table('revision', metadata,
+        Column('rev_id', Integer, primary_key=True),
+        Column('page_id', None, ForeignKey('page_metadata.page_id')),
+        Column('prev_rev_id', Integer, nullable=False),
+
+        Column('rev_timestamp', Integer, nullable=False),
+        Column('prev_rev_timestamp', Integer, nullable=False),
+        Column('is_minor', Boolean, nullable=False),
+
+        Column('username', Text(length=85), nullable=False),
+        Column('is_user_registered', Boolean, nullable=False),
+        Column('is_user_bot', Boolean, nullable=False),
+        Column('n_user_contributions_at_rev', Integer, nullable=False),
+
+        Column('damaging_pred', Float, nullable=True),
+        Column('goodfaith_pred', Float, nullable=True),
+    )
+
     metadata.create_all(engine, checkfirst=True)
 
 
@@ -56,6 +74,7 @@ def create_test_data(engine):
     page_metadata = metadata.tables['page_metadata']
     category_name = metadata.tables['category_name']
     page_category = metadata.tables['page_category']
+    revision = metadata.tables['revision']
 
     conn = engine.connect()
     conn.execute(page_metadata.insert(), [
@@ -71,6 +90,37 @@ def create_test_data(engine):
         {'page_id': 0, 'page_category': 1},
         {'page_id': 1, 'page_category': 0},
         {'page_id': 1, 'page_category': 2},
+    ])
+
+    conn.execute(revision.insert(), [
+        {
+            'rev_id': 1, 
+            'page_id': 0,
+            'prev_rev_id': 0,
+            'rev_timestamp': 1396329403,
+            'prev_rev_timestamp': 1396328403,
+            'is_minor': False,
+            'username': 'Suriname0',
+            'is_user_registered': True,
+            'is_user_bot': False,
+            'n_user_contributions_at_rev': 100,
+            'damaging_pred': 0.0001,
+            'goodfaith_pred': 0.999,
+        },
+        {
+            'rev_id': 2, 
+            'page_id': 0,
+            'prev_rev_id': 1,
+            'rev_timestamp': 1396329603,
+            'prev_rev_timestamp': 1396329403,
+            'is_minor': False,
+            'username': 'Suriname0',
+            'is_user_registered': True,
+            'is_user_bot': False,
+            'n_user_contributions_at_rev': 101,
+            'damaging_pred': 0.995,
+            'goodfaith_pred': 0.001,
+        },
     ])
     
 
