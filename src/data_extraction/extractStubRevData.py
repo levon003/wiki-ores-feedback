@@ -106,7 +106,7 @@ def process_dump(dump):
             rev_data = {
                 'page_id': page_id,
                 'rev_id': rev_id,
-                'prev_rev_id': rev_doc['parent_id'],
+                'prev_rev_id': rev_doc['parent_id'] if 'parent_id' in rev_doc else None,
                 'is_minor': rev_doc['minor'],
                 'user_text': rev_user_text,
                 'user_id': rev_user_id,
@@ -222,7 +222,7 @@ def create_tables(engine):
     revision = Table('revision', metadata,
         Column('rev_id', Integer, primary_key=True),
         Column('page_id', Integer, nullable=False),
-        Column('prev_rev_id', Integer, nullable=False),
+        Column('prev_rev_id', Integer),
 
         Column('rev_timestamp', Integer, nullable=False),
         Column('seconds_to_prev', Integer),
@@ -270,25 +270,30 @@ def process_all(paths):
     page_processed_count = 0
     curr_batch = []
     FORCE_COMMIT_SIZE = 100000
-    for result in para.map(process_stub_history_filepath, paths, mappers=len(paths)):
-        if 'wiki_namespace' in result:
-            # this is a page result
-            conn.execute(page_metadata.insert(), [
-                result,
-            ])
-            page_processed_count += 1
-            if page_processed_count % 10000 == 0:
-                print(f"Processed {page_processed_count} pages in {datetime.now() - start}")
-        else:
-            curr_batch.append(result)
-            if len(curr_batch) >= FORCE_COMMIT_SIZE:
-                conn.execute(revision.insert(), curr_batch)
-                curr_batch = []
-            processed_count += 1
-            if processed_count % 1000000 == 0:
-                print(f"Processed {processed_count} revisions in {datetime.now() - start}")
-    if len(curr_batch) > 0:
-        conn.execute(revision.insert(), curr_batch)
+    
+    with open(os.path.join(working_dir, 'revs.ndjson'), 'w') as outfile, open(os.path.join(working_dir, 'page.ndjson'), 'w') as page_outfile:
+        for result in para.map(process_stub_history_filepath, paths, mappers=len(paths)):
+            if 'wiki_namespace' in result:
+                # this is a page result
+                page_outfile.write(json.dumps(result) + "\n")
+                #conn.execute(page_metadata.insert(), [
+                #    result,
+                #])
+                page_processed_count += 1
+                if page_processed_count % 10000 == 0:
+                    print(f"Processed {page_processed_count} pages in {datetime.now() - start}")
+            else:
+                outfile.write(json.dumps(result) + "\n")
+                
+                #curr_batch.append(result)
+                #if len(curr_batch) >= FORCE_COMMIT_SIZE:
+                #    conn.execute(revision.insert(), curr_batch)
+                #    curr_batch = []
+                processed_count += 1
+                if processed_count % 1000000 == 0:
+                    print(f"Processed {processed_count} revisions in {datetime.now() - start}")
+    #if len(curr_batch) > 0:
+    #    conn.execute(revision.insert(), curr_batch)
     print(f"Finished processing {processed_count} revisions (and {page_processed_count} pages) in {datetime.now() - start}")
 
 
