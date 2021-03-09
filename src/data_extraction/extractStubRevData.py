@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This script extracts revisions from a Stub History XML dump
 # Saves as much information as possible
-# Might take around 13 hours?
+# Took 17h10m35s to run on 27 cores; minimal memory usage.
 # After running this script, one may wish to sort the CSV output: `sort -k1 -n -t, rev_ids.csv > rev_ids_sorted.csv`
 # Although, generally, the CSV will be too large to sort using bash tools...
 
