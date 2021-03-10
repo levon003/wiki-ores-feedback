@@ -23,8 +23,14 @@ import {
   TextField,
   Tooltip,
   Paper,
-  makeStyles
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -76,19 +82,26 @@ const RevisionView = ({revision, className, ...rest }) => {
         flexGrow={1}
         width = "1300px"
       >
-        <Box maxHeight="80vh" width="80vx" style={{'overflowY': 'scroll'}}>
+      <Accordion maxHeight="80vh" width="80vx" style={{'overflowY': 'scroll'}}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header"> 
+      </AccordionSummary>
+      <AccordionDetails>
         <table class="diff diff-contentalign-left diff-editfont-monospace" data-mw="interface">
-        <colgroup>
-        <col class="diff-marker"/>
-				<col class="diff-content"/>
-				<col class="diff-marker"/>
-				<col class="diff-content"/>
-				</colgroup> 
-      <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
+          <colgroup>
+				    <col class="diff-marker"/>
+				    <col class="diff-content"/>
+            <col class="diff-marker"/>
+			      <col class="diff-content"/>
+				  </colgroup> 
+          <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
         </table>
-        </Box>
-      </Box>
-    </Paper>
+      </AccordionDetails>
+  
+  </Accordion>
+  </Box>
+  </Paper>
+  
+
   );
 };
 
