@@ -82,7 +82,7 @@ const RevisionView = ({revision, className, ...rest }) => {
         flexGrow={1}
         width = "1300px"
       >
-      <Accordion maxHeight="80vh" width="80vx" style={{'overflowY': 'scroll'}}>
+      <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header"> 
       </AccordionSummary>
       <AccordionDetails>
