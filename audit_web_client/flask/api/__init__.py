@@ -23,11 +23,12 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, 'interface.sqlite'),
         INSTANCE_DATA_DIR=os.path.join(app.instance_path, 'data'),
         VERSION=VERSION,
+        MYSQL_CONFIG_FILEPATH=os.path.join(app.root_path, 'replica.my.cnf'),
     )
     
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
+        app.config.from_pyfile(os.path.join(app.root_path, 'config.py'), silent=False)
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
@@ -47,7 +48,13 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
+    from . import replica
+    replica.init_app(app)
+
     logging.info(app.url_map)
+    logging.debug('Loaded configuration mapping:')
+    for key, value in app.config.items():
+        logging.debug(f'{key}: \t{value}')
     
     return app
 

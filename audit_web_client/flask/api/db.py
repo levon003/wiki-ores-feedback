@@ -16,7 +16,7 @@ def get_engine():
         return engine
     elif env == 'toolforge':
         mariadb_pass = current_app.config['MARIADB_PASSWORD']
-        mariadb_url = f'mysql+mysqldb://s5660:{mariadb_pass}@tools.db.svc.eqiad.wmflabs/s5660__oidb'
+        mariadb_url = f'mysql+mysqldb://s54660:{mariadb_pass}@tools.db.svc.eqiad.wmflabs/s5660__oidb'
         engine = create_engine(mariadb_url,
             pool_pre_ping=True,
         )

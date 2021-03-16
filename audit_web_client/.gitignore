@@ -2,3 +2,6 @@ instance/
 node_modules/
 build/
 
+# Prod database configuration should not be versioned
+replica.my.cnf
+
