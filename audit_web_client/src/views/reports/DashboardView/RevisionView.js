@@ -62,11 +62,6 @@ const RevisionView = ({revision, className, ...rest }) => {
     });
   }, []);
 
-  // <Box maxHeight="20vh" maxWidth="80vw" style={{'overflowY': 'scroll'}}>
-  //         <div dangerouslySetInnerHTML={{__html: revisionDiff}} />
-  //       </Box>
-  // take in string.. 
-
   return (
     <Paper
       className={clsx(classes.root, className)}
@@ -100,7 +95,6 @@ const RevisionView = ({revision, className, ...rest }) => {
   </Accordion>
   </Box>
   </Paper>
-  
 
   );
 };
