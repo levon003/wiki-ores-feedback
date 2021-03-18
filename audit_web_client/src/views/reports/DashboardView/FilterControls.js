@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
-import moment from 'moment';
-import { v4 as uuid } from 'uuid';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match';
+import throttle from 'lodash/throttle';
 import PropTypes from 'prop-types';
 import {
   Box,
   Button,
   Card,
-  CardHeader,
   Checkbox,
-  Collapse,
   Chip,
-  Divider,
   List,
   ListItem,
   ListItemIcon,
@@ -20,12 +19,6 @@ import {
   ListSubheader,
   Paper,
   Popover,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
   TextField,
   Tooltip,
   Typography,
@@ -60,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const FilterControls = ({ className, onChange, ...rest }) => {
+const UserFilterChip = ({ className, onChange, ...rest }) => {
 
   const classes = useStyles();
     
@@ -201,6 +194,263 @@ const FilterControls = ({ className, onChange, ...rest }) => {
   const id = open ? 'simple-popover' : undefined;
     
   return (
+    <Box
+      display="flex"
+      flexDirection="row"
+      flexWrap="nowrap"
+    >
+      <Chip clickable onClick={handleClick} label={getUserFilterSummary()} />
+      <Tooltip title="Help tooltip for the user filter controls goes here.">
+        <HelpOutlineIcon aria-label="User filter controls help" />
+      </Tooltip>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={userTypeAnchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Paper variant='elevation'>
+          <List
+            component="nav"
+            aria-labelledby="user-type-list-subheader"
+            subheader={
+              <ListSubheader component="div" id="user-type-list-subheader">
+                Filter users by type
+              </ListSubheader>
+            }
+            className={classes.root}
+          >
+            <ListItem key="unregistered" role={undefined} dense button onClick={handleToggle("unregistered")}>
+              <ListItemIcon>
+                <Checkbox
+                  edge="start"
+                  checked={userTypeFilter.unregistered}
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ 'aria-labelledby': 'user-type-unregistered-desc' }}
+                />
+              </ListItemIcon>
+              <ListItemText id="user-type-unregistered-desc" primary="Unregistered" />
+            </ListItem>
+            <ListItem key="registered" role={undefined} dense button onClick={handleToggle("registered")}>
+              <ListItemIcon>
+                <Checkbox
+                  edge="start"
+                  checked={userTypeFilter.registered}
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ 'aria-labelledby': 'user-type-registered-desc' }}
+                />
+              </ListItemIcon>
+              <ListItemText id="user-type-registered-desc" primary="Registered" />
+            </ListItem>
+            <List component="div" disablePadding>
+              {['newcomers', 'learners', 'experienced', 'bots'].map((value) => {
+                  
+                return (
+                  <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)} className={classes.nestedList}>
+                    <ListItemIcon>
+                      <Checkbox
+                        edge="start"
+                        checked={userTypeFilter[value]}
+                        tabIndex={-1}
+                        disableRipple
+                        inputProps={{ 'aria-labelledby': "user-type-" + value + "-desc" }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText id={"user-type-" + value + "-desc"} primary={userTypePrettyNames[value]} />
+                  </ListItem>
+                );
+              })}
+              
+            </List>
+          </List>
+          <Autocomplete
+            multiple
+            freeSolo
+            id="username-filter-autocomplete"
+            onChange={handleUsernameFilterChange}
+            options={filteredUsernames}
+            value={filteredUsernames}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Filter to specific users"
+              />
+            )}
+          />
+          <Button
+            onClick={handleUserFilterReset}
+          >
+          Reset to defaults
+          </Button>
+        </Paper>
+      </Popover>
+    </Box>
+  );
+};
+
+const PageFilterChip = ({className, onChange, ...rest }) => {
+
+  const classes = useStyles();
+
+  const [values, setValues] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+  const [options, setOptions] = useState([]);
+
+  const [open, setOpen] = useState(false);
+  const [isActiveQuery, setActiveQuery] = useState(false);
+  const loading = open && isActiveQuery;
+
+  const throttledAutocompleteFetch = useMemo(
+    () =>
+      throttle((request, callback) => {
+        setActiveQuery(true);
+        const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(request.input);
+        fetch(page_autocomplete_url, {method: 'GET'})
+          .then(res => res.json())
+          .then(data => data.options)
+          .then(callback);
+      }, 200),
+    [],
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    if (inputValue === '') {
+      setOptions(values.length > 0 ? values : []);
+      return undefined;
+    }
+
+    throttledAutocompleteFetch({ input: inputValue }, (results) => {
+      if (active) {
+        let newOptions = [];
+
+        if (values.length > 0) {
+          newOptions = values;
+        }
+
+        if (results) {
+          newOptions = [...newOptions, ...results];
+        }
+
+        setOptions(newOptions);
+        setActiveQuery(false);
+      }
+    });
+
+    return () => {
+      active = false;
+      setActiveQuery(false);
+    };
+  }, [values, inputValue, throttledAutocompleteFetch]);
+
+  useEffect(() => {
+    if (!open) {
+      setOptions([]);
+    }
+  }, [open]);
+
+  const getAutocompleteOptions = (queryString) => {
+    const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(queryString);
+    fetch(page_autocomplete_url, {method: 'GET'})
+      .then(res => res.json())
+      .then(data => {
+        console.log(data.options);
+        return data.options;
+      });
+  }
+
+  return (
+    <Autocomplete
+      multiple
+      id="specific-site-filter"
+      style={{ width: 300 }}
+      open={open}
+      onOpen={() => {
+        setOpen(true);
+      }}
+      onClose={() => {
+        setOpen(false);
+      }}
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
+      filterOptions={(x) => x}
+      options={options}
+      autoComplete
+      includeInputInList
+      filterSelectedOptions
+      value={values}
+      onChange={(event, newValues) => {
+        setOptions(newValues ? [...newValues, ...options] : options);
+        setValues(newValues);
+        // TODO call onChange with new set of filter criteria
+      }}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
+      renderInput={(params) => (
+        <TextField {...params} 
+          label="Specific page titles" 
+          variant="outlined" 
+          fullWidth 
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+          />
+      )}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip label={option.primary_text} {...getTagProps({ index })} />
+        ))
+      }
+      renderOption={(option) => {
+        const matches = match(option.primary_text, inputValue);
+        const parts = parse(
+          option.primary_text,
+          matches
+        );
+
+        return (
+          <Grid container alignItems="center">
+            <Grid item xs>
+              {parts.map((part, index) => (
+                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                  {part.text}
+                </span>
+              ))}
+
+              <Typography variant="body2" color="textSecondary">
+                {option.secondary_text}
+              </Typography>
+            </Grid>
+          </Grid>
+        );
+      }}
+    />
+  );
+};
+
+const FilterControls = ({ className, onChange, ...rest }) => {
+
+  const classes = useStyles();
+
+  return (
     <Card
       className={clsx(classes.root, className)}
       {...rest}
@@ -215,132 +465,8 @@ const FilterControls = ({ className, onChange, ...rest }) => {
           display="flex"
           flexDirection="row"
         >
-          <Box
-            display="flex"
-            flexDirection="row"
-            flexWrap="nowrap"
-          >
-            <Chip clickable onClick={handleClick} label={getUserFilterSummary()} />
-            <Tooltip title="Help tooltip for the user filter controls goes here.">
-              <HelpOutlineIcon aria-label="User filter controls help" />
-            </Tooltip>
-            <Popover
-              id={id}
-              open={open}
-              anchorEl={userTypeAnchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-            >
-              <Paper variant='elevation'>
-                <List
-                  component="nav"
-                  aria-labelledby="user-type-list-subheader"
-                  subheader={
-                    <ListSubheader component="div" id="user-type-list-subheader">
-                      Filter users by type
-                    </ListSubheader>
-                  }
-                  className={classes.root}
-                >
-                  <ListItem key="unregistered" role={undefined} dense button onClick={handleToggle("unregistered")}>
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={userTypeFilter.unregistered}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': 'user-type-unregistered-desc' }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText id="user-type-unregistered-desc" primary="Unregistered" />
-                  </ListItem>
-                  <ListItem key="registered" role={undefined} dense button onClick={handleToggle("registered")}>
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={userTypeFilter.registered}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': 'user-type-registered-desc' }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText id="user-type-registered-desc" primary="Registered" />
-                  </ListItem>
-                  <List component="div" disablePadding>
-                    {['newcomers', 'learners', 'experienced', 'bots'].map((value) => {
-                        
-                      return (
-                        <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)} className={classes.nestedList}>
-                          <ListItemIcon>
-                            <Checkbox
-                              edge="start"
-                              checked={userTypeFilter[value]}
-                              tabIndex={-1}
-                              disableRipple
-                              inputProps={{ 'aria-labelledby': "user-type-" + value + "-desc" }}
-                            />
-                          </ListItemIcon>
-                          <ListItemText id={"user-type-" + value + "-desc"} primary={userTypePrettyNames[value]} />
-                        </ListItem>
-                      );
-                    })}
-                    
-                  </List>
-                </List>
-                <Autocomplete
-                  multiple
-                  freeSolo
-                  id="username-filter-autocomplete"
-                  onChange={handleUsernameFilterChange}
-                  options={filteredUsernames}
-                  value={filteredUsernames}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      label="Filter to specific users"
-                    />
-                  )}
-                />
-                <Button
-                  onClick={handleUserFilterReset}
-                >
-                Reset to defaults
-                </Button>
-              </Paper>
-            </Popover>
-                <Autocomplete
-                  multiple
-                  id="user-type-checkboxes"
-                  options={userTypeOptions}
-                  disableCloseOnSelect
-                  getOptionLabel={(option) => option.desc}
-                  renderOption={(option, { selected }) => (
-                    <React.Fragment>
-                      <Checkbox
-                        icon={checkboxIcon}
-                        checkedIcon={checkboxCheckedIcon}
-                        style={{ marginRight: 6 }}
-                        checked={selected}
-                      />
-                      {option.desc}
-                    </React.Fragment>
-                  )}
-                  style={{ width: 500 }}
-                  renderInput={(params) => (
-                    <TextField {...params} variant="outlined" label="Filter view with checkboxes" placeholder="" />
-                  )}
-                />
-            
-            
-          </Box>
+          <PageFilterChip onChange={onChange} />
+          <UserFilterChip onChange={onChange} />
         </Box>
       </Box>
     </Card>
