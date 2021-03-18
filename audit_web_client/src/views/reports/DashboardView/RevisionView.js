@@ -37,6 +37,15 @@ const RevisionView = ({revision, className, ...rest }) => {
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
 
+  const [revisionMetadata, setRevisionMetadata] = useState({
+    'from_user': '',
+    'from_timestamp': '',
+    'from_parsedcomment': '',
+    'to_user': '',
+    'to_timestamp': '',
+    'to_parsedcomment': '',
+  });
+
   const handleChange = (event, isExpanded) => {
     setExpanded(!expanded);
   }
@@ -45,7 +54,7 @@ const RevisionView = ({revision, className, ...rest }) => {
   // Note that it needs styling to look anything like the Wikipedia view!
   // https://www.mediawiki.org/wiki/Manual:CORS
   useEffect(() => {
-    fetch('https://en.wikipedia.org/w/api.php?action=compare&fromrev=1001836865&torev=1001836878&format=json&origin=*', {
+    fetch('https://en.wikipedia.org/w/api.php?action=compare&fromrev=1001836865&torev=1001836878&format=json&prop=diff|title|ids|user|comment|size|timestamp&origin=*', {
         crossDomain: true,
         method: 'GET',
         headers: {'Content-Type': 'application/json',
@@ -54,8 +63,16 @@ const RevisionView = ({revision, className, ...rest }) => {
       })
         .then(res => res.json())
         .then(data => {
-          console.log(data.compare['*']);
+          console.log(data);
           setRevisionDiff(data.compare['*']);
+          setRevisionMetadata({
+            'from_user': data.compare['fromuser'],
+            'from_timestamp': data.compare['fromtimestamp'],
+            'from_parsedcomment': data.compare['fromparsedcomment'],
+            'to_user': data.compare['touser'],
+            'to_timestamp': data.compare['totimestamp'],
+            'to_parsedcomment': data.compare['toparsedcomment'],
+          })
     });
   }, []);
 
@@ -90,6 +107,20 @@ const RevisionView = ({revision, className, ...rest }) => {
             <col className="diff-marker"/>
 			      <col className="diff-content"/>
 				  </colgroup> 
+          <tbody>
+            <tr>
+              <td colSpan={2}>Revision as of {revisionMetadata.from_timestamp}</td>
+              <td colSpan={2}>Revision as of {revisionMetadata.to_timestamp}</td>
+            </tr>
+            <tr>
+              <td colSpan={2}>{revisionMetadata.from_user}</td>
+              <td colSpan={2}>{revisionMetadata.to_user}</td>
+            </tr>
+            <tr>
+              <td colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.from_parsedcomment}} />
+              <td colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}} />
+            </tr>
+          </tbody>
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
         </table>
         <Button
