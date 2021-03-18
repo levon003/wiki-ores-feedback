@@ -1,27 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import clsx from 'clsx';
-import moment from 'moment';
-import { v4 as uuid } from 'uuid';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import PropTypes from 'prop-types';
 import {
   Box,
   Button,
-  ButtonGroup,
-  Card,
-  CardHeader,
-  Chip,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  TextareaAutosize,
-  TextField,
-  Tooltip,
   Paper,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -29,10 +12,7 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-// import ScrollUpButton from "react-scroll-up-button";
-import {TinyButton as ScrollUpButton} from "react-scroll-up-button"; 
-import { Collapse } from '@material-ui/core';
-import { render } from 'nprogress';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -55,11 +35,11 @@ const useStyles = makeStyles((theme) => ({
 const RevisionView = ({revision, className, ...rest }) => {
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
 
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  }   
+  const handleChange = (event, isExpanded) => {
+    setExpanded(!expanded);
+  }
 
   // demonstration of using the Compare API to retrieve HTML and set it to state.
   // Note that it needs styling to look anything like the Wikipedia view!
@@ -94,25 +74,30 @@ const RevisionView = ({revision, className, ...rest }) => {
         flexGrow={1}
         width = "1300px"
       > */}
-      <Accordion expanded={expanded === 'panel'} onChange={handleChange('panel')}>
+      <Accordion expanded={expanded} onChange={handleChange}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel-content" id="panel-header"> 
+      View Diff
       </AccordionSummary>
       <AccordionDetails>
-        <table class="diff diff-contentalign-left diff-editfont-monospace" data-mw="interface">
+        <Box
+          display="flex"
+          flexDirection="column"
+        >
+        <table className="diff diff-contentalign-left diff-editfont-monospace" data-mw="interface">
           <colgroup>
-				    <col class="diff-marker"/>
-				    <col class="diff-content"/>
-            <col class="diff-marker"/>
-			      <col class="diff-content"/>
+				    <col className="diff-marker"/>
+				    <col className="diff-content"/>
+            <col className="diff-marker"/>
+			      <col className="diff-content"/>
 				  </colgroup> 
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
         </table>
-        <div>
-          {/* <ScrollUpButton ContainerClassName="ScrollUpButton__Container" TransitionClassName="ScrollUpButton__Toggled">
-      </ScrollUpButton> */}
-      <ScrollUpButton/>
-      
-      </div>
+        <Button
+          onClick={handleChange}
+        >
+          <ExpandLessIcon /> Collapse diff <ExpandLessIcon />
+        </Button>
+        </Box>
       </AccordionDetails>
   </Accordion>
   {/* </Box> */}
