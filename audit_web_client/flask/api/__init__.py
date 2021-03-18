@@ -51,6 +51,9 @@ def create_app(test_config=None):
     from . import replica
     replica.init_app(app)
 
+    from . import autocomplete
+    app.register_blueprint(autocomplete.bp)
+
     logging.info(app.url_map)
     logging.debug('Loaded configuration mapping:')
     for key, value in app.config.items():
