@@ -28,22 +28,39 @@ import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+// import ScrollUpButton from "react-scroll-up-button";
+import {TinyButton as ScrollUpButton} from "react-scroll-up-button"; 
+import { Collapse } from '@material-ui/core';
+import { render } from 'nprogress';
 
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    width: '100%',
+  },
   actions: {
     justifyContent: 'flex-end'
   },
+  heading: {
+    flexShrink: 0,
+    flexBasis: '33.33%',
+  },  
+  // secondaryHeading: {
+  //   fontSize: theme.typography.pxToRem(15),
+  //   color: theme.palette.text.secondary,
+
 }));
 
 const RevisionView = ({revision, className, ...rest }) => {
   const classes = useStyles();
-  
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
-      
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  }   
+
   // demonstration of using the Compare API to retrieve HTML and set it to state.
   // Note that it needs styling to look anything like the Wikipedia view!
   // https://www.mediawiki.org/wiki/Manual:CORS
@@ -70,15 +87,15 @@ const RevisionView = ({revision, className, ...rest }) => {
       p={1}
       {...rest}
     >
-      <Box 
+      {/* <Box 
         display="flex"
         flexWrap="nowrap"
         flexDirection="row"
         flexGrow={1}
         width = "1300px"
-      >
-      <Accordion>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header"> 
+      > */}
+      <Accordion expanded={expanded === 'panel'} onChange={handleChange('panel')}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel-content" id="panel-header"> 
       </AccordionSummary>
       <AccordionDetails>
         <table class="diff diff-contentalign-left diff-editfont-monospace" data-mw="interface">
@@ -90,10 +107,15 @@ const RevisionView = ({revision, className, ...rest }) => {
 				  </colgroup> 
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
         </table>
+        <div>
+          {/* <ScrollUpButton ContainerClassName="ScrollUpButton__Container" TransitionClassName="ScrollUpButton__Toggled">
+      </ScrollUpButton> */}
+      <ScrollUpButton/>
+      
+      </div>
       </AccordionDetails>
-  
   </Accordion>
-  </Box>
+  {/* </Box> */}
   </Paper>
 
   );
