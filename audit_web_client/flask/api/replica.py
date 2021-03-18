@@ -32,6 +32,18 @@ def get_replica_engine():
     return g.replica_engine
     
 
+#@app.teardown_request
+def teardown_session(exception):
+    pass
+
+
+#@app.teardown_appcontext
+def teardown_engine(exception):
+    engine = g.pop('replica_engine', None)
+    if engine is not None:
+        engine.dispose()
+
+
 def get_pages_linked_from_page_id(page_id, session):
     logger = logging.getLogger('replica.links.from')
     s = text("""
@@ -136,3 +148,4 @@ def test_replicas_command():
 
 def init_app(app):
     app.cli.add_command(test_replicas_command)
+    app.teardown_appcontext(teardown_engine)
