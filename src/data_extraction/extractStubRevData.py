@@ -185,6 +185,7 @@ def process_dump(dump):
                 'wiki_namespace': page_namespace,
                 'page_title': page_title,
                 'rev_count': target_range_rev_count,
+                'is_page_redirect': is_page_redirect,  # TODO do we need this? should we filter out redirects?
             }
             yield page_info
             # emit revision data from target range
