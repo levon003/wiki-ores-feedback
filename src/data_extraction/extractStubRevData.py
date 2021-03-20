@@ -66,9 +66,12 @@ def process_dump(dump):
             rev_doc = revision.to_json()
             rev_id = rev_doc['id']
             rev_timestamp = int(datetime.strptime(rev_doc['timestamp'], "%Y-%m-%dT%H:%M:%SZ").timestamp())
+            rev_size_bytes = rev_doc['bytes']
             
             if rev_timestamp < detector_start_timestamp:
                 # skip all initial page revisions
+                prev_timestamp = rev_timestamp
+                prev_rev_size_bytes = rev_size_bytes
                 continue
             elif rev_timestamp > end_timestamp:
                 # skip all revisions after the period of interest
@@ -79,7 +82,6 @@ def process_dump(dump):
             if 'user' in rev_doc:
                 rev_user_text = rev_doc['user']['text'] if 'text' in rev_doc['user'] else None
                 rev_user_id = rev_doc['user']['id'] if 'id' in rev_doc['user'] else None
-            rev_size_bytes = rev_doc['bytes']
             
             if rev_timestamp < start_timestamp:
                 # process the sha1 so that we can identify reverts once we are in the range of interest
@@ -112,6 +114,7 @@ def process_dump(dump):
                 'user_id': rev_user_id,
                 'rev_timestamp': rev_timestamp,
                 'seconds_to_prev': seconds_to_prev,
+                'curr_bytes': rev_size_bytes,
                 'delta_bytes': delta_bytes,
                 'edit_summary': rev_doc['comment'] if 'comment' in rev_doc else None,
                 'is_reverted': False,
@@ -185,7 +188,7 @@ def process_dump(dump):
                 'wiki_namespace': page_namespace,
                 'page_title': page_title,
                 'rev_count': target_range_rev_count,
-                'is_page_redirect': is_page_redirect,  # TODO do we need this? should we filter out redirects?
+                'is_page_redirect': is_page_redirect,
             }
             yield page_info
             # emit revision data from target range
@@ -247,8 +250,8 @@ def create_tables(engine):
     
     metadata.drop_all(engine, checkfirst=True)
     metadata.create_all(engine, checkfirst=True)
+
     
-        
 def process_all(paths):
     git_root_dir = "/export/scratch2/levon003/repos/wiki-ores-feedback"
     derived_data_dir = os.path.join(git_root_dir, "data", "derived")
@@ -272,19 +275,17 @@ def process_all(paths):
     curr_batch = []
     FORCE_COMMIT_SIZE = 100000
     
-    with open(os.path.join(working_dir, 'revs.ndjson'), 'w') as outfile, open(os.path.join(working_dir, 'page.ndjson'), 'w') as page_outfile:
+    with open(os.path.join(working_dir, 'revs.tsv'), 'w') as outfile, open(os.path.join(working_dir, 'page.ndjson'), 'w') as page_outfile:
         for result in para.map(process_stub_history_filepath, paths, mappers=len(paths)):
             if 'wiki_namespace' in result:
                 # this is a page result
                 page_outfile.write(json.dumps(result) + "\n")
-                #conn.execute(page_metadata.insert(), [
-                #    result,
-                #])
                 page_processed_count += 1
                 if page_processed_count % 10000 == 0:
                     print(f"Processed {page_processed_count} pages in {datetime.now() - start}")
             else:
-                outfile.write(json.dumps(result) + "\n")
+                #outfile.write(json.dumps(result) + "\n")
+                outfile.write("{rev_timestamp}\t{page_id}\t{rev_id}\t{prev_rev_id}\t{is_minor}\t{user_text}\t{user_id}\t{rev_timestamp}\t{seconds_to_prev}\t{curr_bytes}\t{delta_bytes}\t{is_reverted}\t{is_revert}\t{is_self_reverted}\t{is_self_revert}\t{revert_target_id}\t{revert_set_size}\t{revert_id}\t{seconds_to_revert}\t{edit_summary}\n".format(**result))
                 
                 #curr_batch.append(result)
                 #if len(curr_batch) >= FORCE_COMMIT_SIZE:

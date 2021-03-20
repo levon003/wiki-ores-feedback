@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # This script extracts user edit counts from stub history
+# Sample execution: 8448808 users in 8:12:28.775234
+# After reduction with the sortReduceUserEditCounts script, there are 3547207 unique users
 
 import mwxml
 import mwxml.utilities
