@@ -22,19 +22,30 @@ def get_namespace_prefix_dict():
         'Talk:': 1,
         'User:': 2,
         'User_talk:': 3,
+        'WP:': 4,
+        'Project:': 4,
         'Wikipedia:': 4,
+        'MOS:': 4,  # pseudo-namespace
+        'WT:': 5,
+        'Project_talk:': 5,
         'Wikipedia_talk:': 5,
         'File:': 6,
+        'Image:': 6,
         'File_talk:': 7,
+        'Image_talk:': 7,
         'MediaWiki:': 8,
         'MediaWiki_talk:': 9,
         'Template:': 10,
+        'T:': 10,  # pseudo-namespace
         'Template_talk:': 11,
         'Help:': 12,
+        'H:': 12,  # pseudo-namespace
         'Help_talk:': 13,
         'Category:': 14,
+        'CAT:': 14,  # pseudo-namespace
         'Category_talk:': 15,
         'Portal:': 100,
+        'P:': 100,  # pseudo-namespace
         'Portal_talk:': 101,
         'Draft:': 118,
         'Draft_talk:': 119,
@@ -54,9 +65,11 @@ def autocomplete_page_title():
     logger.debug(f"Serving autocomplete request with query '{query_str}'.")
 
 
-    ns = 0
+    ns = 0   # default: assume namespace 0 (main/article)
     ns_prefix = ""
     if ':' in query_str:
+        # check to see if this is a namespace prefix
+        # if it is, change the searched namespace
         ns_prefix_dict = get_namespace_prefix_dict()
         ns_prefix = query_str.split(':')[0] + ':'
         logger.debug(f"Investigating potential namespace prefix '{ns_prefix}'.")
