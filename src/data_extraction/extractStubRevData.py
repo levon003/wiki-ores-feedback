@@ -99,7 +99,7 @@ def process_dump(dump):
                 seconds_to_prev = rev_timestamp - prev_timestamp
             delta_bytes = None
             if prev_rev_size_bytes is not None:
-                delta_byes = rev_size_bytes - prev_rev_size_bytes
+                delta_bytes = rev_size_bytes - prev_rev_size_bytes
             
             assert rev_doc['page']['id'] == page_id
             assert rev_doc['page']['namespace'] == page_namespace
@@ -235,6 +235,7 @@ def create_tables(engine):
         Column('user_text', Text(length=85), nullable=False),
         Column('user_id', Integer),
                      
+        Column('curr_bytes', Integer),
         Column('delta_bytes', Integer),
         Column('edit_summary', Text(length=500)),
         
