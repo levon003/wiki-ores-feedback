@@ -2,8 +2,9 @@
 # This script extracts revisions from a Stub History XML dump
 # Saves as much information as possible
 # Took 17h10m35s to run on 27 cores; minimal memory usage.
-# After running this script, one may wish to sort the CSV output: `sort -k1 -n -t, rev_ids.csv > rev_ids_sorted.csv`
-# Although, generally, the CSV will be too large to sort using bash tools...
+# 2nd run: 111200155 revisions (and 15082470 pages) in 17:10:39.688123
+# head revs.tsv > sort -T /export/scratch2/tmp --parallel=8 -t $'\t' -k 1,1 -n
+
 
 import mwxml
 import mwxml.utilities
@@ -41,6 +42,8 @@ def process_dump(dump):
     detector_start_timestamp = int(detector_start_date.timestamp())
     start_date = datetime.fromisoformat('2018-01-01')  # start of 2018
     start_timestamp = int(start_date.timestamp())
+    midpoint_date = datetime.fromisoformat('2019-01-01')
+    midpoint_timestamp = int(midpoint_date.timestamp())
     end_date = datetime.fromisoformat('2020-01-01')
     end_timestamp = int(end_date.timestamp())
     for page in dump:
@@ -49,6 +52,7 @@ def process_dump(dump):
         page_id = page.id
         rev_count = 0
         target_range_rev_count = 0
+        target_range_midpoint_rev_count = 0
 
         rev_list = []
         rev_dict = {}
@@ -80,7 +84,7 @@ def process_dump(dump):
             rev_user_text = ""
             rev_user_id = ""
             if 'user' in rev_doc:
-                rev_user_text = rev_doc['user']['text'] if 'text' in rev_doc['user'] else None
+                rev_user_text = rev_doc['user']['text'].replace('\t', '\\t').replace('\n', '\\n') if 'text' in rev_doc['user'] else None
                 rev_user_id = rev_doc['user']['id'] if 'id' in rev_doc['user'] else None
             
             if rev_timestamp < start_timestamp:
@@ -93,6 +97,9 @@ def process_dump(dump):
                 continue
             # after this point, we are after 2018!
             target_range_rev_count += 1
+            if rev_timestamp < midpoint_timestamp:
+                # still before the midpoint
+                target_range_midpoint_rev_count += 1
             
             seconds_to_prev = None
             if prev_timestamp is not None:
@@ -116,7 +123,8 @@ def process_dump(dump):
                 'seconds_to_prev': seconds_to_prev,
                 'curr_bytes': rev_size_bytes,
                 'delta_bytes': delta_bytes,
-                'edit_summary': rev_doc['comment'] if 'comment' in rev_doc else None,
+                #'edit_summary': rev_doc['comment'] if 'comment' in rev_doc else None,
+                'has_edit_summary': 'comment' in rev_doc,
                 'is_reverted': False,
                 'is_revert': False,
                 'is_self_reverted': False,
@@ -187,7 +195,8 @@ def process_dump(dump):
                 'page_id': page_id,
                 'wiki_namespace': page_namespace,
                 'page_title': page_title,
-                'rev_count': target_range_rev_count,
+                'full_rev_count': target_range_rev_count,  # corresponds to 2018-2020 revs
+                'range_rev_count': target_range_midpoint_rev_count,  # corresponds to 2018-2019 revs
                 'is_page_redirect': is_page_redirect,
             }
             yield page_info
@@ -259,9 +268,9 @@ def process_all(paths):
     working_dir = os.path.join(derived_data_dir, 'stub-history-all-revisions', 'oidb')
     os.makedirs(working_dir, exist_ok=True)
     
-    output_filepath = os.path.join(working_dir, 'oidb.sqlite')
-    engine = get_engine(output_filepath)
-    create_tables(engine)
+    #output_filepath = os.path.join(working_dir, 'oidb.sqlite')
+    #engine = get_engine(output_filepath)
+    #create_tables(engine)
     
     #metadata = MetaData(bind=engine)
     #metadata.reflect()
@@ -276,17 +285,17 @@ def process_all(paths):
     curr_batch = []
     FORCE_COMMIT_SIZE = 100000
     
-    with open(os.path.join(working_dir, 'revs.tsv'), 'w') as outfile, open(os.path.join(working_dir, 'page.ndjson'), 'w') as page_outfile:
+    with open(os.path.join(working_dir, 'revs_unsorted.tsv'), 'w') as outfile, open(os.path.join(working_dir, 'page.ndjson'), 'w') as page_outfile:
         for result in para.map(process_stub_history_filepath, paths, mappers=len(paths)):
             if 'wiki_namespace' in result:
                 # this is a page result
                 page_outfile.write(json.dumps(result) + "\n")
                 page_processed_count += 1
-                if page_processed_count % 10000 == 0:
+                if page_processed_count % 100000 == 0:
                     print(f"Processed {page_processed_count} pages in {datetime.now() - start}")
             else:
                 #outfile.write(json.dumps(result) + "\n")
-                outfile.write("{rev_timestamp}\t{page_id}\t{rev_id}\t{prev_rev_id}\t{is_minor}\t{user_text}\t{user_id}\t{rev_timestamp}\t{seconds_to_prev}\t{curr_bytes}\t{delta_bytes}\t{is_reverted}\t{is_revert}\t{is_self_reverted}\t{is_self_revert}\t{revert_target_id}\t{revert_set_size}\t{revert_id}\t{seconds_to_revert}\t{edit_summary}\n".format(**result))
+                outfile.write("{rev_timestamp}\t{page_id}\t{rev_id}\t{prev_rev_id}\t{is_minor}\t{user_text}\t{user_id}\t{rev_timestamp}\t{seconds_to_prev}\t{curr_bytes}\t{delta_bytes}\t{has_edit_summary}\t{is_reverted}\t{is_revert}\t{is_self_reverted}\t{is_self_revert}\t{revert_target_id}\t{revert_set_size}\t{revert_id}\t{seconds_to_revert}\n".format(**result))
                 
                 #curr_batch.append(result)
                 #if len(curr_batch) >= FORCE_COMMIT_SIZE:
