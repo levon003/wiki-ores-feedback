@@ -13,6 +13,8 @@ from collections import defaultdict
 from tqdm import tqdm
 from datetime import datetime
 
+INSERT_BATCH_SIZE = 1000000
+
 
 def get_oidb_engine():
     if 'oidb_engine' in g:
@@ -83,10 +85,11 @@ def create_tables(engine):
 
         Column('user_text', Text(length=85), nullable=False),
         Column('user_id', Integer),  # note: "user_id IS NULL" means "unregistered"
+        Column('is_user_registered', Boolean, nullable=False),
         Column('is_user_bot', Boolean, nullable=False),
         Column('n_user_contributions_at_rev', Integer, nullable=False),
                      
-        Column('curr_bytes', Integer),
+        Column('curr_bytes', Integer, nullable=False),
         Column('delta_bytes', Integer),
         
         Column('is_reverted', Boolean, nullable=False),
@@ -102,11 +105,10 @@ def create_tables(engine):
         Column('goodfaith_pred', Float),
     )
 
-    metadata.drop_all(engine, checkfirst=True)
     metadata.create_all(engine, checkfirst=True)
 
 
-def import_oidb_data(engine):
+def import_oidb_data(engine, import_page, import_revision):
     logger = logging.getLogger('cli.create-db.import_oidb_data')
 
     metadata = MetaData(bind=engine)
@@ -114,7 +116,6 @@ def import_oidb_data(engine):
     page_table = metadata.tables['page']
     revision_table = metadata.tables['revision']
 
-    INSERT_BATCH_SIZE = 1000000
     # hard-coding flagon paths
     data_dir = "/export/scratch2/levon003/repos/wiki-ores-feedback/data"
     if not os.path.exists(data_dir):
@@ -125,12 +126,27 @@ def import_oidb_data(engine):
     page_table_filepath = os.path.join(oidb_dir, 'page.ndjson')
     rev_tsv_filepath = os.path.join(oidb_dir, 'revs.tsv')
 
+    if import_page:
+        logger.info("Creating page table.")
+        import_page_data(engine, page_table, page_table_filepath)
+    else:
+        logger.debug("Skipping page table creation.")
+
+    if import_revision:
+        logger.info("Creating revision table.")
+        import_revision_data(engine, revision_table, data_dir, oidb_dir, rev_tsv_filepath)
+    else:
+        logger.debug("Skipping revision table creation.")
+
+
+def import_page_data(engine, page_table, page_table_filepath):
+    logger = logging.getLogger('cli.create-db.import_page_data')
     start = datetime.now()
     with engine.connect() as conn: 
         # import page data
+        processed_count = 0
         with open(page_table_filepath) as infile:
             page_list = []
-            processed_count += 1
             for line in tqdm(infile, total=15082470, desc='Constructing page table'):
                 page = json.loads(line)
                 page_data = {
@@ -148,11 +164,16 @@ def import_oidb_data(engine):
 
                 if len(page_list) >= INSERT_BATCH_SIZE:
                     conn.execute(page_table.insert(), page_list)
+                    logger.debug(f"Committed page insert with {len(page_list)} pages ({processed_count} total) in {datetime.now() - start}.")
+                    page_list = []
             if len(page_list) > 0:
                 conn.execute(page_table.insert(), page_list)
+                page_list = []
             logger.debug(f"Finished constructing page table ({processed_count} total) in {datetime.now() - start}.")
 
 
+def import_revision_data(engine, revision_table, data_dir, oidb_dir, rev_tsv_filepath):
+    logger = logging.getLogger('cli.create-db.import_revision_data')
     # load in bot users
     registered_bot_username_filepath = os.path.join(data_dir, 'raw', 'bots', 'registered-enwiki-bots-quarry53348-2021-03-18.tsv')
     with open(registered_bot_username_filepath, 'r') as infile:
@@ -162,6 +183,7 @@ def import_oidb_data(engine):
             user_id, _, _, _ = line.strip().split('\t')
             user_id = int(user_id)
             registered_bot_user_ids.add(user_id)
+    logger.info(f"Loaded {len(registered_bot_user_ids)} registered bot user ids.")
 
     # load existing user edit counts
     edit_counts_filepath = os.path.join(oidb_dir, 'pre2018_edit_counts.tsv')
@@ -171,10 +193,12 @@ def import_oidb_data(engine):
         for line in infile:
             user_id, editcount = line.strip().split('\t')
             user_id_editcount_dict[user_id] = editcount
+    logger.info(f"Loaded {len(user_id_editcount_dict)} user ids with existing non-zero edit counts.")
 
     start = datetime.now()
     end_date = datetime.fromisoformat('2019-01-01')
     end_timestamp = int(end_date.timestamp())
+    logger.info(f"Loading revisions created before {end_date}.")
     with engine.connect() as conn: 
         with open(rev_tsv_filepath, 'r') as infile:
             processed_count = 0
@@ -191,8 +215,8 @@ def import_oidb_data(engine):
 
                 # we track the number of edits made by each user over time
                 # note: assumes that each line is sequential
+                user_id = None if user_id == 'None' or user_id == '' else int(user_id)
                 if user_id is not None:
-                    user_id = int(user_id)
                     user_id_editcount_dict[user_id] += 1
                     n_user_contributions_at_rev = user_id_editcount_dict[user_id]
                 else:  # this is an unregistered user; we could these separately
@@ -202,14 +226,14 @@ def import_oidb_data(engine):
                 rev_data = {
                     'page_id': int(page_id),
                     'rev_id': int(rev_id), 
-                    'prev_rev_id': int(prev_rev_id), 
+                    'prev_rev_id': int(prev_rev_id) if prev_rev_id != 'None' else None, 
                     'is_minor': is_minor == 'True', 
                     'user_text': user_text, 
-                    'user_id': int(user_id), 
+                    'user_id': user_id, 
                     'rev_timestamp': int(rev_timestamp), 
-                    'seconds_to_prev': int(seconds_to_prev), 
+                    'seconds_to_prev': int(seconds_to_prev) if seconds_to_prev != 'None' else None, 
                     'curr_bytes': int(curr_bytes), 
-                    'delta_bytes': int(delta_bytes), 
+                    'delta_bytes': int(delta_bytes) if delta_bytes != 'None' else None, 
                     'has_edit_summary': has_edit_summary == 'True', 
                     'is_reverted': is_reverted == 'True', 
                     'is_revert': is_revert == 'True',
@@ -221,15 +245,18 @@ def import_oidb_data(engine):
                     'seconds_to_revert': int(seconds_to_revert) if seconds_to_revert != 'None' else None, 
                     'n_user_contributions_at_rev': n_user_contributions_at_rev,
                     'is_user_bot': is_user_bot,
+                    'is_user_registered': user_id is not None,
                 }
                 rev_list.append(rev_data)
 
                 if len(rev_list) >= INSERT_BATCH_SIZE:
                     conn.execute(revision_table.insert(), rev_list)
-                    logger.debug(f"Revision insert complete ({processed_count} total) in {datetime.now() - start}..")
+                    logger.debug(f"Revision insert complete ({processed_count} total) in {datetime.now() - start}.")
+                    rev_list = []
             if len(rev_list) > 0:
                 conn.execute(revision_table.insert(), rev_list)
-                logger.debug(f"Final revision insert ({processed_count} total) complete in {datetime.now() - start}.")
+                rev_list = []
+            logger.debug(f"Final revision insert ({processed_count} total) complete in {datetime.now() - start}.")
 
 def create_test_data(engine):
     metadata = MetaData(bind=engine)
@@ -290,20 +317,52 @@ def create_test_data(engine):
 
 
 @click.command('create-db')
+@click.option('--page/--no-page', 'import_page', default=False)
+@click.option('--revision/--no-revision', 'import_revision', default=False)
 @with_appcontext
-def create_db_command():
+def create_db_command(import_page, import_revision):
     logger = logging.getLogger('cli.create-db.main')
     logger.info("Creating and populating OIDB database in Tools.")
     start = datetime.now()
     engine = get_oidb_engine()
     create_tables(engine)
     logger.info(f"Finished creating tables after {datetime.now() - start}.")
-    import_oidb_data(engine)
+    import_oidb_data(engine, import_page, import_revision)
     logger.info(f"Finished importing table data after {datetime.now() - start}.")
 
+@click.command('drop-db')
+@click.option('--revision-only', default=False, is_flag=True)
+@click.option('--page-only', default=False, is_flag=True)
+@click.option('--all', 'drop_all', default=False, is_flag=True)
+@with_appcontext
+def drop_db_command(revision_only, page_only, drop_all):
+    print(revision_only, page_only, drop_all)
+    logger = logging.getLogger('cli.drop-db.main')
+    logger.info("Dropping OIDB database in Tools.")
+    start = datetime.now()
+    engine = get_oidb_engine()
+    metadata = MetaData(bind=engine)
+    metadata.reflect()
+    logger.info(f"Existing tables ({len(metadata.tables)} total):")
+    for key, value in metadata.tables.items():
+        logger.info(f"{key}")
+    if drop_all:
+        logger.info("Dropping all tables identified via reflection.")
+        metadata.drop_all()
+    elif revision_only:
+        logger.info("Dropping revision table.")
+        metadata.drop_all(tables=[metadata.tables['revision'],])
+    elif page_only: 
+        logger.info("Dropping page table.")
+        metadata.drop_all(tables=[metadata.tables['page'],])
+    else:
+        logger.info("No table specified; dropping nothing.")
+    #to_drop = []
+    #metadata.drop_all(tables=['revision',])
+    logger.info(f"Finished dropping table data after {datetime.now() - start}.")
 
 def init_app(app):
-    #app.teardown_appcontext(close_db)
     app.cli.add_command(create_db_command)
+    app.cli.add_command(drop_db_command)
     app.teardown_appcontext(teardown_engine)
     app.teardown_request(teardown_session)
