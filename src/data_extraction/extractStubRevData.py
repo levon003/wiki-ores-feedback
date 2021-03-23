@@ -3,7 +3,8 @@
 # Saves as much information as possible
 # Took 17h10m35s to run on 27 cores; minimal memory usage.
 # 2nd run: 111200155 revisions (and 15082470 pages) in 17:10:39.688123
-# head revs.tsv > sort -T /export/scratch2/tmp --parallel=8 -t $'\t' -k 1,1 -n
+# 3rd run: 111200155 revisions (and 15082470 pages) in 16:53:41.702123
+# sort -T /export/scratch2/tmp --parallel=8 -t $'\t' -k 1,1 -n revs_unsorted.tsv > revs.tsv
 
 
 import mwxml
