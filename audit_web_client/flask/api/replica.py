@@ -2,7 +2,7 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 import click
 from flask import current_app, g
@@ -10,7 +10,7 @@ from flask.cli import with_appcontext
 import logging
 
 def get_replica_engine():
-    if 'replica_eng' in g:
+    if 'replica_engine' in g:
         return g.replica_engine
     env = current_app.config['ENV']
     if env == 'toolforge':
@@ -32,12 +32,21 @@ def get_replica_engine():
     return g.replica_engine
     
 
-#@app.teardown_request
+def get_replica_session():
+    if 'replica_session' in g:
+        return g.replica_session
+    engine = get_replica_engine()
+    g.replica_session = scoped_session(sessionmaker(engine))
+    #g.replica_session = Session()
+    return g.replica_session
+
+
 def teardown_session(exception):
-    pass
+    session = g.pop('replica_session', None)
+    if session is not None:
+        session.remove()
 
 
-#@app.teardown_appcontext
 def teardown_engine(exception):
     engine = g.pop('replica_engine', None)
     if engine is not None:
@@ -130,22 +139,24 @@ def test_replicas_command():
     logger = logging.getLogger('cli.test-replica')
     logger.info("Testing replica database connection.")
 
-    engine = get_replica_engine()
-    Session = sessionmaker(engine)
-    with Session.begin() as session:
+    #engine = get_replica_engine()
+    #Session = sessionmaker(engine)
+    Session = get_replica_session()
+    with Session() as session:
+        with session.begin():
+            page_id = 62715690
+            page_ids = get_pages_linked_from_page_id(page_id, session)
+            logger.info(f"Identified {len(page_ids)} pages linked from page {page_id}.")
 
-        page_id = 62715690
-        page_ids = get_pages_linked_from_page_id(page_id, session)
-        logger.info(f"Identified {len(page_ids)} pages linked from page {page_id}.")
+            page_ids = get_pages_linked_to_page_id(page_id, session)
+            logger.info(f"Identified {len(page_ids)} pages linked to page {page_id}.")
 
-        page_ids = get_pages_linked_to_page_id(page_id, session)
-        logger.info(f"Identified {len(page_ids)} pages linked to page {page_id}.")
-
-        query_str = 'Bảo_'
-        page_list = get_pages_by_partial_title(query_str, 0, session)
-        logger.info(f"Identified {len(page_list)} pages linked to query '{query_str}', including '{page_list[0]}'.")
+            query_str = 'Bảo_'
+            page_list = get_pages_by_partial_title(query_str, 0, session)
+            logger.info(f"Identified {len(page_list)} pages linked to query '{query_str}', including '{page_list[0]}'.")
 
 
 def init_app(app):
     app.cli.add_command(test_replicas_command)
     app.teardown_appcontext(teardown_engine)
+    app.teardown_request(teardown_session)

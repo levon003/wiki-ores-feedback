@@ -3,7 +3,7 @@ import click
 from flask import current_app, g, request, make_response, Blueprint
 from flask.cli import with_appcontext
 
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 import logging
 from urllib.parse import unquote
@@ -80,12 +80,11 @@ def autocomplete_page_title():
         else:
             ns_prefix = ""
 
-    engine = replica.get_replica_engine()
-    Session = sessionmaker(engine)
-    with Session.begin() as session:
-        page_list = replica.get_pages_by_partial_title(query_str, ns, session)
-        logger.debug(f"Identified {len(page_list)} pages for query '{query_str}'.")
-    engine.dispose()
+    Session = replica.get_replica_session()
+    with Session() as session:
+        with session.begin():
+            page_list = replica.get_pages_by_partial_title(query_str, ns, session)
+    logger.debug(f"Identified {len(page_list)} pages for query '{query_str}'.")
 
     page_title_data = []
     for page in page_list[:5]:

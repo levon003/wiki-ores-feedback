@@ -72,7 +72,12 @@ class FlaskLoggingFilter(logging.Filter):
   
 def set_up_logging(app):
     root = logging.getLogger()
+    if len(root.handlers) > 0:
+        # if the Flask reloader is active, it tries to set up the logger twice
+        # stop if we already have the appropriate handlers i.e. any handlers
+        return
     root.setLevel(logging.DEBUG)
+
         
     stream_handler = logging.StreamHandler()
     # TODO Log at info level by default for normal operations
