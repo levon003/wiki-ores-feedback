@@ -51,6 +51,9 @@ def create_app(test_config=None):
     from . import replica
     replica.init_app(app)
 
+    from . import sample
+    app.register_blueprint(sample.bp)
+
     from . import autocomplete
     app.register_blueprint(autocomplete.bp)
 
