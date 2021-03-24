@@ -1,5 +1,10 @@
 .bar:hover {
-    fill: #D3D3D3;
+  stroke: #169eec;
+    opacity: 1;
+    /* transform: scale(1.1);; */
+}
+.box:hover {
+  fill: #cacac5;
     opacity: 1;
     /* transform: scale(1.1);; */
 }
