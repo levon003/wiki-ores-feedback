@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import Grid from '@material-ui/core/Grid';
+import * as Autosuggest from "react-autosuggest";
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';

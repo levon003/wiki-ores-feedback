@@ -76,7 +76,7 @@ const Dashboard = () => {
           >
 
             <MisalignmentFilter 
-              onChange={handleStateUpdate}, 
+              onChange={handleStateUpdate}
               data= {data}  
             />
           </Grid>
