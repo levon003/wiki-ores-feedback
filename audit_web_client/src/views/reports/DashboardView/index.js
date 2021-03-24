@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Grid,
@@ -7,6 +7,7 @@ import {
 import Page from 'src/components/Page';
 import RevisionViewer from './RevisionViewer';
 import MisalignmentFilter from './MisalignmentFilter';
+import FilterControls from './FilterControls';
 
 import LatestProducts from './LatestProducts';
 import Sales from './Sales';
@@ -37,6 +38,19 @@ const Dashboard = () => {
                   vlg_NR  : 400,
                 };
 
+  const [globalFilterState, setGlobalFilterState] = useState();
+  const [revisions, setRevisions] = useState();
+    
+    
+  const handleStateUpdate = (new_state) => () => {
+      setGlobalFilterState(new_state);
+      // TODO do a GET request to the backend with the new filters
+      // Get the new revisions and save them
+      //fetch().then({
+      //    setRevisions(...data from backend...)
+      //})
+  };
+    
   return (
     <Page
       className={classes.root}
@@ -52,13 +66,27 @@ const Dashboard = () => {
             item
             xs={12}
           >
-          <MisalignmentFilter data= {data} />
+             <FilterControls 
+                onChange={handleStateUpdate}
+            />
           </Grid>
           <Grid
             item
             xs={12}
           >
-            {/* <RevisionViewer /> */}
+
+            <MisalignmentFilter 
+              onChange={handleStateUpdate}, 
+              data= {data}  
+            />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+          >
+            <RevisionViewer 
+              revisions={revisions}
+            />
           </Grid>
         </Grid>
       </Container>

@@ -71,7 +71,8 @@ const RevisionView = ({revision, className, ...rest }) => {
         flexGrow={1}
       >
         <Box maxHeight="20vh" maxWidth="80vw" style={{'overflowY': 'scroll'}}>
-          <div dangerouslySetInnerHTML={{__html: revisionDiff}} />
+          {/* To try: https://www.npmjs.com/package/html-react-parser */}
+          <div dangerouslySetInnerHTML={{'__html': revisionDiff}} />
         </Box>
       </Box>
     </Paper>
