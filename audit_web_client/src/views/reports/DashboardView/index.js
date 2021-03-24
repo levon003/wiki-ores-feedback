@@ -15,6 +15,7 @@ import TasksProgress from './TasksProgress';
 import TotalCustomers from './TotalCustomers';
 import TotalProfit from './TotalProfit';
 import TrafficByDevice from './TrafficByDevice';
+import { PinDropSharp } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,6 +28,15 @@ const useStyles = makeStyles((theme) => ({
 
 const Dashboard = () => {
   const classes = useStyles();
+  // Temporary data here: 
+  const data =  { 
+                  vlhp_R : 1000,
+                  vlhp_NR : 200,
+                  confrevs_R : 200,
+                  confrevs_NR : 100,
+                  vlg_R  : 10,
+                  vlg_NR  : 400,
+                };
 
   const [globalFilterState, setGlobalFilterState] = useState();
   const [revisions, setRevisions] = useState();
@@ -56,7 +66,7 @@ const Dashboard = () => {
             item
             xs={12}
           >
-            <FilterControls 
+             <FilterControls 
                 onChange={handleStateUpdate}
             />
           </Grid>
@@ -64,8 +74,10 @@ const Dashboard = () => {
             item
             xs={12}
           >
+
             <MisalignmentFilter 
-              onChange={handleStateUpdate}
+              onChange={handleStateUpdate}, 
+              data= {data}  
             />
           </Grid>
           <Grid

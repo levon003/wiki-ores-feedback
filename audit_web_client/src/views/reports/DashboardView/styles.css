@@ -1,0 +1,26 @@
+.bar:hover {
+  stroke: #169eec;
+    opacity: 1;
+    /* transform: scale(1.1);; */
+}
+.box:hover {
+  fill: #cacac5;
+    opacity: 1;
+    /* transform: scale(1.1);; */
+}
+
+.wrapTxt {
+    position: relative;
+  }
+  .wrapTxt .mask {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+.svgText {
+    pointer-events: none;
+}
