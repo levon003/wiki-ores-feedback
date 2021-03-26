@@ -287,13 +287,13 @@ def update_ores_scores():
     engine = get_oidb_engine()
     rt = get_revision_table()
     update_stmt = rt.update().\
-        where(rt.c.rev_id == bindparam('rev_id')).\
-        values(damaging_pred=bindparam('damaging_pred'), goodfaith_pred=bindparam('goodfaith_pred'))
+        where(rt.c.rev_id == bindparam('b_rev_id')).\
+        values(damaging_pred=bindparam('b_damaging_pred'), goodfaith_pred=bindparam('b_goodfaith_pred'))
     data_dir = "/export/scratch2/levon003/repos/wiki-ores-feedback/data"
     if not os.path.exists(data_dir):
         logger.error(f"Expected data directory '{data_dir}'. Is this Flagon?")
         return
-    ores_score_filepath = os.path.join(data_dir, 'revision_sample', 'sample3_ores_scores.csv')
+    ores_score_filepath = os.path.join(data_dir, 'derived', 'revision_sample', 'sample3_ores_scores.csv')
     start = datetime.now()
     with engine.connect() as conn:
         with open(ores_score_filepath, 'r') as infile:
@@ -305,9 +305,9 @@ def update_ores_scores():
                     continue
                 processed_count += 1
                 rev_scores = {
-                    'rev_id': int(tokens[0]),
-                    'damaging_pred': float(tokens[1]),
-                    'goodfaith_pred': float(tokens[3]),
+                    'b_rev_id': int(tokens[0]),
+                    'b_damaging_pred': float(tokens[1]),
+                    'b_goodfaith_pred': float(tokens[3]),
                 }
                 rev_list.append(rev_scores)
                 if len(rev_list) > INSERT_BATCH_SIZE:
