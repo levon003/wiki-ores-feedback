@@ -4,7 +4,7 @@ from flask import current_app, g, request, make_response, Blueprint
 from flask.cli import with_appcontext
 
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy import select
+from sqlalchemy import select, or_, and_, func
 
 import logging
 from datetime import datetime
@@ -60,7 +60,9 @@ def get_sample_revisions():
     include_experienced = user_filters['experienced']
 
     rt = db.get_revision_table()
+    pt = db.get_page_table()
     s = select(rt.c.rev_id, rt.c.diff_bytes)
+    s = s.join_from(rt, pt)
 
     if include_newcomers and include_experienced and include_learners and include_bot and not include_unregistered:
         s = s.where(rt.c.is_user_registered == True)
@@ -71,6 +73,8 @@ def get_sample_revisions():
     
     revision_list = []
 
+
+    s = select(func.count('*')).select_from(rt)
 
     return {'revisions': revision_list}
 

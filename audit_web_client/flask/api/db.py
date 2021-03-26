@@ -3,7 +3,7 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 
 import sqlalchemy as sa
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, Float, Index
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, Float, Index, bindparam
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 import os
@@ -279,6 +279,56 @@ def import_revision_data(engine, revision_table, data_dir, oidb_dir, rev_tsv_fil
             logger.debug(f"Final revision insert ({processed_count} total) complete in {datetime.now() - start}.")
 
 
+@click.command('update-ores-scores')
+@with_appcontext
+def update_ores_scores():
+    logger = logging.getLogger('cli.update-ores-scores.main')
+    logger.info("Updating with ORES scores.")
+    engine = get_oidb_engine()
+    rt = get_revision_table()
+    update_stmt = rt.update().\
+        where(rt.c.rev_id == bindparam('rev_id')).\
+        values(damaging_pred=bindparam('damaging_pred'), goodfaith_pred=bindparam('goodfaith_pred'))
+    data_dir = "/export/scratch2/levon003/repos/wiki-ores-feedback/data"
+    if not os.path.exists(data_dir):
+        logger.error(f"Expected data directory '{data_dir}'. Is this Flagon?")
+        return
+    ores_score_filepath = os.path.join(data_dir, 'revision_sample', 'sample3_ores_scores.csv')
+    start = datetime.now()
+    with engine.connect() as conn:
+        with open(ores_score_filepath, 'r') as infile:
+            processed_count = 0
+            rev_list = []
+            for line in tqdm(infile, total=32705623):
+                tokens = line.strip().split(',')
+                if len(tokens) != 5:
+                    continue
+                processed_count += 1
+                rev_scores = {
+                    'rev_id': int(tokens[0]),
+                    'damaging_pred': float(tokens[1]),
+                    'goodfaith_pred': float(tokens[3]),
+                }
+                rev_list.append(rev_scores)
+                if len(rev_list) > INSERT_BATCH_SIZE:
+                    res = conn.execute(update_stmt, rev_list)
+                    if res.supports_sane_multi_rowcount:
+                        logger.debug(f"Revision updated {res.rowcount} / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
+                    else:
+                        logger.debug(f"Revision updated ? / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
+                    rev_list = []
+                    logger.debug(f"Revision update ({processed_count} total) complete in {datetime.now() - start}.")
+            if len(rev_list) > 0:
+                res = conn.execute(update_stmt, rev_list)
+                if res.supports_sane_multi_rowcount:
+                    logger.debug(f"Revision updated {res.rowcount} / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
+                else:
+                    logger.debug(f"Revision updated ? / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
+                rev_list = []
+            logger.debug(f"Final revision update ({processed_count} total) complete in {datetime.now() - start}.")
+    logger.info("Finished updating with ORES scores.")
+
+
 @click.command('create-index')
 @click.option('--page/--no-page', 'create_page', default=False)
 @click.option('--revision/--no-revision', 'create_revision', default=False)
@@ -346,5 +396,6 @@ def init_app(app):
     app.cli.add_command(create_db_command)
     app.cli.add_command(drop_db_command)
     app.cli.add_command(create_index_command)
+    app.cli.add_command(update_ores_scores)
     app.teardown_appcontext(teardown_engine)
     app.teardown_request(teardown_session)

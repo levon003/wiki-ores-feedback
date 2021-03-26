@@ -29,14 +29,14 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes = useStyles();
   // Temporary data here: 
-  const data =  { 
-                  vlhp_R : 1000,
-                  vlhp_NR : 200,
-                  confrevs_R : 200,
-                  confrevs_NR : 100,
-                  vlg_R  : 10,
-                  vlg_NR  : 400,
-                };
+  const [data, setData] =  useState({
+    vlhp_R : 1000,
+    vlhp_NR : 200,
+    confrevs_R : 200,
+    confrevs_NR : 100,
+    vlg_R  : 10,
+    vlg_NR  : 400,
+  });
 
   const [globalFilterState, setGlobalFilterState] = useState();
   const [revisions, setRevisions] = useState();
@@ -44,8 +44,10 @@ const Dashboard = () => {
     
   const handleStateUpdate = (new_state) => () => {
       setGlobalFilterState(new_state);
-      // TODO do a GET request to the backend with the new filters
+      // TODO do a POST request to the backend with the new filters
       // Get the new revisions and save them
+      // ALSO get the new counts of each of the conditions
+      // i.e. number of revisions that are Very Likely Bad
       //fetch().then({
       //    setRevisions(...data from backend...)
       //})
@@ -54,7 +56,7 @@ const Dashboard = () => {
   return (
     <Page
       className={classes.root}
-      title="RevReflect: Inspect ORES Predictions"
+      title="ORES-Inspect"
     >
       <Container maxWidth={false}>
         <Grid
@@ -77,7 +79,7 @@ const Dashboard = () => {
 
             <MisalignmentFilter 
               onChange={handleStateUpdate}
-              data= {data}  
+              data= {data}
             />
           </Grid>
           <Grid
