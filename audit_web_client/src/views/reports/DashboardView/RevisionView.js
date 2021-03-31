@@ -13,7 +13,8 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-
+import "../../../../src/style.css"
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,10 +26,7 @@ const useStyles = makeStyles((theme) => ({
   heading: {
     flexShrink: 0,
     flexBasis: '33.33%',
-  },  
-  // secondaryHeading: {
-  //   fontSize: theme.typography.pxToRem(15),
-  //   color: theme.palette.text.secondary,
+  }, 
 
 }));
 
@@ -44,6 +42,8 @@ const RevisionView = ({revision, className, ...rest }) => {
     'to_user': '',
     'to_timestamp': '',
     'to_parsedcomment': '',
+    'from_revid': '',
+    'to_revid': '',
   });
 
   const handleChange = (event, isExpanded) => {
@@ -72,10 +72,16 @@ const RevisionView = ({revision, className, ...rest }) => {
             'to_user': data.compare['touser'],
             'to_timestamp': data.compare['totimestamp'],
             'to_parsedcomment': data.compare['toparsedcomment'],
+            'from_revid': data.compare['fromrevid'],
+            'to_revid': data.compare['torevid'],
           })
     });
   }, []);
-
+  // function changeDate() {
+  //   const corfromtime = moment().format(fromtimestamp);
+  //   const cortotime = moment().format(fromtimestamp);
+// {moment(revisionMetadata.from_timestamp).format("MMMM Do YYYY, h:mm:ss a")}
+  // }
   return (
     <Paper
       className={clsx(classes.root, className)}
@@ -84,13 +90,6 @@ const RevisionView = ({revision, className, ...rest }) => {
       p={1}
       {...rest}
     >
-      {/* <Box 
-        display="flex"
-        flexWrap="nowrap"
-        flexDirection="row"
-        flexGrow={1}
-        width = "1300px"
-      > */}
       <Accordion expanded={expanded} onChange={handleChange}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel-content" id="panel-header"> 
       View Diff
@@ -109,16 +108,16 @@ const RevisionView = ({revision, className, ...rest }) => {
 				  </colgroup> 
           <tbody>
             <tr>
-              <td colSpan={2}>Revision as of {revisionMetadata.from_timestamp}</td>
-              <td colSpan={2}>Revision as of {revisionMetadata.to_timestamp}</td>
+              <td id= "time" colSpan={2}><a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>Revision as of  {moment(revisionMetadata.from_timestamp).format("h:mm, D MMMM YYYY")}</a></td>
+              <td id= "time" colSpan={2}><a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>Revision as of {moment(revisionMetadata.to_timestamp).format("h:mm, D MMMM YYYY")}</a></td>
             </tr>
             <tr>
-              <td colSpan={2}>{revisionMetadata.from_user}</td>
-              <td colSpan={2}>{revisionMetadata.to_user}</td>
+              <td id= "user" colSpan={2}>{revisionMetadata.from_user}</td>
+              <td id= "user" colSpan={2}>{revisionMetadata.to_user}</td>
             </tr>
             <tr>
-              <td colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.from_parsedcomment}} />
-              <td colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}} />
+              <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.from_parsedcomment}}/>
+              <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}/>
             </tr>
           </tbody>
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
@@ -131,7 +130,6 @@ const RevisionView = ({revision, className, ...rest }) => {
         </Box>
       </AccordionDetails>
   </Accordion>
-  {/* </Box> */}
   </Paper>
 
   );
