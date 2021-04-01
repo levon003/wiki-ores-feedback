@@ -14,6 +14,7 @@ from tqdm import tqdm
 from datetime import datetime
 
 INSERT_BATCH_SIZE = 1000000
+UPDATE_BATCH_SIZE = 1000
 
 
 def get_oidb_engine():
@@ -310,7 +311,7 @@ def update_ores_scores():
                     'b_goodfaith_pred': float(tokens[3]),
                 }
                 rev_list.append(rev_scores)
-                if len(rev_list) > INSERT_BATCH_SIZE:
+                if len(rev_list) > UPDATE_BATCH_SIZE:
                     res = conn.execute(update_stmt, rev_list)
                     if res.supports_sane_multi_rowcount:
                         logger.debug(f"Revision updated {res.rowcount} / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
