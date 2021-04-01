@@ -26,7 +26,7 @@ from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, 
 
 def get_stub_history_dir():
     raw_data_dir = "/export/scratch2/wiki_data"
-    stub_history_dir = os.path.join(raw_data_dir, "enwiki-20200101-stub-meta-history-gz")
+    stub_history_dir = os.path.join(raw_data_dir, "enwiki-20210101-stub-meta-history-gz")
     assert os.path.exists(stub_history_dir)
     return stub_history_dir
 
@@ -296,7 +296,7 @@ def process_all(paths):
                     print(f"Processed {page_processed_count} pages in {datetime.now() - start}")
             else:
                 #outfile.write(json.dumps(result) + "\n")
-                outfile.write("{rev_timestamp}\t{page_id}\t{rev_id}\t{prev_rev_id}\t{is_minor}\t{user_text}\t{user_id}\t{rev_timestamp}\t{seconds_to_prev}\t{curr_bytes}\t{delta_bytes}\t{has_edit_summary}\t{is_reverted}\t{is_revert}\t{is_self_reverted}\t{is_self_revert}\t{revert_target_id}\t{revert_set_size}\t{revert_id}\t{seconds_to_revert}\n".format(**result))
+                outfile.write("{rev_timestamp}\t{page_id}\t{rev_id}\t{prev_rev_id}\t{is_minor}\t{user_text}\t{user_id}\t{seconds_to_prev}\t{curr_bytes}\t{delta_bytes}\t{has_edit_summary}\t{is_reverted}\t{is_revert}\t{is_self_reverted}\t{is_self_revert}\t{revert_target_id}\t{revert_set_size}\t{revert_id}\t{seconds_to_revert}\n".format(**result))
                 
                 #curr_batch.append(result)
                 #if len(curr_batch) >= FORCE_COMMIT_SIZE:
