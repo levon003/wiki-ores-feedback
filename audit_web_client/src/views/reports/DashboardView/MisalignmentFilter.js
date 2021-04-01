@@ -77,16 +77,34 @@ class App extends Component {
     }
   }
 }
-const MisalignmentFilter = ({data ,className, ...rest }) => {
+const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
   const classes = useStyles();
   var bgColor = "purple";
-  const [text, setText] = useState("Likely good")
+  const [activeFilters, setActiveFilters] = useState({
+    'prediction_filter': None,
+    'revert_filter': None,
+  });
+  const [text, setText] = useState("Likely good");
   function handleClick(e) {
     setText("changed");
     e.preventDefault();
     bgColor = "red";
     console.log('The link was clicked.');
     console.log(bgColor);
+
+    let prediction_filter = None;
+    let revert_filter = None;
+    //TODO based on the click event, set prediction filter and revert filter
+    // If a prediction box was checked, then set prediction_filter to be the name of the box
+    // e.g. prediction_filter = 'vlb';
+    // If an edge was checked, need to set both,
+    // e.g. prediction_filter = 'vlb'; AND revert_filter = 'reverted';
+    const new_filter_value = {
+      'prediction_filter': prediction_filter,
+      'revert_filter': revert_filter,
+    };
+    setActiveFilters(new_filter_value);
+    onChange(new_filter_value);
   }
   function GenerateSVG(props){
     const total_R = props.data["confrevs_R"] + props.data["vlg_R"] + props.data["vlhp_R"];
