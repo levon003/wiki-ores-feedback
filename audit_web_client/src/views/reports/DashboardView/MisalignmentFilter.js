@@ -81,8 +81,8 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
   const classes = useStyles();
   var bgColor = "purple";
   const [activeFilters, setActiveFilters] = useState({
-    'prediction_filter': None,
-    'revert_filter': None,
+    'prediction_filter': null,
+    'revert_filter': null,
   });
   const [text, setText] = useState("Likely good");
   function handleClick(e) {
@@ -92,8 +92,8 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
     console.log('The link was clicked.');
     console.log(bgColor);
 
-    let prediction_filter = None;
-    let revert_filter = None;
+    let prediction_filter = null;
+    let revert_filter = null;
     //TODO based on the click event, set prediction filter and revert filter
     // If a prediction box was checked, then set prediction_filter to be the name of the box
     // e.g. prediction_filter = 'vlb';

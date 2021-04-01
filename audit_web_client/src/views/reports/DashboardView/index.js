@@ -41,11 +41,11 @@ const Dashboard = () => {
   const [globalFilterState, setGlobalFilterState] = useState();
   const [revisions, setRevisions] = useState([]);
     
-  const handleMisalignmentFilterChange = (new_filter) = () => {
+  const handleMisalignmentFilterChange = (new_filter) => {
     console.log(new_filter);
   };
 
-  const handleStateUpdate = (new_state) => () => {
+  const handleStateUpdate = (new_state) => {
     setGlobalFilterState(new_state);
     // TODO do a POST request to the backend with the new filters
     // Get the new revisions and save them
@@ -54,6 +54,8 @@ const Dashboard = () => {
     //fetch().then({
     //    setRevisions(...data from backend...)
     //})
+    const filter_conditions_changed = false;
+    const should_get_new_revisions = false;
     if (filter_conditions_changed) {
       fetch('/api/rev_counts', {method: 'GET'})
         .then(res => res.json())
