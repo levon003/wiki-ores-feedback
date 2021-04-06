@@ -3,7 +3,7 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 
 import sqlalchemy as sa
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, Float
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, Float, Index, bindparam
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 import os
@@ -14,6 +14,7 @@ from tqdm import tqdm
 from datetime import datetime
 
 INSERT_BATCH_SIZE = 1000000
+UPDATE_BATCH_SIZE = 1000
 
 
 def get_oidb_engine():
@@ -61,19 +62,18 @@ def teardown_engine(exception):
         engine.dispose()
 
 
-def create_tables(engine):
-    logger = logging.getLogger('cli.create-db.create_tables')
-    metadata = MetaData()
-
-    page = Table('page', metadata,
+def get_metadata():
+    if 'oidb_metadata' in g:
+        return g.oidb_metadata
+    g.oidb_metadata = MetaData()
+    Table('page', g.oidb_metadata,
         Column('page_id', Integer, primary_key=True),
         Column('wiki_namespace', Integer, nullable=False),
         Column('page_title', Text, nullable=False),
         Column('is_redirect', Boolean, nullable=False),
         Column('rev_count', Integer, nullable=False),
     )
-
-    revision = Table('revision', metadata,
+    Table('revision', g.oidb_metadata,
         Column('rev_id', Integer, primary_key=True),
         Column('page_id', None, ForeignKey('page.page_id')),
         Column('prev_rev_id', Integer),
@@ -104,9 +104,27 @@ def create_tables(engine):
         Column('damaging_pred', Float),
         Column('goodfaith_pred', Float),
     )
+    return g.oidb_metadata
 
+
+def get_table(table_name):
+    metadata = get_metadata()
+    return metadata.tables[table_name]
+
+
+def get_page_table():
+    return get_table('page')
+
+
+def get_revision_table():
+    return get_table('revision')
+
+
+def create_tables(engine):
+    #logger = logging.getLogger('cli.create-db.create_tables')
+    metadata = get_metadata()
     metadata.create_all(engine, checkfirst=True)
-
+    
 
 def import_oidb_data(engine, import_page, import_revision):
     logger = logging.getLogger('cli.create-db.import_oidb_data')
@@ -173,6 +191,9 @@ def import_page_data(engine, page_table, page_table_filepath):
 
 
 def import_revision_data(engine, revision_table, data_dir, oidb_dir, rev_tsv_filepath):
+    """
+    Note: imports 55493557 revisions in 4:10:29
+    """
     logger = logging.getLogger('cli.create-db.import_revision_data')
     # load in bot users
     registered_bot_username_filepath = os.path.join(data_dir, 'raw', 'bots', 'registered-enwiki-bots-quarry53348-2021-03-18.tsv')
@@ -258,62 +279,71 @@ def import_revision_data(engine, revision_table, data_dir, oidb_dir, rev_tsv_fil
                 rev_list = []
             logger.debug(f"Final revision insert ({processed_count} total) complete in {datetime.now() - start}.")
 
-def create_test_data(engine):
-    metadata = MetaData(bind=engine)
-    metadata.reflect()
 
-    page_metadata = metadata.tables['page_metadata']
-    category_name = metadata.tables['category_name']
-    page_category = metadata.tables['page_category']
-    revision = metadata.tables['revision']
+@click.command('update-ores-scores')
+@with_appcontext
+def update_ores_scores():
+    logger = logging.getLogger('cli.update-ores-scores.main')
+    logger.info("Updating with ORES scores.")
+    engine = get_oidb_engine()
+    rt = get_revision_table()
+    update_stmt = rt.update().\
+        where(rt.c.rev_id == bindparam('b_rev_id')).\
+        values(damaging_pred=bindparam('b_damaging_pred'), goodfaith_pred=bindparam('b_goodfaith_pred'))
+    data_dir = "/export/scratch2/levon003/repos/wiki-ores-feedback/data"
+    if not os.path.exists(data_dir):
+        logger.error(f"Expected data directory '{data_dir}'. Is this Flagon?")
+        return
+    ores_score_filepath = os.path.join(data_dir, 'derived', 'revision_sample', 'sample3_ores_scores.csv')
+    start = datetime.now()
+    with engine.connect() as conn:
+        with open(ores_score_filepath, 'r') as infile:
+            processed_count = 0
+            rev_list = []
+            for line in tqdm(infile, total=32705623):
+                tokens = line.strip().split(',')
+                if len(tokens) != 5:
+                    continue
+                processed_count += 1
+                rev_scores = {
+                    'b_rev_id': int(tokens[0]),
+                    'b_damaging_pred': float(tokens[1]),
+                    'b_goodfaith_pred': float(tokens[3]),
+                }
+                rev_list.append(rev_scores)
+                if len(rev_list) > UPDATE_BATCH_SIZE:
+                    res = conn.execute(update_stmt, rev_list)
+                    if res.supports_sane_multi_rowcount:
+                        logger.debug(f"Revision updated {res.rowcount} / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
+                    else:
+                        logger.debug(f"Revision updated ? / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
+                    rev_list = []
+                    logger.debug(f"Revision update ({processed_count} total) complete in {datetime.now() - start}.")
+            if len(rev_list) > 0:
+                res = conn.execute(update_stmt, rev_list)
+                if res.supports_sane_multi_rowcount:
+                    logger.debug(f"Revision updated {res.rowcount} / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
+                else:
+                    logger.debug(f"Revision updated ? / {len(rev_list)} ({processed_count} total) complete in {datetime.now() - start}.")
+                rev_list = []
+            logger.debug(f"Final revision update ({processed_count} total) complete in {datetime.now() - start}.")
+    logger.info("Finished updating with ORES scores.")
 
-    conn = engine.connect()
-    conn.execute(page_metadata.insert(), [
-        {'page_id': 0, 'wiki_namespace': 0, 'page_name': 'Salt', 'rev_count': 1},
-        {'page_id': 1, 'wiki_namespace': 0, 'page_name': 'Paul Dourish', 'rev_count': 2},
-    ])
-    conn.execute(category_name.insert(), [
-        {'category_id': 0, 'category_name': 'LGBT History'},
-        {'category_id': 1, 'category_name': 'Food'},
-        {'category_id': 2, 'category_name': 'Computer Scientists'},
-    ])
-    conn.execute(page_category.insert(), [
-        {'page_id': 0, 'page_category': 1},
-        {'page_id': 1, 'page_category': 0},
-        {'page_id': 1, 'page_category': 2},
-    ])
 
-    conn.execute(revision.insert(), [
-        {
-            'rev_id': 1, 
-            'page_id': 0,
-            'prev_rev_id': 0,
-            'rev_timestamp': 1396329403,
-            'prev_rev_timestamp': 1396328403,
-            'is_minor': False,
-            'username': 'Suriname0',
-            'is_user_registered': True,
-            'is_user_bot': False,
-            'n_user_contributions_at_rev': 100,
-            'damaging_pred': 0.0001,
-            'goodfaith_pred': 0.999,
-        },
-        {
-            'rev_id': 2, 
-            'page_id': 0,
-            'prev_rev_id': 1,
-            'rev_timestamp': 1396329603,
-            'prev_rev_timestamp': 1396329403,
-            'is_minor': False,
-            'username': 'Suriname0',
-            'is_user_registered': True,
-            'is_user_bot': False,
-            'n_user_contributions_at_rev': 101,
-            'damaging_pred': 0.995,
-            'goodfaith_pred': 0.001,
-        },
-    ])
-    
+@click.command('create-index')
+@click.option('--page/--no-page', 'create_page', default=False)
+@click.option('--revision/--no-revision', 'create_revision', default=False)
+@with_appcontext
+def create_index_command(create_page, create_revision):
+    logger = logging.getLogger('cli.create-index.main')
+    logger.info('Creating indices.')
+    engine = get_oidb_engine()
+    if create_page:
+        page = get_page_table()
+        i = Index('page_page_id', page.c.page_id)
+        i.create(engine, checkfirst=True)
+        logger.info('Created page indices.')
+    logger.info('Finished creating specified indices.')
 
 
 @click.command('create-db')
@@ -329,6 +359,7 @@ def create_db_command(import_page, import_revision):
     logger.info(f"Finished creating tables after {datetime.now() - start}.")
     import_oidb_data(engine, import_page, import_revision)
     logger.info(f"Finished importing table data after {datetime.now() - start}.")
+
 
 @click.command('drop-db')
 @click.option('--revision-only', default=False, is_flag=True)
@@ -361,8 +392,11 @@ def drop_db_command(revision_only, page_only, drop_all):
     #metadata.drop_all(tables=['revision',])
     logger.info(f"Finished dropping table data after {datetime.now() - start}.")
 
+
 def init_app(app):
     app.cli.add_command(create_db_command)
     app.cli.add_command(drop_db_command)
+    app.cli.add_command(create_index_command)
+    app.cli.add_command(update_ores_scores)
     app.teardown_appcontext(teardown_engine)
     app.teardown_request(teardown_session)

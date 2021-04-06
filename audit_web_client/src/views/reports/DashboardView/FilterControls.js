@@ -363,6 +363,7 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
   }, [open]);
 
   const getAutocompleteOptions = (queryString) => {
+    // TODO ensure this is safe to delete
     const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(queryString);
     fetch(page_autocomplete_url, {method: 'GET'})
       .then(res => res.json())

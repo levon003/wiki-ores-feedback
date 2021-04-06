@@ -4,11 +4,14 @@ from flask import current_app, g, request, make_response, Blueprint
 from flask.cli import with_appcontext
 
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy import select
 
 import logging
 from urllib.parse import unquote
+from datetime import datetime
 
 from . import replica
+from . import db
 
 bp = Blueprint('autocomplete', __name__)
 
@@ -53,9 +56,41 @@ def get_namespace_prefix_dict():
     return g.namespace_prefix_dict
 
 
+def sort_page_list_by_edit_count(ns, page_list):
+    """
+    Sorts page_list in-place by edit count, and adds the rev_count key to the associated page dictionaries.
+
+    :page_list: list of page dictionaries, each of which has a page_id key
+    """
+    logger = logging.getLogger('autocomplete.sort_page_list_by_edit_count')
+    if len(page_list) == 0:
+        return
+    page_ids = [page['page_id'] for page in page_list]
+    # mapping of page_id to an index in the page_list
+    page_id_index_dict = {page['page_id']: i for i, page in enumerate(page_list)}
+    Session = db.get_oidb_session()
+    with Session() as session:
+        with session.begin():
+            pt = db.get_page_table()
+            s = select(pt.c.page_id, pt.c.rev_count).where(pt.c.page_id.in_(page_ids))
+            for row in session.execute(s):
+                page_id, rev_count = row
+                ind = page_id_index_dict[page_id]
+                page_list[ind]['rev_count'] = rev_count
+                del page_id_index_dict[page_id]
+    if len(page_id_index_dict) > 0:
+        logger.debug(f"Identified {len(page_id_index_dict)} pages in autocomplete results with 0 edits.")
+        for ind in page_id_index_dict.values():
+            page_list[ind]['rev_count'] = 0
+    # sort the list of pages according to the retrieved edit counts
+    page_list.sort(key=lambda page: page['rev_count'], reverse=True)
+    logger.debug(f"Sorted {len(page_list)} pages by edit count ({len(page_id_index_dict)} / {len(page_list)} have 0 edits).")
+
+
 @bp.route('/api/autocomplete/page_title')
 def autocomplete_page_title():
     logger = logging.getLogger('autocomplete.page_title')
+    start = datetime.now()
     query_str = request.args.get('query', '')
     query_str = unquote(query_str)
     if query_str.strip() == '':
@@ -84,15 +119,18 @@ def autocomplete_page_title():
     with Session() as session:
         with session.begin():
             page_list = replica.get_pages_by_partial_title(query_str, ns, session)
-    logger.debug(f"Identified {len(page_list)} pages for query '{query_str}'.")
+    logger.info(f"Identified {len(page_list)} pages for query '{query_str}' in {datetime.now() - start}.")
+
+    sort_page_list_by_edit_count(ns, page_list)
 
     page_title_data = []
     for page in page_list[:5]:
         page_title_data.append({
             'page_id': page['page_id'],
             'primary_text': ns_prefix + page['page_title'].replace('_', ' '),
-            'secondary_text': '0 edits'
+            'secondary_text': f"{page['rev_count']} edits"
         })
+    logger.info(f"Constructed result set from {len(page_list)} page titles for query '{query_str}' in {datetime.now() - start}.")
 
     return {'options': page_title_data, 'page_namespace': ns}
 

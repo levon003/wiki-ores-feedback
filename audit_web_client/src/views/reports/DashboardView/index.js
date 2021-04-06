@@ -29,32 +29,58 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes = useStyles();
   // Temporary data here: 
-  const data =  { 
-                  vlhp_R : 1000,
-                  vlhp_NR : 200,
-                  confrevs_R : 200,
-                  confrevs_NR : 100,
-                  vlg_R  : 10,
-                  vlg_NR  : 400,
-                };
+  const [data, setData] =  useState({
+    vlhp_R : 1000,
+    vlhp_NR : 200,
+    confrevs_R : 200,
+    confrevs_NR : 100,
+    vlg_R  : 10,
+    vlg_NR  : 400,
+  });
 
   const [globalFilterState, setGlobalFilterState] = useState();
-  const [revisions, setRevisions] = useState();
+  const [revisions, setRevisions] = useState([]);
     
-    
-  const handleStateUpdate = (new_state) => () => {
-      setGlobalFilterState(new_state);
-      // TODO do a GET request to the backend with the new filters
-      // Get the new revisions and save them
-      //fetch().then({
-      //    setRevisions(...data from backend...)
-      //})
+  const handleMisalignmentFilterChange = (new_filter) => {
+    console.log(new_filter);
+  };
+
+  const handleStateUpdate = (new_state) => {
+    setGlobalFilterState(new_state);
+    // TODO do a POST request to the backend with the new filters
+    // Get the new revisions and save them
+    // ALSO get the new counts of each of the conditions
+    // i.e. number of revisions that are Very Likely Bad
+    //fetch().then({
+    //    setRevisions(...data from backend...)
+    //})
+    const filter_conditions_changed = false;
+    const should_get_new_revisions = false;
+    if (filter_conditions_changed) {
+      fetch('/api/rev_counts', {method: 'GET'})
+        .then(res => res.json())
+        .then(data => {
+          setData(data.counts);
+      });
+    }
+    if (should_get_new_revisions) {
+      fetch('/api/sample', {method: 'GET'})
+        .then(res => res.json())
+        .then(data => {
+          setRevisions(data.revisions);
+      });
+    }
+    fetch('/api/activity_log', {method: 'GET'})
+      .then(res => res.json())
+      .then(data => {
+        console.log(data);
+    });
   };
     
   return (
     <Page
       className={classes.root}
-      title="RevReflect: Inspect ORES Predictions"
+      title="ORES-Inspect"
     >
       <Container maxWidth={false}>
         <Grid
@@ -76,8 +102,8 @@ const Dashboard = () => {
           >
 
             <MisalignmentFilter 
-              onChange={handleStateUpdate}
-              data= {data}  
+              onChange={handleMisalignmentFilterChange}
+              data= {data}
             />
           </Grid>
           <Grid
