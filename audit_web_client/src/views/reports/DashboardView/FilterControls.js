@@ -479,3 +479,9 @@ FilterControls.propTypes = {
 };
 
 export default FilterControls;
+
+// highlight box if that box is selected etc
+// click twice --> unclick, click another that is selected 
+// 1. set the values
+// 2. show the visual effects 
+// 3. 

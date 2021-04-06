@@ -6,6 +6,8 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import PropTypes from 'prop-types';
 import "../DashboardView/styles.css";
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
 
 import {
   Box,
@@ -641,15 +643,39 @@ const MisalignmentFilter = ({data ,className, ...rest }) => {
     const total_R = props.data["confrevs_R"] + props.data["vlg_R"] + props.data["vlhp_R"];
     return <Grid container justify="left">
     <Grid item>
-      <Tooltip title={"Non-reverted revisions that ORES thinks are very likely to have problems (damaging/vandalism) " + props.data["vlhp_R"] + " revs (" + Math.round(props.data["vlhp_R"]/total_R * 10000) / 100 + "% of all non-reverted revs)"} placement="top-start">
+      <HtmlTooltip
+        title={
+          <React.Fragment>
+            <Typography color="inherit"> Non-reverted revisions that ORES thinks are very likely to have problems (damaging/vandalism) </Typography>
+            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100  }</u>.{' '} */}
+            {props.data["vlhp_R"] + " revs (" + Math.round(props.data["vlhp_R"]/total_R * 10000) / 100 + "% of all non-reverted revs)"}
+          </React.Fragment>
+        }
+      >
         <Button>Investigate unexpected consensus</Button>
-      </Tooltip>
-      <Tooltip title={"Reverted revisions that ORES thinks are very likely good (non-damaging) " + props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100 + "% of all reverted revs)"} placement="top">
+      </HtmlTooltip>
+      <HtmlTooltip
+        title={
+          <React.Fragment>
+            <Typography color="inherit"> Reverted revisions that ORES thinks are very likely good (non-damaging) </Typography>
+            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100  }</u>.{' '} */}
+            {props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100  + "% of all reverted revs)"}
+          </React.Fragment>
+        }
+      >
         <Button>Investigate unexpected reverts</Button>
-      </Tooltip>
-      <Tooltip title={"Revisions that ORES wasn’t sure about " + props.data["confrevs_R"]  + " revs (" + Math.round(props.data["confrevs_R"]/total_R * 10000) / 100 + "% of all revs) (0.301 < ORES score < 0.944)"} placement="top-end">
+      </HtmlTooltip>
+      <HtmlTooltip
+        title={
+          <React.Fragment>
+            <Typography color="inherit"> Revisions that ORES wasn’t sure about  </Typography>
+            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100  }</u>.{' '} */}
+            {props.data["confrevs_R"]  + " revs (" + Math.round(props.data["confrevs_R"]/total_R * 10000) / 100 + "% of all revs) (0.301 < ORES score < 0.944)"}
+          </React.Fragment>
+        }
+      >
         <Button>Investigate confusing revisions</Button>
-      </Tooltip>
+      </HtmlTooltip>
     </Grid>
   </Grid>
   }
@@ -659,6 +685,15 @@ const MisalignmentFilter = ({data ,className, ...rest }) => {
   const aspectRatio = originalWidth / originalHeight;
   const windowWidth = width;
   const windowHeight = height;
+  const HtmlTooltip = withStyles((theme) => ({
+    tooltip: {
+      backgroundColor: '#f5f5f9',
+      color: 'rgba(0, 0, 0, 0.87)',
+      maxWidth: 220,
+      fontSize: theme.typography.pxToRem(12),
+      border: '1px solid #dadde9',
+    },
+  }))(Tooltip);
   // const svg = 
     {/* open={open} onClose={handleClose} onOpen={handleOpen} */}
 
@@ -675,6 +710,8 @@ MisalignmentFilter.propTypes = {
 };
 
 export default MisalignmentFilter;
-// change tooltip to html style https://material-ui.com/components/tooltips/
+// 1. change tooltip to html style https://material-ui.com/components/tooltips/
 // hover on arrow pull up a tooltip; run a javascript function on 
-// 1. get fake data and merge with main branch
+// 2. 
+//
+// 
