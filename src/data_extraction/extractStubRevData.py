@@ -20,7 +20,7 @@ import re
 import hashlib
 from datetime import datetime
 import pytz
-import dateutil
+import dateutil.parser
 import para
 from itertools import groupby
 
@@ -73,7 +73,6 @@ def process_dump(dump):
             # convert each revision to json and extract the relevant info from it
             rev_doc = revision.to_json()
             rev_id = rev_doc['id']
-            #rev_timestamp = int(datetime.strptime(rev_doc['timestamp'], "%Y-%m-%dT%H:%M:%SZ").timestamp())
             rev_timestamp = int(dateutil.parser.isoparse(rev_doc['timestamp']).timestamp())
             rev_size_bytes = rev_doc['bytes']
             
@@ -132,6 +131,7 @@ def process_dump(dump):
                 'has_edit_summary': 'comment' in rev_doc,
                 'is_reverted': False,
                 'is_revert': False,
+                'is_reverted_to_by_other': False,
                 'is_self_reverted': False,
                 'is_self_revert': False,
                 'revert_target_id': None,
@@ -159,6 +159,16 @@ def process_dump(dump):
                 rev_data['revert_target_id'] = reverted_to_id
                 rev_data['revert_set_size'] = len(reverteds_ids)
                 
+                # compute is_reverted_to_by_other
+                if reverted_to_id in rev_dict:
+                    # else the reverted_to target happened before the target period
+                    reverted_to_rev_data = rev_dict[reverted_to_id]
+                    # once true, is_reverted_to_by_other is always true
+                    if not reverted_to_rev_data['is_reverted_to_by_other']:
+                        # is_reverted_to_by_other means "was a revert target"
+                        # BUT a revert target from a revert authored by a DIFFERENT user
+                        reverted_to_rev_data['is_reverted_to_by_other'] = rev_data['user_text'] != reverted_to_rev_data['user_text']
+                
                 is_self_revert = rev_data['user_text'] is not None  # true in most cases; if false, not enough info to know if a self revert
                 # update the data of the reverted revisions
                 for rev_id in reverteds_ids:
@@ -169,7 +179,7 @@ def process_dump(dump):
                                 is_self_revert = False
                         else:
                             # note: in rare circumstances, we can miss self-reverts, iff
-                            # (a) reverted rev is before 2013, (b) reverting rev is after 2018
+                            # (a) reverted rev is before 2014, (b) reverting rev is after 2019
                             # In this case, we assume not a self revert
                             is_self_revert = False
                             print(f"Revision {rev_id} reverted by revision {reverting_id} after more than 5 years.")
@@ -200,8 +210,8 @@ def process_dump(dump):
                 'page_id': page_id,
                 'wiki_namespace': page_namespace,
                 'page_title': page_title,
-                'full_rev_count': target_range_rev_count,  # corresponds to 2018-2020 revs
-                'range_rev_count': target_range_midpoint_rev_count,  # corresponds to 2018-2019 revs
+                'full_rev_count': target_range_rev_count,  # corresponds to 2019-2021 revs
+                'range_rev_count': target_range_midpoint_rev_count,  # corresponds to 2019-2020 revs
                 'is_page_redirect': is_page_redirect,
             }
             yield page_info
@@ -300,7 +310,7 @@ def process_all(paths):
                     print(f"Processed {page_processed_count} pages in {datetime.now() - start}")
             else:
                 #outfile.write(json.dumps(result) + "\n")
-                outfile.write("{rev_timestamp}\t{page_id}\t{rev_id}\t{prev_rev_id}\t{is_minor}\t{user_text}\t{user_id}\t{seconds_to_prev}\t{curr_bytes}\t{delta_bytes}\t{has_edit_summary}\t{is_reverted}\t{is_revert}\t{is_self_reverted}\t{is_self_revert}\t{revert_target_id}\t{revert_set_size}\t{revert_id}\t{seconds_to_revert}\n".format(**result))
+                outfile.write("{rev_timestamp}\t{page_id}\t{rev_id}\t{prev_rev_id}\t{is_minor}\t{user_text}\t{user_id}\t{seconds_to_prev}\t{curr_bytes}\t{delta_bytes}\t{has_edit_summary}\t{is_reverted}\t{is_revert}\t{is_reverted_to_by_other}\t{is_self_reverted}\t{is_self_revert}\t{revert_target_id}\t{revert_set_size}\t{revert_id}\t{seconds_to_revert}\n".format(**result))
                 
                 #curr_batch.append(result)
                 #if len(curr_batch) >= FORCE_COMMIT_SIZE:
