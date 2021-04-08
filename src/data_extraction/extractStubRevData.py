@@ -4,6 +4,7 @@
 # Took 17h10m35s to run on 27 cores; minimal memory usage.
 # 2nd run: 111200155 revisions (and 15082470 pages) in 17:10:39.688123
 # 3rd run: 111200155 revisions (and 15082470 pages) in 16:53:41.702123
+# 1st run with 2021 revision dump: 117569278 revisions (and 15572868 pages) in 12:35:50.463692
 # sort -T /export/scratch2/tmp --parallel=8 -t $'\t' -k 1,1 -n revs_unsorted.tsv > revs.tsv
 
 
@@ -18,10 +19,12 @@ import json
 import re
 import hashlib
 from datetime import datetime
+import pytz
+import dateutil
 import para
 from itertools import groupby
 
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, TIMESTAMP, Float
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, Float
 
 
 def get_stub_history_dir():
@@ -39,13 +42,13 @@ def get_stub_history_paths(stub_history_dir):
 
 
 def process_dump(dump):
-    detector_start_date = datetime.fromisoformat('2013-01-01')  # 5 years before the start of 2018
+    detector_start_date = datetime.fromisoformat('2014-01-01')  # 5 years before the start of 2019
     detector_start_timestamp = int(detector_start_date.timestamp())
-    start_date = datetime.fromisoformat('2018-01-01')  # start of 2018
+    start_date = datetime.fromisoformat('2019-01-01').replace(tzinfo=pytz.UTC)  # start of 2019
     start_timestamp = int(start_date.timestamp())
-    midpoint_date = datetime.fromisoformat('2019-01-01')
+    midpoint_date = datetime.fromisoformat('2020-01-01').replace(tzinfo=pytz.UTC)
     midpoint_timestamp = int(midpoint_date.timestamp())
-    end_date = datetime.fromisoformat('2020-01-01')
+    end_date = datetime.fromisoformat('2021-01-01').replace(tzinfo=pytz.UTC)
     end_timestamp = int(end_date.timestamp())
     for page in dump:
         is_page_redirect = int(page.redirect is not None)
@@ -70,7 +73,8 @@ def process_dump(dump):
             # convert each revision to json and extract the relevant info from it
             rev_doc = revision.to_json()
             rev_id = rev_doc['id']
-            rev_timestamp = int(datetime.strptime(rev_doc['timestamp'], "%Y-%m-%dT%H:%M:%SZ").timestamp())
+            #rev_timestamp = int(datetime.strptime(rev_doc['timestamp'], "%Y-%m-%dT%H:%M:%SZ").timestamp())
+            rev_timestamp = int(dateutil.parser.isoparse(rev_doc['timestamp']).timestamp())
             rev_size_bytes = rev_doc['bytes']
             
             if rev_timestamp < detector_start_timestamp:
