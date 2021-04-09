@@ -30,18 +30,20 @@ const Dashboard = () => {
   const classes = useStyles();
   // Temporary data here: 
   const [data, setData] =  useState({
-    vlhp_R : 1000,
-    vlhp_NR : 200,
-    confrevs_R : 200,
-    confrevs_NR : 100,
-    vlg_R  : 10,
-    vlg_NR  : 400,
+    vlhp_r : 1000,
+    vlhp_nr : 200,
+    confrevs_r : 200,
+    confrevs_nr : 100,
+    vlg_r  : 10,
+    vlg_nr  : 400,
   });
 
   const [globalFilterState, setGlobalFilterState] = useState();
   const [revisions, setRevisions] = useState([]);
     
   const handleMisalignmentFilterChange = (new_filter) => {
+    console.log("new_filter");
+    
     console.log(new_filter);
   };
 

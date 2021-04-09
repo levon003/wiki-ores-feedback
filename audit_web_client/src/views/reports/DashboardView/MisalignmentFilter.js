@@ -1,4 +1,4 @@
-import React, { useState, useContext, createContext, useEffect, Component} from 'react';
+import React, { useState, useContext, createContext, useEffect, Component, useRef} from 'react';
 import clsx from 'clsx';
 import moment from 'moment';
 import { v4 as uuid } from 'uuid';
@@ -8,6 +8,7 @@ import "../DashboardView/styles.css";
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import { Tooltip as TT} from "react-svg-tooltip" ;
 
 import {
   Box,
@@ -70,49 +71,110 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 80,
   },
 }));
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      bgColor : "purple",
-      curtext: "Likely good!!"
-    }
-  }
-}
+
 const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
-  const classes = useStyles();
-  var bgColor = "purple";
   const [activeFilters, setActiveFilters] = useState({
     'prediction_filter': null,
     'revert_filter': null,
   });
-  const [text, setText] = useState("Likely good");
-  function handleClick(e) {
-    setText("changed");
-    e.preventDefault();
-    bgColor = "red";
-    console.log('The link was clicked.');
-    console.log(bgColor);
-
-    let prediction_filter = null;
-    let revert_filter = null;
+  const [strokecolor, setStrokeColor] = useState({
+    'vlhp_box': "#eeeeee",
+    'itm_box': "#eeeeee",
+    'lg_box': "#eeeeee",
+    'nr_box': "#eeeeee",
+    'r_box': "#eeeeee",
+    'vlhp_nr_box': "white",
+    'vlhp_r_box': "white",
+    'itm_nr_box': "white",
+    'itm_r_box': "white",
+    'lg_nr_box': "white",
+    'lg_r_box': "white",
+    'vlhp_edge_nr': "#ea9999",
+    'vlhp_edge_r': "#ea9999",
+    'itm_edge_nr': "#f9cb9c",
+    'itm_edge_r': "#f9cb9c",
+    'lg_edge_nr': "#b6d7a8",
+    'lg_edge_r': "#b6d7a8"
+  });
+  function updateValue(e, pred, revert){
+    console.log("heres")
+    console.log(pred)
+    if (activeFilters.revert_filter == revert && activeFilters.prediction_filter == pred){
+      activeFilters.revert_filter = null
+      activeFilters.prediction_filter = null
+      console.log(activeFilters)
+    }
+    else{
+      activeFilters.revert_filter = revert
+      activeFilters.prediction_filter = pred
+    }
+  }
+  
+  function handleClick(prediction_filter, revert_filter ) {
     //TODO based on the click event, set prediction filter and revert filter
     // If a prediction box was checked, then set prediction_filter to be the name of the box
     // e.g. prediction_filter = 'vlb';
     // If an edge was checked, need to set both,
     // e.g. prediction_filter = 'vlb'; AND revert_filter = 'reverted';
-    const new_filter_value = {
-      'prediction_filter': prediction_filter,
-      'revert_filter': revert_filter,
-    };
+    // DONE
+    let new_filter_value = {
+      'prediction_filter': null,
+      'revert_filter': null,
+    };;
+    let new_colors = {
+      'vlhp_box': "#eeeeee",
+      'itm_box': "#eeeeee",
+      'lg_box': "#eeeeee",
+      'nr_box': "#eeeeee",
+      'r_box': "#eeeeee",
+      'vlhp_nr_box': "white",
+      'vlhp_r_box': "white",
+      'itm_nr_box': "white",
+      'itm_r_box': "white",
+      'lg_nr_box': "white",
+      'lg_r_box': "white",
+      'vlhp_edge_nr': "#ea9999",
+      'vlhp_edge_r': "#ea9999",
+      'itm_edge_nr': "#f9cb9c",
+      'itm_edge_r': "#f9cb9c",
+      'lg_edge_nr': "#b6d7a8",
+      'lg_edge_r': "#b6d7a8"
+    }
+    
+    if (activeFilters.revert_filter != revert_filter || activeFilters.prediction_filter != prediction_filter){
+      new_filter_value = {
+        'prediction_filter': prediction_filter,
+        'revert_filter': revert_filter,
+      };
+      console.log(revert_filter + "_" + prediction_filter)
+      let box = prediction_filter + "_box";
+      let edgebox = prediction_filter + "_" + revert_filter + "_box";
+      let edge = prediction_filter + "_edge_" + revert_filter;
+      let rbox = revert_filter + "_box";
+      new_colors[box] = "#FFFBCC" 
+      new_colors[edgebox] = "#FFFBCC" 
+      new_colors[edge] = "#169eec" // "#FFFBCC" 
+      new_colors[rbox] = "#FFFBCC" 
+      console.log(new_colors)
+      //   "${prediction_filter}_box" : "#FFFBCC",
+      //   "${prediction_filter}_edge_${revert_filter}" : "#FFFBCC",
+      // }
+    }
     setActiveFilters(new_filter_value);
+    setStrokeColor(new_colors);
     onChange(new_filter_value);
+    
+    
+
   }
+ 
   function GenerateSVG(props){
-    const total_R = props.data["confrevs_R"] + props.data["vlg_R"] + props.data["vlhp_R"];
-    const total_NR = props.data["confrevs_NR"] + props.data["vlg_NR"] + props.data["vlhp_NR"];
-    const total = total_R + total_NR;
-    return <svg
+    let total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
+    let total_nr = props.data["confrevs_nr"] + props.data["vlg_nr"] + props.data["vlhp_nr"];
+    let total = total_R + total_nr;
+    const myRef = useRef();
+
+    let svg  = <svg
     xmlns="http://www.w3.org/2000/svg"
     width="60%"
     // height="210mm"
@@ -256,11 +318,29 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
           <path
             class="bar"
             fillRule="evenodd"
-            stroke="#ea9999"
+            stroke = {strokecolor.vlhp_edge_r}
             strokeLinecap="butt"
             strokeWidth="12"
+            ref = {myRef}
+            onClick = {() => handleClick("vlhp","r")}
             d="M303.165 88.732c97.057 0 145.587 86.874 194.114 173.748 24.264 43.437 48.528 86.874 78.857 119.452 15.164 16.289 31.845 29.863 50.8 39.365a140.772 140.772 0 0014.656 6.341 137.801 137.801 0 008.645 2.849l.41.118 M650.647 430.606l-15.213 11.523 38.574-8.3-34.884-18.437z"
           ></path>
+          <TT triggerRef={myRef}>
+          <rect
+            x={-3}
+            y={-3}
+            width={120}
+            height={15}
+            rx={0.5}
+            ry={0.5}
+            fill="#F2F4F2"
+            stroke = "#727372"
+            strokeWidth = "0.1"
+          />
+          <text x={5} y={5} fontSize={6} fill="black">
+            Very likely have problems - Reverted
+          </text>
+        </TT>
           <path
             fill="#000"
             fillOpacity="0"
@@ -270,9 +350,10 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
           <path
             class="bar"
             fillRule="evenodd"
-            stroke="#f9cb9c"
+            stroke= {strokecolor.itm_edge_nr} //"#f9cb9c"
             strokeLinecap="butt"
             strokeWidth="12"
+            onClick = {() => handleClick("itm","nr")}
             d="M303.157 262.48c99.205 0 148.808-43.433 198.41-86.866 24.801-21.716 49.602-43.433 80.604-59.72 15.5-8.144 32.551-14.93 51.927-19.68a242.697 242.697 0 0114.98-3.171 255.716 255.716 0 019.838-1.566l.026-.004 M658.942 91.473l-12.571 14.36 36.101-15.922-37.89-11.009z"
           ></path>
           <path
@@ -284,9 +365,10 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
           <path
             class = "bar"
             fillRule="evenodd"
-            stroke="#b6d7a8"
+            stroke= {strokecolor.lg_edge_r}
             strokeLinecap="butt"
             strokeWidth="12"
+            onClick = {() => handleClick("lg","r")}
             d="M303.165 436.228c97.057 0 145.587.016 194.114.032a535009.633 535009.633 0 00129.658.028l23.324.001 M650.26 436.29l-13.495 13.494 37.078-13.493-37.077-13.497z"
           ></path>
           <path
@@ -298,9 +380,14 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
           <path
             fillRule="evenodd"
             class="bar"
-            stroke="#b6d7a8"
+            
+            id="myicon" 
+            value = {"haha"}
+            pointer-events="all"
+            stroke={strokecolor.lg_edge_nr}
             strokeLinecap="butt"
             strokeWidth="12"
+            onClick = {() => handleClick("lg","nr")}
             d="M303.165 436.228c99.203 0 148.803-86.874 198.406-173.748 24.801-43.437 49.603-86.874 80.605-119.451 15.501-16.29 32.552-29.863 51.929-39.365a145.597 145.597 0 0114.98-6.342 143.098 143.098 0 019.838-3.131l.29-.08 M659.212 94.11l-11.614 15.145 34.994-18.228-38.524-8.53z"
           ></path>
           <path
@@ -312,9 +399,10 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
           <path
             class="bar"
             fillRule="evenodd"
-            stroke="#ea9999"
+            stroke={strokecolor.vlhp_edge_nr}
             strokeLinecap="butt"
             strokeWidth="12"
+            onClick = {() => handleClick("vlhp","nr")}
             d="M303.165 88.732c99.203 0 148.803.016 198.406.032a588863.83 588863.83 0 00132.534.029h24.754 M658.86 88.794l-13.496 13.494 37.077-13.493-37.076-13.497z"
           ></path>
           <path
@@ -326,9 +414,10 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
           <path
             class="bar"
             fillRule="evenodd"
-            stroke="#f9cb9c"
+            stroke={strokecolor.itm_edge_r}
             strokeLinecap="butt"
             strokeWidth="12"
+            onClick = {() => handleClick("itm","r")}
             d="M303.157 262.48c97.06 0 145.587 43.441 194.119 86.882 24.265 21.72 48.532 43.441 78.866 59.732 15.167 8.145 31.85 14.932 50.809 19.684a233.002 233.002 0 0014.657 3.17c2.518.462 5.074.889 7.67 1.28l1.106.162 M650.384 433.39l-14.4 12.526 37.925-10.89-36.051-16.035z"
           ></path>
           <path
@@ -479,21 +568,22 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
     <rect
             width="77.146"
             height="12%"
-            fill = "#eeeeee"
+            fill = {strokecolor.vlhp_box}
             stroke = "rgb(0,0,0)"
             x="3.326%"
             y="16%"
             strokeWidth="0.7"
             ry="1.875"
             class="box"
+            ref = {myRef}
+            onClick = {() => handleClick("vlhp","both")}
           ></rect>
           <text class="svgText" x="5.5%" y="21%" font-family="Georgia" font-size="6" fill="black"> Very likely have problems </text>
           <text class="svgText" x="5.5%" y="25%" font-family="Georgia" font-size="6" fill="black"> Score {'>'} 0.9</text>
           
           <rect
-            fill = "#eeeeee"
+            fill = {strokecolor.r_box}
             stroke = "rgb(0,0,0)"
-            onClick={handleClick}
             width="81.5"
             height="12%"
             x= "70.45%"
@@ -503,12 +593,13 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="1.875"
             class = "box"
+            onClick = {() => handleClick("all","r")}
           ></rect>
             <text class="svgText" x="72.8%" y="79%" font-family="Georgia" font-size="6" fill="black"> Reverted </text>
             <text class="svgText" x="72.8%" y="83%" font-family="Georgia" font-size="6" fill="black"> {total_R} revisions ({Math.round(total_R/total * 10000)/100} %)</text>
   
           <rect
-            fill = "#eeeeee"
+            fill = {strokecolor.nr_box}
             stroke = "rgb(0,0,0)"
             onClick={handleClick}
             width="81.5"
@@ -520,12 +611,13 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="1.875"
             class = "box"
+            onClick = {() => handleClick("all","nr")}
           ></rect>
             <text class="svgText" x="72.8%" y="21%" font-family="Georgia" font-size="6" fill="black"> Not Reverted </text>
-            <text class="svgText" x="72.8%" y="25%" font-family="Georgia" font-size="6" fill="black"> {total_NR} revisions ({Math.round(total_NR/total * 10000)/100} %)</text>
+            <text class="svgText" x="72.8%" y="25%" font-family="Georgia" font-size="6" fill="black"> {total_nr} revisions ({Math.round(total_nr/total * 10000)/100} %)</text>
   
           <rect 
-            fill = "#eeeeee"
+            fill = {strokecolor.itm_box}
             stroke = "rgb(0,0,0)"
             onClick={handleClick}
             width="77.146"
@@ -537,6 +629,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="1.875"
             class = "box"
+            onClick = {() => handleClick("itm","both")}
           ></rect>
             <text class="svgText" x="5.5%" y="50%" font-family="Georgia" font-size="6" fill="black">In the middle  </text>
             <text class="svgText" x="5.5%" y="54%" font-family="Georgia" font-size="6" fill="black">(0.9 - 0.05) </text>
@@ -545,7 +638,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             <rect
             width="77.146"
             height="12%"
-            fill = "#eeeeee"
+            fill = {strokecolor.lg_box}
             stroke = "rgb(0,0,0)"
             x="3.326%"
             y="74%"
@@ -553,15 +646,14 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="1.875"
             class = "box"
-            onClick={handleClick}
+            onClick = {() => handleClick("lg","both")}
           ></rect>
-            <text class="svgText" x="5.5%" y="79%" font-family="Georgia" font-size="6" fill="black"> {text} </text>
+            <text class="svgText" x="5.5%" y="79%" font-family="Georgia" font-size="6" fill="black"> Likely good </text>
             <text class="svgText" x="5.5%" y="83%" font-family="Georgia" font-size="6" fill="black">(0.9 - 0.05) </text>
   
-            <rect data-name="haha"
-            fill = "white"
+            <rect  
+            fill = {strokecolor.vlhp_nr_box}
             stroke = "rgb(0,0,0)"
-            onClick={handleClick}
             width="57"
             height="8.8%"
             x="38.8%"
@@ -571,12 +663,13 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="0"
             class = "box"
+            onClick = {() => handleClick("vlhp","nr")}
           ></rect>
-            <text class="svgText" x="39.8%" y="19.2%" font-family="Georgia" font-size="5" fill="black"> {props.data["vlhp_NR"]} revisions  </text>
-            <text class="svgText" x="39.8%" y="22.2%" font-family="Georgia" font-size="5" fill="black"> {Math.round(props.data["vlhp_NR"]/total_NR * 10000) / 100 } % of not reverted </text>
+            <text class="svgText" x="39.8%" y="19.2%" font-family="Georgia" font-size="5" fill="black"> {props.data["vlhp_nr"]} revisions  </text>
+            <text class="svgText" x="39.8%" y="22.2%" font-family="Georgia" font-size="5" fill="black"> {Math.round(props.data["vlhp_nr"]/total_nr * 10000) / 100 } % of not reverted </text>
   
             <rect 
-            fill = "white"
+            fill = {strokecolor.lg_r_box}
             stroke = "rgb(0,0,0)"
             onClick={handleClick}
             width="57"
@@ -588,12 +681,13 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="0"
             class = "box"
+            onClick = {() => handleClick("lg","r")}
           ></rect>
-            <text class="svgText" x="39.8%" y="81.8%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlg_R"]} misaligned revisions  </text>
-            <text class="svgText" x="39.8%" y="84.8%" font-family="Georgia" font-size="4.5" fill="black"> {Math.round(props.data["vlg_R"]/total_R * 10000) / 100 } % of reverted </text>
-  
+            <text class="svgText" x="39.8%" y="81.8%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlg_r"]} misaligned revisions  </text>
+            <text class="svgText" x="39.8%" y="84.8%" font-family="Georgia" font-size="4.5" fill="black"> {Math.round(props.data["vlg_r"]/total_R * 10000) / 100 } % of reverted </text>
+            
             <rect data-name="haha"
-            fill = "white"
+            fill = {strokecolor.vlhp_r_box}
             stroke = "rgb(0,0,0)"
             onClick={handleClick}
             width="20"
@@ -605,11 +699,12 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="0"
             class = "box"
+            onClick = {() => handleClick("vlhp","r")}
           ></rect>
-            <text class="svgText" x="39.8%" y="29.8%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlhp_R"]} </text>
+            <text class="svgText" x="39.8%" y="29.8%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlhp_r"]} </text>
   
             <rect data-name="haha"
-            fill = "white"
+            fill = {strokecolor.itm_nr_box}
             stroke = "rgb(0,0,0)"
             onClick={handleClick}
             width="20"
@@ -621,10 +716,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="0"
             class = "box"
+            onClick = {() => handleClick("itm","nr")}
           ></rect>
-            <text class="svgText" x="39.8%" y="47%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["confrevs_NR"]} </text>
+            <text class="svgText" x="39.8%" y="47%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["confrevs_nr"]} </text>
             <rect data-name="haha"
-            fill = "white"
+            fill = {strokecolor.itm_r_box}
             stroke = "rgb(0,0,0)"
             onClick={handleClick}
             width="20"
@@ -636,10 +732,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="0"
             class="box"
+            onClick = {() => handleClick("itm","r")}
           ></rect>
-            <text class="svgText" x="39.8%" y="57%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["confrevs_R"]} </text>
+            <text class="svgText" x="39.8%" y="57%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["confrevs_r"]} </text>
             <rect data-name="haha"
-            fill = "white"
+            fill = {strokecolor.lg_nr_box}
             stroke = "rgb(0,0,0)"
             onClick={handleClick}
             width="20"
@@ -651,22 +748,29 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             display="inline"
             ry="0"
             class = "box"
+            onClick = {() => handleClick("lg","nr")}
           ></rect>
-            <text class="svgText" x="39.8%" y="72.5%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlg_NR"]} </text>
+          
+            <text class="svgText" x="39.8%" y="72.5%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlg_nr"]} </text>
   
     </g>
-  </svg>
-  }
+  </svg>;
+    return svg;
+    
+}
+  
+
+
   function GenerateToolTips(props){
-    const total_R = props.data["confrevs_R"] + props.data["vlg_R"] + props.data["vlhp_R"];
+    const total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
     return <Grid container justify="left">
     <Grid item>
       <HtmlTooltip
         title={
           <React.Fragment>
             <Typography color="inherit"> Non-reverted revisions that ORES thinks are very likely to have problems (damaging/vandalism) </Typography>
-            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100  }</u>.{' '} */}
-            {props.data["vlhp_R"] + " revs (" + Math.round(props.data["vlhp_R"]/total_R * 10000) / 100 + "% of all non-reverted revs)"}
+            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
+            {props.data["vlhp_r"] + " revs (" + Math.round(props.data["vlhp_r"]/total_R * 10000) / 100 + "% of all non-reverted revs)"}
           </React.Fragment>
         }
       >
@@ -676,8 +780,8 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
         title={
           <React.Fragment>
             <Typography color="inherit"> Reverted revisions that ORES thinks are very likely good (non-damaging) </Typography>
-            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100  }</u>.{' '} */}
-            {props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100  + "% of all reverted revs)"}
+            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
+            {props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  + "% of all reverted revs)"}
           </React.Fragment>
         }
       >
@@ -687,8 +791,8 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
         title={
           <React.Fragment>
             <Typography color="inherit"> Revisions that ORES wasn’t sure about  </Typography>
-            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_R"]  +" revs (" + Math.round(props.data["vlg_R"]/total_R * 10000) / 100  }</u>.{' '} */}
-            {props.data["confrevs_R"]  + " revs (" + Math.round(props.data["confrevs_R"]/total_R * 10000) / 100 + "% of all revs) (0.301 < ORES score < 0.944)"}
+            {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
+            {props.data["confrevs_r"]  + " revs (" + Math.round(props.data["confrevs_r"]/total_R * 10000) / 100 + "% of all revs) (0.301 < ORES score < 0.944)"}
           </React.Fragment>
         }
       >
@@ -714,10 +818,15 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
   }))(Tooltip);
   // const svg = 
     {/* open={open} onClose={handleClose} onOpen={handleOpen} */}
-
+  
   return (<div style={{ width: windowWidth*0.75, aspectRatio, position:'relative', left:'30%' }}>
     <row>
         <GenerateSVG data = {data}></GenerateSVG>
+        <div id="mypopup">
+          <h3>Popup title</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
         <GenerateToolTips data = {data}></GenerateToolTips>
     </row>
   </div>
@@ -728,8 +837,7 @@ MisalignmentFilter.propTypes = {
 };
 
 export default MisalignmentFilter;
-// 1. change tooltip to html style https://material-ui.com/components/tooltips/
-// hover on arrow pull up a tooltip; run a javascript function on 
-// 2. 
-//
+
+// TODO: 
+// Change tooltip: Of this many vlhp, this many were reverted 
 // 
