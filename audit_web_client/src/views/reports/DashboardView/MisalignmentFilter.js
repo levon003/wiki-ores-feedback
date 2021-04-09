@@ -1,8 +1,5 @@
-import React, { useState, useContext, createContext, useEffect, Component, useRef} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import clsx from 'clsx';
-import moment from 'moment';
-import { v4 as uuid } from 'uuid';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import PropTypes from 'prop-types';
 import "../DashboardView/styles.css";
 import Grid from '@material-ui/core/Grid';
@@ -70,6 +67,11 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 80,
   },
+  nodeText: {
+    fontSize: 6,
+    fontFamily: "Georgia",
+    fill: 'black',
+  }
 }));
 
 const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
@@ -120,7 +122,8 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
     let new_filter_value = {
       'prediction_filter': null,
       'revert_filter': null,
-    };;
+    };
+
     let new_colors = {
       'vlhp_box': "#eeeeee",
       'itm_box': "#eeeeee",
@@ -139,7 +142,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
       'itm_edge_r': "#f9cb9c",
       'lg_edge_nr': "#b6d7a8",
       'lg_edge_r': "#b6d7a8"
-    }
+    };
     
     if (activeFilters.revert_filter != revert_filter || activeFilters.prediction_filter != prediction_filter){
       new_filter_value = {
@@ -163,12 +166,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
     setActiveFilters(new_filter_value);
     setStrokeColor(new_colors);
     onChange(new_filter_value);
-    
-    
-
   }
  
   function GenerateSVG(props){
+    const classes = useStyles();
+
     let total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
     let total_nr = props.data["confrevs_nr"] + props.data["vlg_nr"] + props.data["vlhp_nr"];
     let total = total_R + total_nr;
@@ -316,7 +318,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             d="M303.165 88.732c97.057 0 145.587 86.874 194.114 173.748 48.528 86.874 97.054 173.748 194.107 173.748"
           ></path>
           <path
-            class="bar"
+            className="bar"
             fillRule="evenodd"
             stroke = {strokecolor.vlhp_edge_r}
             strokeLinecap="butt"
@@ -348,7 +350,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             d="M303.157 262.48c99.205 0 148.808-43.433 198.41-86.866 49.602-43.433 99.205-86.866 198.41-86.866"
           ></path>
           <path
-            class="bar"
+            className="bar"
             fillRule="evenodd"
             stroke= {strokecolor.itm_edge_nr} //"#f9cb9c"
             strokeLinecap="butt"
@@ -363,7 +365,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             d="M303.165 436.228c97.057 0 145.587.016 194.114.032 48.528.016 97.054.031 194.107.031"
           ></path>
           <path
-            class = "bar"
+            className="bar"
             fillRule="evenodd"
             stroke= {strokecolor.lg_edge_r}
             strokeLinecap="butt"
@@ -379,11 +381,10 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
           ></path>
           <path
             fillRule="evenodd"
-            class="bar"
-            
+            className="bar"
             id="myicon" 
             value = {"haha"}
-            pointer-events="all"
+            pointerEvents="all"
             stroke={strokecolor.lg_edge_nr}
             strokeLinecap="butt"
             strokeWidth="12"
@@ -397,7 +398,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             d="M303.165 88.732c99.203 0 148.803.016 198.406.032 49.602.016 99.207.031 198.413.031"
           ></path>
           <path
-            class="bar"
+            className="bar"
             fillRule="evenodd"
             stroke={strokecolor.vlhp_edge_nr}
             strokeLinecap="butt"
@@ -412,7 +413,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             d="M303.157 262.48c97.06 0 145.587 43.441 194.119 86.882 48.531 43.441 97.067 86.882 194.133 86.882"
           ></path>
           <path
-            class="bar"
+            className="bar"
             fillRule="evenodd"
             stroke={strokecolor.itm_edge_r}
             strokeLinecap="butt"
@@ -574,12 +575,12 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             y="16%"
             strokeWidth="0.7"
             ry="1.875"
-            class="box"
+            className="box"
             ref = {myRef}
             onClick = {() => handleClick("vlhp","both")}
           ></rect>
-          <text class="svgText" x="5.5%" y="21%" font-family="Georgia" font-size="6" fill="black"> Very likely have problems </text>
-          <text class="svgText" x="5.5%" y="25%" font-family="Georgia" font-size="6" fill="black"> Score {'>'} 0.9</text>
+          <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="21%"> Very likely have problems </text>
+          <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="25%">Score {'>'} 0.9</text>
           
           <rect
             fill = {strokecolor.r_box}
@@ -592,11 +593,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="1.875"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("all","r")}
           ></rect>
-            <text class="svgText" x="72.8%" y="79%" font-family="Georgia" font-size="6" fill="black"> Reverted </text>
-            <text class="svgText" x="72.8%" y="83%" font-family="Georgia" font-size="6" fill="black"> {total_R} revisions ({Math.round(total_R/total * 10000)/100} %)</text>
+            <text className="svgText" x="72.8%" y="79%" fontFamily="Georgia" fontSize="6" fill="black"> Reverted </text>
+            <text className="svgText" x="72.8%" y="83%" fontFamily="Georgia" fontSize="6" fill="black"> {total_R} revisions ({Math.round(total_R/total * 10000)/100} %)</text>
   
           <rect
             fill = {strokecolor.nr_box}
@@ -610,11 +611,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="1.875"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("all","nr")}
           ></rect>
-            <text class="svgText" x="72.8%" y="21%" font-family="Georgia" font-size="6" fill="black"> Not Reverted </text>
-            <text class="svgText" x="72.8%" y="25%" font-family="Georgia" font-size="6" fill="black"> {total_nr} revisions ({Math.round(total_nr/total * 10000)/100} %)</text>
+            <text className="svgText" x="72.8%" y="21%" fontFamily="Georgia" fontSize="6" fill="black"> Not Reverted </text>
+            <text className="svgText" x="72.8%" y="25%" fontFamily="Georgia" fontSize="6" fill="black"> {total_nr} revisions ({Math.round(total_nr/total * 10000)/100} %)</text>
   
           <rect 
             fill = {strokecolor.itm_box}
@@ -628,11 +629,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="1.875"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("itm","both")}
           ></rect>
-            <text class="svgText" x="5.5%" y="50%" font-family="Georgia" font-size="6" fill="black">In the middle  </text>
-            <text class="svgText" x="5.5%" y="54%" font-family="Georgia" font-size="6" fill="black">(0.9 - 0.05) </text>
+            <text className="svgText" x="5.5%" y="50%" fontFamily="Georgia" fontSize="6" fill="black">In the middle  </text>
+            <text className="svgText" x="5.5%" y="54%" fontFamily="Georgia" fontSize="6" fill="black">(0.9 - 0.05) </text>
   
           
             <rect
@@ -645,11 +646,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             strokeWidth="0.7"
             display="inline"
             ry="1.875"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("lg","both")}
           ></rect>
-            <text class="svgText" x="5.5%" y="79%" font-family="Georgia" font-size="6" fill="black"> Likely good </text>
-            <text class="svgText" x="5.5%" y="83%" font-family="Georgia" font-size="6" fill="black">(0.9 - 0.05) </text>
+            <text className="svgText" x="5.5%" y="79%" fontFamily="Georgia" fontSize="6" fill="black"> Likely good </text>
+            <text className="svgText" x="5.5%" y="83%" fontFamily="Georgia" fontSize="6" fill="black">(0.9 - 0.05) </text>
   
             <rect  
             fill = {strokecolor.vlhp_nr_box}
@@ -662,11 +663,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="0"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("vlhp","nr")}
           ></rect>
-            <text class="svgText" x="39.8%" y="19.2%" font-family="Georgia" font-size="5" fill="black"> {props.data["vlhp_nr"]} revisions  </text>
-            <text class="svgText" x="39.8%" y="22.2%" font-family="Georgia" font-size="5" fill="black"> {Math.round(props.data["vlhp_nr"]/total_nr * 10000) / 100 } % of not reverted </text>
+            <text className="svgText" x="39.8%" y="19.2%" fontFamily="Georgia" fontSize="5" fill="black"> {props.data["vlhp_nr"]} revisions  </text>
+            <text className="svgText" x="39.8%" y="22.2%" fontFamily="Georgia" fontSize="5" fill="black"> {Math.round(props.data["vlhp_nr"]/total_nr * 10000) / 100 } % of not reverted </text>
   
             <rect 
             fill = {strokecolor.lg_r_box}
@@ -680,11 +681,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="0"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("lg","r")}
           ></rect>
-            <text class="svgText" x="39.8%" y="81.8%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlg_r"]} misaligned revisions  </text>
-            <text class="svgText" x="39.8%" y="84.8%" font-family="Georgia" font-size="4.5" fill="black"> {Math.round(props.data["vlg_r"]/total_R * 10000) / 100 } % of reverted </text>
+            <text className="svgText" x="39.8%" y="81.8%" fontFamily="Georgia" fontSize="4.5" fill="black"> {props.data["vlg_r"]} misaligned revisions  </text>
+            <text className="svgText" x="39.8%" y="84.8%" fontFamily="Georgia" fontSize="4.5" fill="black"> {Math.round(props.data["vlg_r"]/total_R * 10000) / 100 } % of reverted </text>
             
             <rect data-name="haha"
             fill = {strokecolor.vlhp_r_box}
@@ -698,10 +699,10 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="0"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("vlhp","r")}
           ></rect>
-            <text class="svgText" x="39.8%" y="29.8%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlhp_r"]} </text>
+            <text className="svgText" x="39.8%" y="29.8%" fontFamily="Georgia" fontSize="4.5" fill="black"> {props.data["vlhp_r"]} </text>
   
             <rect data-name="haha"
             fill = {strokecolor.itm_nr_box}
@@ -715,10 +716,10 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="0"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("itm","nr")}
           ></rect>
-            <text class="svgText" x="39.8%" y="47%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["confrevs_nr"]} </text>
+            <text className="svgText" x="39.8%" y="47%" fontFamily="Georgia" fontSize="4.5" fill="black"> {props.data["confrevs_nr"]} </text>
             <rect data-name="haha"
             fill = {strokecolor.itm_r_box}
             stroke = "rgb(0,0,0)"
@@ -731,10 +732,10 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="0"
-            class="box"
+            className="box"
             onClick = {() => handleClick("itm","r")}
           ></rect>
-            <text class="svgText" x="39.8%" y="57%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["confrevs_r"]} </text>
+            <text className="svgText" x="39.8%" y="57%" fontFamily="Georgia" fontSize="4.5" fill="black"> {props.data["confrevs_r"]} </text>
             <rect data-name="haha"
             fill = {strokecolor.lg_nr_box}
             stroke = "rgb(0,0,0)"
@@ -747,11 +748,11 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             text = "hello"
             display="inline"
             ry="0"
-            class = "box"
+            className = "box"
             onClick = {() => handleClick("lg","nr")}
           ></rect>
           
-            <text class="svgText" x="39.8%" y="72.5%" font-family="Georgia" font-size="4.5" fill="black"> {props.data["vlg_nr"]} </text>
+            <text className="svgText" x="39.8%" y="72.5%" fontFamily="Georgia" fontSize="4.5" fill="black"> {props.data["vlg_nr"]} </text>
   
     </g>
   </svg>;
@@ -819,8 +820,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
   // const svg = 
     {/* open={open} onClose={handleClose} onOpen={handleOpen} */}
   
-  return (<div style={{ width: windowWidth*0.75, aspectRatio, position:'relative', left:'30%' }}>
-    <row>
+  return (<div style={{ width: windowWidth*0.75, aspectRatio, position:'relative', left:"30%" }}>
         <GenerateSVG data = {data}></GenerateSVG>
         <div id="mypopup">
           <h3>Popup title</h3>
@@ -828,7 +828,6 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
         </div>
         <GenerateToolTips data = {data}></GenerateToolTips>
-    </row>
   </div>
   );
 };
