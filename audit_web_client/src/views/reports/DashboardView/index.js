@@ -43,8 +43,50 @@ const Dashboard = () => {
     
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
-    
     console.log(new_filter);
+    // notify the backend that a new misalignment filter is set
+    fetch('/api/activity_log', {
+      method: 'POST', 
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        activity_type: 'misalignment_filter_update',
+        revert_filter: new_filter.revert_filter,
+        prediction_filter: new_filter.prediction_filter,
+      })
+    })
+    .then(res => {
+      if (res.ok) {
+        console.log("Logged misalignment filter update.");
+      } else {
+        console.warn("Failed to update misaslignment filter.");
+      }
+    });
+    // get a new sample of revisions from the backend with the revised misalignment filter
+    fetch('/api/sample', {
+      method: 'POST', 
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        revert_filter: new_filter.revert_filter,
+        prediction_filter: new_filter.prediction_filter,
+      })
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Failed to retrieve sample.");
+      }
+      return res;
+    })
+    .then(res => res.json())
+    .then(data => {
+      setRevisions(data.revisions);
+    })
+    .catch(err => console.error(err));
   };
 
   const handleStateUpdate = (new_state) => {
