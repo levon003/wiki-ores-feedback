@@ -579,7 +579,7 @@ const MisalignmentFilter = ({data, onChange, className, ...rest }) => {
             onClick = {() => handleClick("vlhp","both")}
           ></rect>
           <text class="svgText" x="5.5%" y="21%" font-family="Georgia" font-size="6" fill="black"> Very likely have problems </text>
-          <text class="svgText" x="5.5%" y="25%" font-family="Georgia" font-size="6" fill="black"> Score {'>'} 0.9</text>
+          <text class="svgText" x="5.5%" y="25%" font-family="Georgia" font-size="6" fill="black"> Score {'>'} 0.9 </text>
           
           <rect
             fill = {strokecolor.r_box}
