@@ -34,7 +34,8 @@ const RevisionView = ({revision, className, ...rest }) => {
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
-
+  const [iplink, setiplink] = useState ("");
+  const [userlink, setuserlink] = useState ("");
   const [revisionMetadata, setRevisionMetadata] = useState({
     'from_user': '',
     'from_timestamp': '',
@@ -44,11 +45,23 @@ const RevisionView = ({revision, className, ...rest }) => {
     'to_parsedcomment': '',
     'from_revid': '',
     'to_revid': '',
+    'from_userid' :'',
+    'to_userid' :'',
+
   });
 
   const handleChange = (event, isExpanded) => {
     setExpanded(!expanded);
   }
+
+  function userCheck(id){
+    // console.log(id);
+    if (id == 0 ){
+      setiplink("https://en.wikipedia.org/wiki/Special:Contributions/");
+    }else{
+      setuserlink("https://en.wikipedia.org/wiki/User:");
+    }
+  } 
 
   // demonstration of using the Compare API to retrieve HTML and set it to state.
   // Note that it needs styling to look anything like the Wikipedia view!
@@ -63,6 +76,9 @@ const RevisionView = ({revision, className, ...rest }) => {
       })
         .then(res => res.json())
         .then(data => {
+          userCheck(data.compare['touserid']);
+          userCheck(data.compare['fromuserid']);
+          // console.log(iplink);
           console.log(data);
           setRevisionDiff(data.compare['*']);
           setRevisionMetadata({
@@ -74,14 +90,13 @@ const RevisionView = ({revision, className, ...rest }) => {
             'to_parsedcomment': data.compare['toparsedcomment'],
             'from_revid': data.compare['fromrevid'],
             'to_revid': data.compare['torevid'],
+            'to_userid': data.compare['touserid'],
+            'from_userid': data.compare['fromuserid'],
           })
     });
   }, []);
-  // function changeDate() {
-  //   const corfromtime = moment().format(fromtimestamp);
-  //   const cortotime = moment().format(fromtimestamp);
-// {moment(revisionMetadata.from_timestamp).format("MMMM Do YYYY, h:mm:ss a")}
-  // }
+
+
   return (
     <Paper
       className={clsx(classes.root, className)}
@@ -108,16 +123,26 @@ const RevisionView = ({revision, className, ...rest }) => {
 				  </colgroup> 
           <tbody>
             <tr>
-              <td id= "time" colSpan={2}><a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>Revision as of  {moment(revisionMetadata.from_timestamp).format("h:mm, D MMMM YYYY")}</a></td>
-              <td id= "time" colSpan={2}><a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>Revision as of {moment(revisionMetadata.to_timestamp).format("h:mm, D MMMM YYYY")}</a></td>
+              <td id= "time" colSpan={2}><a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>
+                  Revision as of  {moment(revisionMetadata.from_timestamp).format("h:mm, D MMMM YYYY") }</a> 
+                    (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.from_revid.toString()}>
+                    edit</a>)</td>
+              <td id= "time" colSpan={2}><a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>
+                  Revision as of {moment(revisionMetadata.to_timestamp).format("h:mm, D MMMM YYYY") }</a> 
+                  (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()}>edit</a>) 
+                  (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()}>undo</a>)</td>
             </tr>
             <tr>
-              <td id= "user" colSpan={2}>{revisionMetadata.from_user}</td>
-              <td id= "user" colSpan={2}>{revisionMetadata.to_user}</td>
+              <td id= "user" colSpan={2}><a href = {iplink + revisionMetadata.from_user.toString()}> {revisionMetadata.from_user}</a></td>
+              <td id= "user" colSpan={2}><a href = {userlink + revisionMetadata.to_user.toString()}>{revisionMetadata.to_user} </a></td>
             </tr>
             <tr>
               <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.from_parsedcomment}}/>
               <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}/>
+            </tr>
+            <tr>
+              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}> &lt;- Previous edit </a></td>
+              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid" +  revisionMetadata.from_revid.toString()}> Next edit -{">"}  </a></td>
             </tr>
           </tbody>
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
