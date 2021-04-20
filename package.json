@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-google-charts": "^3.0.15",
+    "react-svg-tooltip": "0.0.11"
+  }
+}

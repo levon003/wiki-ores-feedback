@@ -13,18 +13,22 @@ VERSION = "0.0.1"
 
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, 
+        instance_relative_config=True,
+        static_url_path='',
+        static_folder='www'
+    )
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'interface.sqlite'),
         INSTANCE_DATA_DIR=os.path.join(app.instance_path, 'data'),
+        VERSION=VERSION,
+        MYSQL_CONFIG_FILEPATH=os.path.join(app.root_path, 'replica.my.cnf'),
     )
-
-    app.config.version = VERSION
     
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
+        app.config.from_pyfile(os.path.join(app.root_path, 'config.py'), silent=False)
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
@@ -41,7 +45,22 @@ def create_app(test_config=None):
     app.register_blueprint(index.bp)
     #app.add_url_rule('/', endpoint='index')
 
+    from . import db
+    db.init_app(app)
+
+    from . import replica
+    replica.init_app(app)
+
+    from . import sample
+    app.register_blueprint(sample.bp)
+
+    from . import autocomplete
+    app.register_blueprint(autocomplete.bp)
+
     logging.info(app.url_map)
+    logging.debug('Loaded configuration mapping:')
+    for key, value in app.config.items():
+        logging.debug(f'{key}: \t{value}')
     
     return app
 
@@ -56,7 +75,12 @@ class FlaskLoggingFilter(logging.Filter):
   
 def set_up_logging(app):
     root = logging.getLogger()
+    if len(root.handlers) > 0:
+        # if the Flask reloader is active, it tries to set up the logger twice
+        # stop if we already have the appropriate handlers i.e. any handlers
+        return
     root.setLevel(logging.DEBUG)
+
         
     stream_handler = logging.StreamHandler()
     # TODO Log at info level by default for normal operations

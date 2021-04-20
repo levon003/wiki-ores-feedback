@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Grid,
@@ -7,6 +7,7 @@ import {
 import Page from 'src/components/Page';
 import RevisionViewer from './RevisionViewer';
 import MisalignmentFilter from './MisalignmentFilter';
+import FilterControls from './FilterControls';
 
 import LatestProducts from './LatestProducts';
 import Sales from './Sales';
@@ -14,6 +15,7 @@ import TasksProgress from './TasksProgress';
 import TotalCustomers from './TotalCustomers';
 import TotalProfit from './TotalProfit';
 import TrafficByDevice from './TrafficByDevice';
+import { PinDropSharp } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,11 +28,103 @@ const useStyles = makeStyles((theme) => ({
 
 const Dashboard = () => {
   const classes = useStyles();
+  // Temporary data here: 
+  const [data, setData] =  useState({
+    vlhp_r : 1000,
+    vlhp_nr : 200,
+    confrevs_r : 200,
+    confrevs_nr : 100,
+    vlg_r  : 10,
+    vlg_nr  : 400,
+  });
 
+  const [globalFilterState, setGlobalFilterState] = useState();
+  const [revisions, setRevisions] = useState([]);
+    
+  const handleMisalignmentFilterChange = (new_filter) => {
+    console.log("new_filter");
+    console.log(new_filter);
+    // notify the backend that a new misalignment filter is set
+    fetch('/api/activity_log', {
+      method: 'POST', 
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        activity_type: 'misalignment_filter_update',
+        revert_filter: new_filter.revert_filter,
+        prediction_filter: new_filter.prediction_filter,
+      })
+    })
+    .then(res => {
+      if (res.ok) {
+        console.log("Logged misalignment filter update.");
+      } else {
+        console.warn("Failed to update misaslignment filter.");
+      }
+    });
+    // get a new sample of revisions from the backend with the revised misalignment filter
+    fetch('/api/sample', {
+      method: 'POST', 
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        revert_filter: new_filter.revert_filter,
+        prediction_filter: new_filter.prediction_filter,
+      })
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Failed to retrieve sample.");
+      }
+      return res;
+    })
+    .then(res => res.json())
+    .then(data => {
+      setRevisions(data.revisions);
+    })
+    .catch(err => console.error(err));
+  };
+
+  const handleStateUpdate = (new_state) => {
+    setGlobalFilterState(new_state);
+    // TODO do a POST request to the backend with the new filters
+    // Get the new revisions and save them
+    // ALSO get the new counts of each of the conditions
+    // i.e. number of revisions that are Very Likely Bad
+    //fetch().then({
+    //    setRevisions(...data from backend...)
+    //})
+    const filter_conditions_changed = false;
+    const should_get_new_revisions = false;
+    if (filter_conditions_changed) {
+      fetch('/api/rev_counts', {method: 'GET'})
+        .then(res => res.json())
+        .then(data => {
+          setData(data.counts);
+      });
+    }
+    if (should_get_new_revisions) {
+      fetch('/api/sample', {method: 'GET'})
+        .then(res => res.json())
+        .then(data => {
+          setRevisions(data.revisions);
+      });
+    }
+    fetch('/api/activity_log', {method: 'GET'})
+      .then(res => res.json())
+      .then(data => {
+        console.log(data);
+    });
+  };
+    
   return (
     <Page
       className={classes.root}
-      title="RevReflect: Inspect ORES Predictions"
+      title="ORES-Inspect"
     >
       <Container maxWidth={false}>
         <Grid
@@ -42,13 +136,27 @@ const Dashboard = () => {
             item
             xs={12}
           >
-            <MisalignmentFilter />
+             <FilterControls 
+                onChange={handleStateUpdate}
+            />
           </Grid>
           <Grid
             item
             xs={12}
           >
-            <RevisionViewer />
+
+            <MisalignmentFilter 
+              onChange={handleMisalignmentFilterChange}
+              data= {data}
+            />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+          >
+            {/* <RevisionViewer 
+              revisions={revisions}
+            /> */}
           </Grid>
         </Grid>
       </Container>
