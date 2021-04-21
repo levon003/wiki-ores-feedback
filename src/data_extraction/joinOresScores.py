@@ -2,6 +2,7 @@
 The goal of this script is to merge with the output of extractStubRevData.
 
 Note that currently data-merging is done in the create-table command in the audit_web_client itself.
+A newer version is in the OresHdfsDataInspection notebook.
 
 Idea: load into memory all of the 2019 posts. Add whatever ORES scores we can, filtering as we go. (i.e. don't include in the dataset revisions that don't have associated scores.)
 
