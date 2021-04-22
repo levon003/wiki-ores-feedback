@@ -193,6 +193,7 @@ def process_dump(dump):
                     reverted_rev_data['seconds_to_revert'] = rev_data['rev_timestamp'] - reverted_rev_data['rev_timestamp']
                     reverted_rev_data['revert_target_id'] = reverted_to_id
                     reverted_rev_data['revert_set_size'] = len(reverteds_ids)
+                rev_data['is_self_revert'] = is_self_revert
                 if is_self_revert:
                     # need to update all of the reverteds as well
                     for rev_id in reverteds_ids:
