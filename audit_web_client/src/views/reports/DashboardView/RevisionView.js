@@ -15,6 +15,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { LinkSharp, LocalConvenienceStoreOutlined } from '@material-ui/icons';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,6 +66,22 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   } 
 
+   function parsetoHTML(tpcomment) {
+      var doc = new DOMParser().parseFromString(tpcomment, "text/html");
+      // console.log(doc);
+      // console.log(html);
+      var links = doc.getElementsByTagName("a");
+      for(let link of links){
+        let [first, second] = link.toString().split("http://localhost:3000");
+        link.href = "https://en.wikipedia.org" + second; 
+        console.log(second); console.log(first); 
+        // console.log(link);
+        }
+      return doc.body.innerHTML;
+    }
+
+
+
   // demonstration of using the Compare API to retrieve HTML and set it to state.
   // Note that it needs styling to look anything like the Wikipedia view!
   // https://www.mediawiki.org/wiki/Manual:CORS
@@ -78,16 +97,15 @@ const RevisionView = ({revision, className, ...rest }) => {
         .then(data => {
           userCheck(data.compare['touserid']);
           userCheck(data.compare['fromuserid']);
-          // console.log(iplink);
           console.log(data);
           setRevisionDiff(data.compare['*']);
           setRevisionMetadata({
             'from_user': data.compare['fromuser'],
             'from_timestamp': data.compare['fromtimestamp'],
-            'from_parsedcomment': data.compare['fromparsedcomment'],
+            'from_parsedcomment': parsetoHTML(data.compare['fromparsedcomment']),
             'to_user': data.compare['touser'],
             'to_timestamp': data.compare['totimestamp'],
-            'to_parsedcomment': data.compare['toparsedcomment'],
+            'to_parsedcomment': parsetoHTML(data.compare['toparsedcomment']),
             'from_revid': data.compare['fromrevid'],
             'to_revid': data.compare['torevid'],
             'to_userid': data.compare['touserid'],
