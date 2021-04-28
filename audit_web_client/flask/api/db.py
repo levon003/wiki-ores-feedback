@@ -3,7 +3,7 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 
 import sqlalchemy as sa
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, Float, Index, bindparam
+from sqlalchemy import create_engine, Table, Column, Integer, SmallInteger, String, MetaData, ForeignKey, Text, Boolean, Float, Index, bindparam
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 import os
@@ -71,7 +71,7 @@ def get_metadata():
     Table('page', g.oidb_metadata,
         Column('page_id', Integer, primary_key=True),
         Column('wiki_namespace', Integer, nullable=False),
-        Column('page_title', Text, nullable=False),
+        Column('page_title', Text, nullable=False),  # note: I believe the max-length page_title in the data is 253
         Column('is_redirect', Boolean, nullable=False),
         Column('rev_count', Integer, nullable=False),
     )
@@ -94,6 +94,9 @@ def get_metadata():
                      
         Column('curr_bytes', Integer, nullable=False),
         Column('delta_bytes', Integer),
+        Column('page_rev_count', Integer, nullable=False),
+        Column('page_namespace', SmallInteger, nullable=False),
+        Column('is_page_redirect', Boolean, nullable=False),
         
         Column('is_reverted', Boolean, nullable=False),
         Column('is_revert', Boolean, nullable=False),
@@ -236,8 +239,8 @@ def import_revision_data(engine, revision_table, data_dir, oidb_dir, rev_tsv_fil
             for line in tqdm(infile, total=111200155, desc='Constructing revision table'):
                 processed_count += 1
                 tokens = line.strip().split('\t')
-                assert len(tokens) == 26
-                rev_timestamp, page_id, rev_id, prev_rev_id, is_minor, user_text, user_id, seconds_to_prev, curr_bytes, delta_bytes, has_edit_summary, is_reverted, is_revert, is_reverted_to_by_other, is_self_reverted, is_self_revert, revert_target_id, revert_set_size, revert_id, seconds_to_revert, damaging_pred, goodfaith_pred, model_version, user_is_bot, user_is_trusted, user_edit_count = tokens
+                assert len(tokens) == 29
+                rev_timestamp, page_id, rev_id, prev_rev_id, is_minor, user_text, user_id, seconds_to_prev, curr_bytes, delta_bytes, has_edit_summary, is_reverted, is_revert, is_reverted_to_by_other, is_self_reverted, is_self_revert, revert_target_id, revert_set_size, revert_id, seconds_to_revert, damaging_pred, goodfaith_pred, model_version, user_is_bot, user_is_trusted, user_edit_count, page_rev_count, page_namespace, is_page_redirect = tokens
                 rev_timestamp = int(rev_timestamp)
 
                 # we track the number of edits made by each user over time
@@ -261,6 +264,9 @@ def import_revision_data(engine, revision_table, data_dir, oidb_dir, rev_tsv_fil
                     'seconds_to_prev': int(seconds_to_prev) if seconds_to_prev != 'None' else None, 
                     'curr_bytes': int(curr_bytes), 
                     'delta_bytes': int(delta_bytes) if delta_bytes != 'None' else None, 
+                    'page_rev_count': int(page_rev_count), 
+                    'page_namespace': int(page_namespace),
+                    'is_page_redirect': is_page_redirect == 'True',
                     'has_edit_summary': has_edit_summary == 'True', 
                     'is_reverted': is_reverted == 'True', 
                     'is_revert': is_revert == 'True',
