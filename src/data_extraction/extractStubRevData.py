@@ -197,8 +197,11 @@ def process_dump(dump):
                         revert_set_size += 1
                     else:
                         duplicate_reverted_count += 1
-                assert len(actual_reverteds_ids) > 0
+                assert revert_set_size > 0, str(revert_set_size) + " size set: " + str(reverted_to_id) + " " + str(reverteds_ids) + " " + str(reverting_id)
                 rev_data['revert_set_size'] = revert_set_size
+                if len(actual_reverteds_ids) == 0:
+                    # no actual revisions to update as reverted, so assume not a self-revert
+                    is_self_revert = False
 
                 # update the data of the reverted revisions
                 for rev_id in actual_reverteds_ids:
