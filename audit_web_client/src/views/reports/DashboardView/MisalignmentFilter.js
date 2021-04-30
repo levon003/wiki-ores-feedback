@@ -251,7 +251,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
                 className={clsx(classes.root, classes.edgetooltip)}
               />
               <text x={5} y={5} fontSize={6} fill="black">
-                Of {props.data["vlhp_r"]+props.data["vlhp_nr"]} very like have problem revisions, {props.data["vlhp_nr"]} were reverted. 
+                Of {props.data["vlhp_r"]+props.data["vlhp_nr"]} very likely have problems revisions, {props.data["vlhp_r"]} were reverted. 
               </text>
             </TT>
             <path
@@ -263,7 +263,9 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
             ></path>
             <TT triggerRef={myRef}>
               <rect
+                width={100}
                 className={clsx(classes.root, classes.edgetooltip)}
+                
               />
               <text x={5} y={5} fontSize={6} fill="black">
                 Of {props.data["confrevs_r"]+props.data["confrevs_nr"]} confusing revisions, {props.data["confrevs_nr"]} were not reverted. 
@@ -326,7 +328,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
                 className={clsx(classes.root, classes.edgetooltip)}
               />
               <text x={5} y={5} fontSize={6} fill="black">
-                Of {props.data["confrevs_r"]+props.data["confrevs_nr"]} confusing revisions, {props.data["confrevs_nr"]} were reverted. 
+                Of {props.data["confrevs_r"]+props.data["confrevs_nr"]} confusing revisions, {props.data["confrevs_r"]} were reverted. 
               </text>
             </TT>
           </g>
