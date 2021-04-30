@@ -15,8 +15,8 @@ from datetime import datetime
 def main():
     # set directories
     oidb_dir = "/export/scratch2/levon003/repos/wiki-ores-feedback/data/derived/stub-history-all-revisions/oidb"
-    input_filepath = os.path.join(oidb_dir, 'rev_ids_missing_scores.txt')
-    output_filepath = os.path.join(oidb_dir, 'rev_ids_missing_scores_scored.csv')
+    input_filepath = os.path.join(oidb_dir, 'rev_ids_missing_scores_2.txt')
+    output_filepath = os.path.join(oidb_dir, 'rev_ids_missing_scores_scored_2.csv')
     
     # extract the revision ids to retrieve
     with open(input_filepath, 'r') as infile:
@@ -58,7 +58,6 @@ def main():
             outfile.write(f"{rev_id},{damaging_score},{damaging_prediction},{damaging_version},{goodfaith_score},{goodfaith_prediction},{goodfaith_version}\n")
             total_processed += 1        
     print(f"Processed {total_processed} ORES scores.")
-    session.close()
         
         
 if __name__ == "__main__":
