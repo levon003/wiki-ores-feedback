@@ -31,7 +31,7 @@ const Dashboard = () => {
   });
 
   const [globalFilterState, setGlobalFilterState] = useState();
-  const [revisions, setRevisions] = useState([{'rev_id': 0}]); // TODO should be empty, but has one entry for testing
+  const [revisions, setRevisions] = useState([{'rev_id': 1001836878, 'prev_rev_id': 1001836865}]); // TODO should be empty, but has one entry for testing
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
