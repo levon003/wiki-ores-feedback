@@ -3,22 +3,9 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
   Box,
-  Button,
   Card,
-  CardHeader,
-  Chip,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  TextField,
-  Tooltip,
   makeStyles
 } from '@material-ui/core';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import RevisionView from './RevisionView';
 
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +22,7 @@ const RevisionViewer = ({ className, revisions, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
   
   const classes = useStyles();
-  const [displayLimit, setDisplayLimit] = useState(20);  // TODO Probably want to remember this for a user
+  const [displayLimit, setDisplayLimit] = useState(20);  // TODO Probably want to remember this as a user setting
   const [statusDescription, setStatusDescription] = useState(defaultPreloadMessage);
 
   // Want state to track total available at multiple levels. Probably want to store it one state dictionary, since each should change only "one at a time"...

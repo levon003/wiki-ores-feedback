@@ -9,14 +9,6 @@ import RevisionViewer from './RevisionViewer';
 import MisalignmentFilter from './MisalignmentFilter';
 import FilterControls from './FilterControls';
 
-import LatestProducts from './LatestProducts';
-import Sales from './Sales';
-import TasksProgress from './TasksProgress';
-import TotalCustomers from './TotalCustomers';
-import TotalProfit from './TotalProfit';
-import TrafficByDevice from './TrafficByDevice';
-import { PinDropSharp } from '@material-ui/icons';
-
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
@@ -40,7 +32,7 @@ const Dashboard = () => {
 
   const [globalFilterState, setGlobalFilterState] = useState();
   const [revisions, setRevisions] = useState([{'rev_id': 0}]); // TODO should be empty, but has one entry for testing
-    
+  
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
     console.log(new_filter);
@@ -120,6 +112,10 @@ const Dashboard = () => {
         console.log(data);
     });
   };
+
+  useEffect(() => {
+    // TODO Make an initial request with the default/loaded filter criteria 
+  }, []);
     
   return (
     <Page

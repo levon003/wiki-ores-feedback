@@ -4,10 +4,8 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
   AppBar,
-  Badge,
   Box,
-  Hidden,
-  IconButton,
+  Typography,
   Toolbar,
   makeStyles
 } from '@material-ui/core';
@@ -40,11 +38,11 @@ const TopBar = ({
     >
       <Toolbar>
         <RouterLink to="/" style={{ color: 'white' }}>
-          <h1>ORES Auditing Tool</h1>
+          <Typography variant="h1">ORES-Inspect</Typography>
           {/*Could replace text with a logo per the example like so: <Logo />*/}
         </RouterLink>
         <Box flexGrow={1} />
-        <h1>v0.0.1 - prealpha dev</h1>
+        <Typography variant="h1">v0.0.1a</Typography>
       </Toolbar>
     </AppBar>
   );

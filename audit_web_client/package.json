@@ -43,6 +43,7 @@
     "cors": "^2.8.5",
     "d3": "^6.5.0",
     "d3-sankey": "^0.12.3",
+    "fontsource-roboto": "^4.0.0",
     "formik": "^2.2.6",
     "history": "^5.0.0",
     "lodash": "^4.17.21",

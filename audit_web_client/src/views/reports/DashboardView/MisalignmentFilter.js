@@ -8,30 +8,11 @@ import { withStyles } from '@material-ui/core/styles';
 import { Tooltip as TT } from "react-svg-tooltip";
 
 import {
-  Box,
   Button,
-  Card,
-  CardHeader,
-  Chip,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  TableContainer,
-  TextField,
+  Box,
   Tooltip,
-  Paper,
   makeStyles
 } from '@material-ui/core';
-import { ResponsiveLine } from '@nivo/line';
-import { ResponsiveSankey } from '@nivo/sankey'
-import { ResponsiveBar } from '@nivo/bar'
-import PredictionResponseFlowchart from './PredictionResponseFlowchart';
-import { AlignCenter } from 'react-feather';
-import { includes } from 'lodash';
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
   return {
@@ -158,7 +139,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
       'lg_edge_r': "#b6d7a8"
     };
 
-    if (activeFilters.revert_filter != revert_filter || activeFilters.prediction_filter != prediction_filter) {
+    if (activeFilters.revert_filter !== revert_filter || activeFilters.prediction_filter !== prediction_filter) {
       new_filter_value = {
         'prediction_filter': prediction_filter,
         'revert_filter': revert_filter,
@@ -169,7 +150,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
       var i;
       var rs = ["r", "nr"]
       var ps = ["vlhp", "itm", "lg"];
-      if(new_filter_value.revert_filter == "both"){ // If clicks on one of the right boxes (reverted, not reverted)
+      if(new_filter_value.revert_filter === "both"){ // If clicks on one of the right boxes (reverted, not reverted)
         for (i = 0; i < rs.length; i++){
           let edgeboxr = prediction_filter + "_" + rs[i] + "_box";
           let edger = prediction_filter + "_edge_" + rs[i];
@@ -180,8 +161,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         }
         let box = prediction_filter + "_box";
         new_colors[box] = "#FFFBCC"
-      }
-      else if (new_filter_value.prediction_filter == "all"){ // If clicks on one of the left boxes (likely good, in the middle, etc)
+      } else if (new_filter_value.prediction_filter === "all"){ // If clicks on one of the left boxes (likely good, in the middle, etc)
         let rboxr = revert_filter + "_box";
         new_colors[rboxr] = "#FFFBCC"
         for (i = 0; i < ps.length; i++){
@@ -194,8 +174,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         }
         let box = prediction_filter + "_box";
         new_colors[box] = "#FFFBCC"
-      }
-      else{ // If clicks on an edge, or a box on the edge
+      } else { // If clicks on an edge, or a box on the edge
         let box = prediction_filter + "_box";
         let edgebox = prediction_filter + "_" + revert_filter + "_box";
         let edge = prediction_filter + "_edge_" + revert_filter;
@@ -211,7 +190,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
     onChange(new_filter_value);
   }
 
-  function GenerateSVG(props) {
+  function FlowchartSummarySVG(props) {
     const classes = useStyles();
 
     let total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
@@ -492,9 +471,9 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
 
 
 
-  function GenerateToolTips(props) {
+  function SelectionButtonGrid(props) {
     const total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
-    return <Grid container justify="left">
+    return <Grid container justify="center">
       <Grid item>
         <HtmlTooltip
           title={
@@ -505,7 +484,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
             </React.Fragment>
           }
         >
-          <Button>Investigate unexpected consensus</Button>
+          <Button variant='outlined'>Investigate unexpected consensus</Button>
         </HtmlTooltip>
         <HtmlTooltip
           title={
@@ -516,7 +495,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
             </React.Fragment>
           }
         >
-          <Button>Investigate unexpected reverts</Button>
+          <Button variant='outlined'>Investigate unexpected reverts</Button>
         </HtmlTooltip>
         <HtmlTooltip
           title={
@@ -527,7 +506,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
             </React.Fragment>
           }
         >
-          <Button>Investigate confusing revisions</Button>
+          <Button variant='outlined'>Investigate confusing revisions</Button>
         </HtmlTooltip>
       </Grid>
     </Grid>
@@ -547,26 +526,25 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
       border: '1px solid #dadde9',
     },
   }))(Tooltip);
-  // const svg = 
-  {/* open={open} onClose={handleClose} onOpen={handleOpen} */ }
 
-  return (<div style={{ width: windowWidth * 0.75, aspectRatio, position: 'relative', left: "30%" }}>
-    <GenerateSVG data={data}></GenerateSVG>
-    <div id="mypopup">
-      <h3>Popup title</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-    </div>
-    <GenerateToolTips data={data}></GenerateToolTips>
-  </div>
+  return (
+  <Box>
+    <Box 
+      width='100%'
+      position='relative'
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+    >
+      <FlowchartSummarySVG data={data} />
+    </Box>
+    <SelectionButtonGrid data={data} />
+  </Box>
   );
 };
+
 MisalignmentFilter.propTypes = {
   className: PropTypes.string
 };
 
 export default MisalignmentFilter;
-
-// TODO: 
-// Change tooltip: Of this many vlhp, this many were reverted 
-// 
