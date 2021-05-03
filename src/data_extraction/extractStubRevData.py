@@ -50,6 +50,7 @@ def process_dump(dump):
     midpoint_timestamp = int(midpoint_date.timestamp())
     end_date = datetime.fromisoformat('2021-01-01').replace(tzinfo=pytz.UTC)
     end_timestamp = int(end_date.timestamp())
+    duplicate_reverted_count = 0
     for page in dump:
         is_page_redirect = int(page.redirect is not None)
         page_namespace = page.namespace
@@ -57,6 +58,7 @@ def process_dump(dump):
         rev_count = 0
         target_range_rev_count = 0
         target_range_midpoint_rev_count = 0
+
 
         rev_list = []
         rev_dict = {}
@@ -170,10 +172,15 @@ def process_dump(dump):
                         reverted_to_rev_data['is_reverted_to_by_other'] = rev_data['user_text'] != reverted_to_rev_data['user_text']
                 
                 is_self_revert = rev_data['user_text'] is not None  # true in most cases; if false, not enough info to know if a self revert
-                # update the data of the reverted revisions
+                
+                # identify the reverted revisions
+                # which is all revs in reverteds_ids that have not previously been reverted
+                actual_reverteds_ids = set()
+                revert_set_size = 0
                 for rev_id in reverteds_ids:
                     if rev_id not in rev_dict:
                         # this revision happened before the target period
+                        revert_set_size += 1
                         if rev_id in rev_user_text_dict:
                             if rev_user_text_dict[rev_id] is None or rev_user_text_dict[rev_id] != rev_data['user_text']:
                                 is_self_revert = False
@@ -184,6 +191,20 @@ def process_dump(dump):
                             is_self_revert = False
                             print(f"Revision {rev_id} reverted by revision {reverting_id} after more than 5 years.")
                         continue
+                    if not rev_dict[rev_id]['is_reverted']:
+                        # this revision is already considered to be reverted by an intervening revision
+                        actual_reverteds_ids.add(rev_id)
+                        revert_set_size += 1
+                    else:
+                        duplicate_reverted_count += 1
+                assert revert_set_size > 0, str(revert_set_size) + " size set: " + str(reverted_to_id) + " " + str(reverteds_ids) + " " + str(reverting_id)
+                rev_data['revert_set_size'] = revert_set_size
+                if len(actual_reverteds_ids) == 0:
+                    # no actual revisions to update as reverted, so assume not a self-revert
+                    is_self_revert = False
+
+                # update the data of the reverted revisions
+                for rev_id in actual_reverteds_ids:
                     reverted_rev_data = rev_dict[rev_id]
                     reverted_rev_data['is_reverted'] = True
                     reverted_rev_data['revert_id'] = reverting_id
@@ -192,12 +213,11 @@ def process_dump(dump):
                         is_self_revert = False
                     reverted_rev_data['seconds_to_revert'] = rev_data['rev_timestamp'] - reverted_rev_data['rev_timestamp']
                     reverted_rev_data['revert_target_id'] = reverted_to_id
-                    reverted_rev_data['revert_set_size'] = len(reverteds_ids)
+                    reverted_rev_data['revert_set_size'] = revert_set_size
+                rev_data['is_self_revert'] = is_self_revert
                 if is_self_revert:
                     # need to update all of the reverteds as well
-                    for rev_id in reverteds_ids:
-                        if rev_id not in rev_dict:
-                            continue
+                    for rev_id in actual_reverteds_ids:
                         reverted_rev_data = rev_dict[rev_id]
                         reverted_rev_data['is_self_reverted'] = True
                 
@@ -218,6 +238,8 @@ def process_dump(dump):
             # emit revision data from target range
             for rev_data in rev_list:
                 yield rev_data
+    if duplicate_reverted_count > 0:
+        print(f"Identified {duplicate_reverted_count} reverted ids that turned out to be already reverted.")
 
                     
 def process_stub_history_filepath(path):
