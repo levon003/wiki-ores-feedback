@@ -412,7 +412,6 @@ def add_derived_columns_to_rev_data(rev_data):
             raise ValueError("Implementation error: coverage should be total")
     rev_data['delta_bytes_filter'] = delta_bytes_filter
 
-
     rc = rev_data['page_rev_count']
     if rc >= 100:
         rev_count_gt_filter = 5

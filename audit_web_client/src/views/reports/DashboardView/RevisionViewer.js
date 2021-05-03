@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
-import moment from 'moment';
-import { v4 as uuid } from 'uuid';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import PropTypes from 'prop-types';
 import {
   Box,
@@ -34,12 +31,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevisionViewer = ({ className, ...rest }) => {
+const RevisionViewer = ({ className, revisions, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
   
   const classes = useStyles();
-  const [revisions, setRevisions] = useState([{'rev_id': 0}]);
-  const [displayLimit, setDisplayLimit] = useState(5);  // TODO Probably want to remember this for a user
+  const [displayLimit, setDisplayLimit] = useState(20);  // TODO Probably want to remember this for a user
   const [statusDescription, setStatusDescription] = useState(defaultPreloadMessage);
 
   // Want state to track total available at multiple levels. Probably want to store it one state dictionary, since each should change only "one at a time"...
@@ -47,6 +43,8 @@ const RevisionViewer = ({ className, ...rest }) => {
     
   useEffect(() => {
     // TODO Actually retrieve a set of revisions here by querying the backend
+    // JK, we're actually doing this in index and passing them in.  
+    // Perhaps the expected behavior is to move loading status into the index, and just include a rev count in this component.
     setStatusDescription('Loaded revisions; change filters or use page controls to see more.')
   }, []);
     

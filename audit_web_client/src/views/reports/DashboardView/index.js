@@ -39,7 +39,7 @@ const Dashboard = () => {
   });
 
   const [globalFilterState, setGlobalFilterState] = useState();
-  const [revisions, setRevisions] = useState([]);
+  const [revisions, setRevisions] = useState([{'rev_id': 0}]); // TODO should be empty, but has one entry for testing
     
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
@@ -154,9 +154,9 @@ const Dashboard = () => {
             item
             xs={12}
           >
-            {/* <RevisionViewer 
+            <RevisionViewer 
               revisions={revisions}
-            /> */}
+            />
           </Grid>
         </Grid>
       </Container>
