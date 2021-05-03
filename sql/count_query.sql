@@ -40,7 +40,90 @@ SELECT page_namespace, is_user_bot, damaging_pred_filter, is_reverted, is_revert
 FROM revision
 WHERE is_reverted = is_reverted_for_damage
 GROUP BY page_namespace, is_user_bot, damaging_pred_filter, is_reverted, is_reverted_for_damage;
+#############################################
+# Create revision count table
+CREATE TABLE revision_count (
+rid INTEGER NOT NULL AUTO_INCREMENT,
+damaging_pred_filter TINYINT,
+reverted_filter_mask TINYINT,
+reverted_within_filter TINYINT,
+reverted_after_filter TINYINT,
+page_namespace TINYINT,
+user_type TINYINT,
+rev_count_gt_filter TINYINT,
+rev_count_lt_filter TINYINT,
+revision_filter_mask TINYINT,
+delta_bytes_filter TINYINT, 
+count INTEGER,
+PRIMARY KEY (rid) 
+)
+SELECT 
+		damaging_pred_filter,
+        reverted_filter_mask,
+        reverted_within_filter,
+        reverted_after_filter,
+        page_namespace,
+        user_type,
+        rev_count_gt_filter,
+        rev_count_lt_filter,
+        revision_filter_mask,
+        delta_bytes_filter, 
+        COUNT(*) as count
+FROM revision
+GROUP BY damaging_pred_filter,
+        reverted_filter_mask,
+        reverted_within_filter,
+        reverted_after_filter,
+        page_namespace,
+        user_type,
+        rev_count_gt_filter,
+        rev_count_lt_filter,
+        revision_filter_mask,
+        delta_bytes_filter;
 
+
+SELECT *
+FROM revision USE INDEX (revision_full_ind)
+WHERE damaging_pred_filter = 0 AND
+        reverted_filter_mask = 0 AND  # not reverted
+        reverted_within_filter IS NULL AND
+        reverted_after_filter IS NULL AND
+        page_namespace = 0 AND
+        user_type IN (0, 2, 3, 4) AND
+        rev_count_gt_filter IN (2, 3, 4, 5) AND
+        rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND
+        revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND
+        delta_bytes_filter IN (-2, -1, 0, 1, 2)
+ORDER BY random
+LIMIT 0, 20;
+
+SELECT *
+FROM revision
+WHERE damaging_pred_filter = 0 AND
+        reverted_filter_mask = 0 AND  # not reverted
+        reverted_within_filter IS NULL AND
+        reverted_after_filter IS NULL AND
+        page_namespace = 0 AND
+        user_type IN (0, 2, 3, 4) AND
+        rev_count_gt_filter IN (2, 3, 4, 5) AND
+        rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND
+        revision_filter_mask = 7 AND
+        delta_bytes_filter IN (1, 2)
+ORDER BY random
+LIMIT 0, 20;
+
+CREATE INDEX revision_full_ind ON revision (
+        damaging_pred_filter,
+        reverted_filter_mask,
+        reverted_within_filter,
+        reverted_after_filter,
+        page_namespace,
+        user_type,
+        rev_count_gt_filter,
+        rev_count_lt_filter,
+        revision_filter_mask,
+        delta_bytes_filter,
+        random);
 
 ###################
 # Analysis of ClueBot NG, who has user_id = 13286072

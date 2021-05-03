@@ -123,6 +123,31 @@ CREATE INDEX revision_default ON revision(page_rev_count, page_namespace, is_use
 CREATE INDEX revision_default_random ON revision(random, page_rev_count, page_namespace, is_user_bot, damaging_pred_filter, is_reverted, is_reverted_for_damage);
 
 
+CREATE INDEX revision_full_ind ON revision (
+        damaging_pred_filter,
+        reverted_filter_mask,
+        reverted_within_filter,
+        reverted_after_filter,
+        page_namespace,
+        user_type,
+        rev_count_gt_filter,
+        rev_count_lt_filter,
+        revision_filter_mask,
+        delta_bytes_filter,
+        random);
+        
+CREATE INDEX revision_count_full_ind ON revision_count (
+        damaging_pred_filter,
+        reverted_filter_mask,
+        reverted_within_filter,
+        reverted_after_filter,
+        page_namespace,
+        user_type,
+        rev_count_gt_filter,
+        rev_count_lt_filter,
+        revision_filter_mask,
+        delta_bytes_filter);
+
 DROP INDEX revision_default ON revision;
 
 SHOW TABLE STATUS;
