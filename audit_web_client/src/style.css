@@ -1,22 +1,25 @@
 #time{
+  font-size: 14px;
   font-weight: bold;
   text-align: center;
   font-family: sans-serif;
 }
 
 #user{
-  font-style: italic;
+  font-size: 14px;
   text-align: center;
   font-family: sans-serif;
 }
 
 #parsecom{
+  font-size: 14px;
   font-style: italic;
   text-align: center;
   font-family: sans-serif;
 }
 
 #edit{
+  font-size: 14px;
   text-align: center;
   font-family: sans-serif;
 

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {
   Box,
   Button,
+  Link,
   Paper,
   Typography,
 } from '@material-ui/core';
@@ -28,7 +29,15 @@ const useStyles = makeStyles((theme) => ({
     flexShrink: 0,
     flexBasis: '33.33%',
   }, 
-
+  mwPlusminusPos: {
+      color: "#006400",
+  },
+  mwPlusminusNeg: {
+      color: "#8b0000",
+  },
+  mwPlusminusNull: {
+    color: "#a2a9b1",
+},
 }));
 
 const RevisionView = ({revision, className, ...rest }) => {
@@ -55,17 +64,25 @@ const RevisionView = ({revision, className, ...rest }) => {
 
   function getUserLink(user_text, user_id) {
     if (user_id === 0) {
-      return "https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString();
+      return (
+        <Box display="inline" component="span">
+         <Link href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>{user_text}</Link> (<Link href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>)
+        </Box>
+      );
     } else {
-      return "https://en.wikipedia.org/wiki/User:" + user_text.toString();
+      return (
+        <Box display="inline" component="span">
+         <Link href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link><RevisionSummarySpace sepChar='|' /><Link href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
+        </Box>
+      );
     }
   }
 
   function formatTimestamp(timestamp) {
-    return moment(timestamp).format("h:mm, D MMMM YYYY");
+    return moment.utc(timestamp).utc().format("HH:mm, DD MMMM YYYY");
   }
 
-  function parsetoHTML(tpcomment) {
+  function convertRelativeLinks(tpcomment) {
     var doc = new DOMParser().parseFromString(tpcomment, "text/html");
     var links = doc.getElementsByTagName("a");
     for(let link of links){
@@ -92,10 +109,10 @@ const RevisionView = ({revision, className, ...rest }) => {
           setRevisionMetadata({
             'from_user': data.compare['fromuser'],
             'from_timestamp': data.compare['fromtimestamp'],
-            'from_parsedcomment': parsetoHTML(data.compare['fromparsedcomment']),
+            'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
             'to_user': data.compare['touser'],
             'to_timestamp': data.compare['totimestamp'],
-            'to_parsedcomment': parsetoHTML(data.compare['toparsedcomment']),
+            'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
             'from_revid': data.compare['fromrevid'],
             'to_revid': data.compare['torevid'],
             'to_userid': data.compare['touserid'],
@@ -132,16 +149,16 @@ const RevisionView = ({revision, className, ...rest }) => {
               </td>
             </tr>
             <tr>
-              <td id= "user" colSpan={2}><a href={getUserLink(revisionMetadata.from_user, revisionMetadata.from_userid)}>{revisionMetadata.from_user}</a></td>
-              <td id= "user" colSpan={2}><a href={getUserLink(revisionMetadata.to_user, revisionMetadata.to_userid)}>{revisionMetadata.to_user}</a></td>
+              <td id= "user" colSpan={2}>{getUserLink(revisionMetadata.from_user, revisionMetadata.from_userid)}</td>
+              <td id= "user" colSpan={2}>{getUserLink(revisionMetadata.to_user, revisionMetadata.to_userid)}</td>
             </tr>
             <tr>
               <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.from_parsedcomment}}/>
               <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}/>
             </tr>
             <tr>
-              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}> &lt;- Previous edit </a></td>
-              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}> Next edit -{">"}  </a></td>
+              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}>← Previous edit</a></td>
+              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}>Next edit →</a></td>
             </tr>
           </tbody>
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
@@ -154,6 +171,91 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
+  function RevisionSummarySpace(props) {
+    if ('sepChar' in props) {
+      return (<Box component="span" whiteSpace="pre" display="inline"> {props.sepChar} </Box>);
+    } else if ('singleSpace' in props) {
+      return (<Box component="span" whiteSpace="pre" display="inline"> </Box>);
+    } else {
+      return (<Box component="span" whiteSpace="pre" display="inline">  </Box>);
+    }
+  }
+
+  function getBytesDeltaDescriptor() {
+    let delta_bytes = revision.delta_bytes;
+    if (delta_bytes === null) {
+      // assume this is a page creation
+      delta_bytes = revision.curr_bytes;
+    }
+
+    if (delta_bytes >= 500) {
+      return (
+        <Box className={clsx(classes.mwPlusminusPos)}>
+          <strong>(+{delta_bytes.toLocaleString()})</strong>
+        </Box>
+      );
+    } else if (delta_bytes > 0) {
+      return (
+        <Box className={clsx(classes.mwPlusminusPos)}>
+          (+{delta_bytes.toLocaleString()})
+        </Box>
+      );
+    } else if (delta_bytes === 0) {
+      return (
+        <Box className={clsx(classes.mwPlusminusNull)}>
+          ({delta_bytes.toLocaleString()})
+        </Box>
+      );
+    } else if (delta_bytes < 0) {
+      return (
+        <Box className={clsx(classes.mwPlusminusNeg)}>
+          (-{delta_bytes.toLocaleString()})
+        </Box>
+      );
+    } else {
+      return (
+        <Box className={clsx(classes.mwPlusminusNeg)}>
+          <strong>(-{delta_bytes.toLocaleString()})</strong>
+        </Box>
+      );
+    }
+  }
+
+  function RevisionSummary(props) {
+    return (
+      <Box>
+        <Box><Typography>{revision.page_title}</Typography></Box>
+        <Box display="flex" flexDirection='row'>
+          <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
+          <Box 
+            pl={1} 
+            display="flex" 
+            flexDirection="row" 
+            flexWrap="wrap"
+            fontFamily="sans-serif" 
+            fontSize={14}
+            whiteSpace="normal"
+          >
+              (
+              <Link href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revision.rev_id}>cur</Link>
+              <RevisionSummarySpace sepChar='|' />
+              <Link href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
+              ) 
+              <RevisionSummarySpace />
+              {formatTimestamp(revision.rev_timestamp)} 
+              <RevisionSummarySpace />
+              {getUserLink(revision.user_text, revision.user_id)}
+              <RevisionSummarySpace sepChar='. .'/>
+              ({revision.curr_bytes.toLocaleString()} bytes)<RevisionSummarySpace singleSpace />{getBytesDeltaDescriptor()}
+              <RevisionSummarySpace sepChar='. .'/>
+              <Box display="inline" component="span">(description  Collapse difference between revisions Collapse difference between revisions Collapse difference between revisions Collapse difference between revisions)</Box>
+              <RevisionSummarySpace singleSpace />(<Link>undo</Link>)
+          </Box>
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Paper
       className={clsx(classes.root, className)}
@@ -162,6 +264,7 @@ const RevisionView = ({revision, className, ...rest }) => {
       p={1}
       {...rest}
     >
+      <RevisionSummary />
       <Accordion expanded={expanded} onChange={handleChange}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel-content" id="panel-header"> 
       {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}

@@ -31,7 +31,17 @@ const Dashboard = () => {
   });
 
   const [globalFilterState, setGlobalFilterState] = useState();
-  const [revisions, setRevisions] = useState([{'rev_id': 1001836878, 'prev_rev_id': 1001836865}]); // TODO should be empty, but has one entry for testing
+  const [revisions, setRevisions] = useState([{
+    rev_id: 1001836878, 
+    prev_rev_id: 1001836865,
+    rev_timestamp: 0,
+    has_edit_summary: false,
+    user_text: "Suriname0",
+    user_id: 50,
+    page_title: "Armadillidium vulgare",
+    curr_bytes: 2289,
+    delta_bytes: 1550,
+  }]); // TODO should be empty, but has one entry for testing
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
