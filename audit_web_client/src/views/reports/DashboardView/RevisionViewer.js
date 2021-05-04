@@ -60,10 +60,12 @@ const RevisionViewer = ({ className, revisions, ...rest }) => {
           alignItems="center"
         >
         {revisions.map((revision) => (
-              <RevisionView 
-                key={revision.rev_id} 
-                revision={revision} 
-              />
+              <Box p={1} width='100%'>
+                <RevisionView 
+                  key={revision.rev_id} 
+                  revision={revision} 
+                />
+              </Box>
             ))}
         
         <Box className={clsx(classes.margin, classes.statusDescription)}>

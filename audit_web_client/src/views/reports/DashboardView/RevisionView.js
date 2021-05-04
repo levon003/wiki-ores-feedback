@@ -58,7 +58,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     'loaded': false,
   });
 
-  const handleChange = (event, isExpanded) => {
+  const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
   }
 
@@ -171,6 +171,18 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
+  function InlineDescription(props) {
+    if (revision.has_edit_summary) {
+      if (revisionMetadata.loaded) {
+        return (<Box display="inline" component="span" fontStyle='italic' dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}></Box>);
+      } else {
+        return (<Box display="inline" component="span" fontSize='10px'>loading</Box>);
+      }
+    } else {
+      return (<Box display="inline" component="span" fontSize='10px'>none</Box>);
+    }
+  }
+
   function getBytesDeltaDescriptor() {
     let delta_bytes = revision.delta_bytes;
     if (delta_bytes === null) {
@@ -192,19 +204,19 @@ const RevisionView = ({revision, className, ...rest }) => {
       );
     } else if (delta_bytes === 0) {
       return (
-        <Box className={clsx(classes.mwPlusminusNull)}>
+        <Box component="span" className={clsx(classes.mwPlusminusNull)}>
           ({delta_bytes.toLocaleString()})
         </Box>
       );
     } else if (delta_bytes < 0) {
       return (
-        <Box className={clsx(classes.mwPlusminusNeg)}>
+        <Box component="span" className={clsx(classes.mwPlusminusNeg)}>
           (-{delta_bytes.toLocaleString()})
         </Box>
       );
     } else {
       return (
-        <Box className={clsx(classes.mwPlusminusNeg)}>
+        <Box component="span" className={clsx(classes.mwPlusminusNeg)}>
           <strong>(-{delta_bytes.toLocaleString()})</strong>
         </Box>
       );
@@ -214,7 +226,7 @@ const RevisionView = ({revision, className, ...rest }) => {
   function RevisionSummary(props) {
     return (
       <Box>
-        <Box><Typography>{revision.page_title}</Typography></Box>
+        <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
           <Box 
@@ -229,16 +241,46 @@ const RevisionView = ({revision, className, ...rest }) => {
               <Link href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
               ) 
               &nbsp;&nbsp;
-              <Box width="fit-content" component="span">{formatTimestamp(revision.rev_timestamp)}</Box>
+              <Box display="inline" component="span">{formatTimestamp(revision.rev_timestamp)}</Box>
               &nbsp;&nbsp;
               {getUserLink(revision.user_text, revision.user_id)}
               {' . . '}
               <Box display="inline" component="span">({revision.curr_bytes.toLocaleString()} bytes)</Box> {getBytesDeltaDescriptor()}
               {' . . '}
-              <Box display="inline" component="span">(description  Collapse difference between revisions Collapse difference between revisions Collapse difference between revisions Collapse difference between revisions)</Box>
-              &nbsp;(<Link>undo</Link>)
+              <Box display="inline" component="span">(<InlineDescription />)</Box>
+              &nbsp;(<Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=edit&undoafter=" + revision.prev_rev_id.toString() + "&undo=" + revision.rev_id.toString()}>undo</Link>)
           </Box>
         </Box>
+      </Box>
+    );
+  }
+
+  function PredictionDisplay(props) {
+    return (
+      <Box>
+        ORES prediction: {revision.damaging_pred.toString()}
+      </Box>
+    );
+  }
+
+  function AnnotationButtons(props) {
+    return (
+      <Box>
+        <Button variant="outlined">Flag</Button>
+        <Button variant="outlined">Confirm damaging</Button>
+        <Button variant="outlined">Not damaging / misclassification</Button>
+      </Box>
+    );
+  }
+
+  function RevisionAnnotationControls(props) {
+    return (
+      <Box
+        display="flex"
+        flexDirection="row"
+      >
+        <PredictionDisplay />
+        <AnnotationButtons />
       </Box>
     );
   }
@@ -251,25 +293,28 @@ const RevisionView = ({revision, className, ...rest }) => {
       p={1}
       {...rest}
     >
-      <RevisionSummary />
-      <Accordion expanded={expanded} onChange={handleChange}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel-content" id="panel-header"> 
-      {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
-      </AccordionSummary>
-      <AccordionDetails>
-        <Box
-          display="flex"
-          flexDirection="column"
-        >
-        <DiffTable />
-        <Button
-          onClick={handleChange}
-        >
-          <ExpandLessIcon /> Collapse difference between revisions <ExpandLessIcon />
-        </Button>
-        </Box>
-      </AccordionDetails>
-  </Accordion>
+      <Box p={1}>
+        <RevisionSummary />
+        <RevisionAnnotationControls />
+        <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
+        {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box
+            display="flex"
+            flexDirection="column"
+          >
+          <DiffTable />
+          <Button
+            onClick={handleAccordionExpansionToggle}
+          >
+            <ExpandLessIcon /> Collapse difference between revisions <ExpandLessIcon />
+          </Button>
+          </Box>
+        </AccordionDetails>
+        </Accordion>
+    </Box>
   </Paper>
 
   );

@@ -41,6 +41,8 @@ const Dashboard = () => {
     page_title: "Armadillidium vulgare",
     curr_bytes: 2289,
     delta_bytes: 1550,
+    has_edit_summary: true,
+    damaging_pred: 0.11111111,
   }]); // TODO should be empty, but has one entry for testing
   
   const handleMisalignmentFilterChange = (new_filter) => {
