@@ -171,16 +171,6 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function RevisionSummarySpace(props) {
-    if ('sepChar' in props) {
-      return (<Box component="span" whiteSpace="pre" display="inline"> {props.sepChar} </Box>);
-    } else if ('singleSpace' in props) {
-      return (<Box component="span" whiteSpace="pre" display="inline"> </Box>);
-    } else {
-      return (<Box component="span" whiteSpace="pre" display="inline">  </Box>);
-    }
-  }
-
   function getBytesDeltaDescriptor() {
     let delta_bytes = revision.delta_bytes;
     if (delta_bytes === null) {
