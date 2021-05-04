@@ -72,7 +72,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     } else {
       return (
         <Box display="inline" component="span">
-         <Link href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link><RevisionSummarySpace sepChar='|' /><Link href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
+         <Link href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>&nbsp;|&nbsp;<Link href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
         </Box>
       );
     }
@@ -190,13 +190,13 @@ const RevisionView = ({revision, className, ...rest }) => {
 
     if (delta_bytes >= 500) {
       return (
-        <Box className={clsx(classes.mwPlusminusPos)}>
+        <Box component="span" className={clsx(classes.mwPlusminusPos)}>
           <strong>(+{delta_bytes.toLocaleString()})</strong>
         </Box>
       );
     } else if (delta_bytes > 0) {
       return (
-        <Box className={clsx(classes.mwPlusminusPos)}>
+        <Box component="span" className={clsx(classes.mwPlusminusPos)}>
           (+{delta_bytes.toLocaleString()})
         </Box>
       );
@@ -229,27 +229,24 @@ const RevisionView = ({revision, className, ...rest }) => {
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
           <Box 
             pl={1} 
-            display="flex" 
-            flexDirection="row" 
-            flexWrap="wrap"
             fontFamily="sans-serif" 
             fontSize={14}
             whiteSpace="normal"
           >
               (
               <Link href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revision.rev_id}>cur</Link>
-              <RevisionSummarySpace sepChar='|' />
+              &nbsp;|&nbsp;
               <Link href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
               ) 
-              <RevisionSummarySpace />
-              {formatTimestamp(revision.rev_timestamp)} 
-              <RevisionSummarySpace />
+              &nbsp;&nbsp;
+              <Box width="fit-content" component="span">{formatTimestamp(revision.rev_timestamp)}</Box>
+              &nbsp;&nbsp;
               {getUserLink(revision.user_text, revision.user_id)}
-              <RevisionSummarySpace sepChar='. .'/>
-              ({revision.curr_bytes.toLocaleString()} bytes)<RevisionSummarySpace singleSpace />{getBytesDeltaDescriptor()}
-              <RevisionSummarySpace sepChar='. .'/>
+              {' . . '}
+              <Box display="inline" component="span">({revision.curr_bytes.toLocaleString()} bytes)</Box> {getBytesDeltaDescriptor()}
+              {' . . '}
               <Box display="inline" component="span">(description  Collapse difference between revisions Collapse difference between revisions Collapse difference between revisions Collapse difference between revisions)</Box>
-              <RevisionSummarySpace singleSpace />(<Link>undo</Link>)
+              &nbsp;(<Link>undo</Link>)
           </Box>
         </Box>
       </Box>
