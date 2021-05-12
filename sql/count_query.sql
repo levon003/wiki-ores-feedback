@@ -97,6 +97,37 @@ WHERE damaging_pred_filter = 0 AND
 ORDER BY random
 LIMIT 0, 20;
 
+SELECT SUM(count) as revision_total
+FROM revision_count
+WHERE damaging_pred_filter = 0 AND
+        reverted_filter_mask = 0 AND  # not reverted
+        reverted_within_filter IS NULL AND
+        reverted_after_filter IS NULL AND
+        page_namespace = 0 AND
+        user_type IN (0, 2, 3, 4) AND
+        rev_count_gt_filter IN (2, 3, 4, 5) AND
+        rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND
+        revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND
+        delta_bytes_filter IN (-2, -1, 0, 1, 2);
+
+SELECT SUM(count) as revision_total FROM revision_count WHERE page_namespace = 0 AND user_type IN (0, 2, 3, 4) AND rev_count_gt_filter IN (2, 3, 4, 5) AND rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND delta_bytes_filter IN (-2, -1, 0, 1, 2)
+AND damaging_pred_filter = 0 AND reverted_filter_mask = 0 AND reverted_within_filter IS NULL AND reverted_after_filter IS NULL;
+SELECT SUM(count) as revision_total FROM revision_count WHERE page_namespace = 0 AND user_type IN (0, 2, 3, 4) AND rev_count_gt_filter IN (2, 3, 4, 5) AND rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND delta_bytes_filter IN (-2, -1, 0, 1, 2)
+AND damaging_pred_filter = 1 AND reverted_filter_mask = 0 AND reverted_within_filter IS NULL AND reverted_after_filter IS NULL;
+SELECT SUM(count) as revision_total FROM revision_count WHERE page_namespace = 0 AND user_type IN (0, 2, 3, 4) AND rev_count_gt_filter IN (2, 3, 4, 5) AND rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND delta_bytes_filter IN (-2, -1, 0, 1, 2)
+AND damaging_pred_filter = 2 AND reverted_filter_mask = 0 AND reverted_within_filter IS NULL AND reverted_after_filter IS NULL;
+
+SELECT SUM(count) as revision_total FROM revision_count WHERE page_namespace = 0 AND user_type IN (0, 2, 3, 4) AND rev_count_gt_filter IN (2, 3, 4, 5) AND rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND delta_bytes_filter IN (-2, -1, 0, 1, 2)
+AND damaging_pred_filter = 2 AND reverted_filter_mask IN (1, 3, 5, 7) AND reverted_within_filter IN (0, 1, 2, 3, 4, 5) AND reverted_after_filter IN (0, 1, 2, 3, 4, 5);
+
+# Question: Why is reverted_filter_mask always <= 7 when damaging_pred_filter = 2?  Need to investigate, seems bad/unexpected...
+SELECT reverted_filter_mask, damaging_pred_filter, COUNT(*) as n_unique_vals, SUM(count) as revision_total FROM revision_count WHERE page_namespace = 0 AND user_type IN (0, 2, 3, 4) AND rev_count_gt_filter IN (2, 3, 4, 5) AND rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND delta_bytes_filter IN (-2, -1, 0, 1, 2)
+GROUP BY damaging_pred_filter, reverted_filter_mask;
+# Could investigate the following rare case:
+SELECT * FROM revision WHERE page_namespace = 0 AND user_type IN (0, 2, 3, 4) AND rev_count_gt_filter IN (2, 3, 4, 5) AND rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND delta_bytes_filter IN (-2, -1, 0, 1, 2)
+AND reverted_filter_mask = 15 AND damaging_pred_filter = 1;
+
+
 SELECT *
 FROM revision
 WHERE damaging_pred_filter = 0 AND
