@@ -200,13 +200,11 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
 
     let svg = <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="60%"
-      // height="210mm"
-      // width="220mm"
-      // height="60mm"
+      width="100%"
+      height="120mm"
       version="1.1"
       viewBox="0 0 297 210"
-    // aspectRatio="1.0"
+    aspectRatio="1.0"
     >
       <g>
         <g
