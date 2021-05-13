@@ -62,6 +62,11 @@ const RevisionView = ({revision, className, ...rest }) => {
     setExpanded(!expanded);
   }
 
+  const handleButtonClick = (button_type) => {
+    // TODO Make any needed updates to the frontend and save to the backend
+    fetch('/api/annotation');  // TODO put the new button_type and the revision.rev_id in the request
+  }
+
   function getUserLink(user_text, user_id) {
     if (user_id === 0) {
       return (
@@ -266,9 +271,10 @@ const RevisionView = ({revision, className, ...rest }) => {
   function AnnotationButtons(props) {
     return (
       <Box>
-        <Button variant="outlined">Flag</Button>
+        <Button variant="outlined" onClick={handleButtonClick('flag')}>Flag/IDK/Not Sure/Ambiguous/Interesting</Button>
         <Button variant="outlined">Confirm damaging</Button>
         <Button variant="outlined">Not damaging / misclassification</Button>
+        <TextField id="notes" label="Notes" />
       </Box>
     );
   }
