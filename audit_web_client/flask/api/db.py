@@ -129,6 +129,12 @@ def get_metadata():
         Column('reverted_within_filter', TINYINT, nullable=True),
         Column('reverted_after_filter', TINYINT, nullable=True),
     )
+    Table('rev_cache', g.oidb_metadata,
+        Column('_id', Integer, primary_key=True, autoincrement=True),
+        Column('filter_hash', Text, nullable=False),
+        Column('rev_id', None, ForeignKey('revision.rev_id'), nullable=False),
+        Index('rev_cache_filter_hash_index', 'filter_hash'),
+    )
     return g.oidb_metadata
 
 

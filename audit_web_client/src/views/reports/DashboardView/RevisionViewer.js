@@ -60,7 +60,7 @@ const RevisionViewer = ({ className, revisions, ...rest }) => {
           alignItems="center"
         >
         {revisions.map((revision) => (
-              <Box p={1} width='100%'>
+              <Box p={1} width='100%' key={revision.rev_id}>
                 <RevisionView 
                   key={revision.rev_id} 
                   revision={revision} 

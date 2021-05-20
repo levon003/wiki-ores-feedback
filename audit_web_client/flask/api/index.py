@@ -13,6 +13,11 @@ def redirect_to_index():
 def redirect_to_index_from_path(path):
     return send_from_directory('www', 'index.html')
 
+@bp.route('/static/<path:path>')
+def retrieve_static_files(path):
+    # TODO does this even work?  Also need to investigate how to serve the root-directory files other than index.html effectively e.g. favicon.ico, robots.txt; could manually construct routes for them, perhaps?
+    return send_from_directory('www/static', path)
+
 @bp.route('/api', methods=('GET',))
 def get_api_route_description():
     return "API not yet designed for public access; documentation forthcoming."

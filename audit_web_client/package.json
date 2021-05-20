@@ -9,6 +9,7 @@
     "start": "react-scripts start",
     "start-flask": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask run",
     "create-db": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask create-db",
+    "flask-cli": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

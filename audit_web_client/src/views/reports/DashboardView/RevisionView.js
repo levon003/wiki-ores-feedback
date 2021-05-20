@@ -7,6 +7,7 @@ import {
   Link,
   Paper,
   Typography,
+  TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
@@ -57,14 +58,45 @@ const RevisionView = ({revision, className, ...rest }) => {
     'to_userid' :'',
     'loaded': false,
   });
+  const [annotationData, setAnnotationData] = useState({
+    'correctness_type': null,
+    'note': null,
+  });
 
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
   }
 
   const handleButtonClick = (button_type) => {
-    // TODO Make any needed updates to the frontend and save to the backend
-    fetch('/api/annotation');  // TODO put the new button_type and the revision.rev_id in the request
+    const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
+    // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
+    // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
+    // Note the above strategy would be inappropriate for the note; one will need other approaches.
+    setAnnotationData({
+      'correctness_type': correctness_type,
+      'note': annotationData.note,
+    })
+
+    console.log("Sending annotation to /api/annotation.");
+    fetch('/api/annotation/' , {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        rev_id: revision.rev_id,
+        annotation_type: 'correctness',
+        correctness_type: correctness_type,
+      }),
+    }).then(res => res.json())
+      .then(data => {
+        // update the annotations with the new data (if it was not rejected)
+        setAnnotationData({
+          'correctness_type': data.correctness_type,
+          'note': data.note,
+        })
+    });
   }
 
   function getUserLink(user_text, user_id) {
@@ -124,6 +156,20 @@ const RevisionView = ({revision, className, ...rest }) => {
             'from_userid': data.compare['fromuserid'],
             'loaded': true,
           })
+    });
+
+    fetch('/api/annotation/?rev_id=' + revision.rev_id.toString(), {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json',
+                'Origin': 'https://ores-inspect.toolforge.org'
+                },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setAnnotationData({
+          'correctness_type': data.correctness_type,
+          'note': data.note,
+        })
     });
   }, [revision]);
 
@@ -271,10 +317,32 @@ const RevisionView = ({revision, className, ...rest }) => {
   function AnnotationButtons(props) {
     return (
       <Box>
-        <Button variant="outlined" onClick={handleButtonClick('flag')}>Flag/IDK/Not Sure/Ambiguous/Interesting</Button>
-        <Button variant="outlined">Confirm damaging</Button>
-        <Button variant="outlined">Not damaging / misclassification</Button>
-        <TextField id="notes" label="Notes" />
+        <Button 
+          variant="outlined" 
+          onClick={(event) => handleButtonClick('flag')}
+        >
+          {annotationData.correctness_type === 'flag' ? '(checked)' : ''}
+          Flag/IDK/Not Sure/Ambiguous/Interesting
+        </Button>
+        <Button 
+          variant="outlined" 
+          onClick={(event) => handleButtonClick('correct')}
+        >
+          {annotationData.correctness_type === 'correct' ? '(checked)' : ''}
+          Confirm damaging
+        </Button>
+        <Button 
+          variant="outlined" 
+          onClick={(event) => handleButtonClick('misclassification')}
+        >
+          {annotationData.correctness_type === 'misclassification' ? '(checked)' : ''}
+          Not damaging / misclassification
+        </Button>
+        <TextField 
+          id="notes" 
+          label="Notes" 
+          value={annotationData.note !== null ? annotationData.note : ""}
+        />
       </Box>
     );
   }

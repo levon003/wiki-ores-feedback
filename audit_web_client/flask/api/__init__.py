@@ -48,11 +48,17 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
+    from . import user_db
+    user_db.init_app(app)
+
     from . import replica
     replica.init_app(app)
 
     from . import sample
     app.register_blueprint(sample.bp)
+
+    from . import annotation
+    app.register_blueprint(annotation.bp)
 
     from . import autocomplete
     app.register_blueprint(autocomplete.bp)

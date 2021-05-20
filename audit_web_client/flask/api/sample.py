@@ -8,11 +8,43 @@ from sqlalchemy import select, or_, and_, func
 
 import logging
 from datetime import datetime
+import hashlib
+import json
+
 
 from . import replica
 from . import db
 
 bp = Blueprint('sample', __name__)
+
+
+PAGE_SIZE = 10
+
+def get_filter_hash(filter_dict):
+    """
+
+    Given a dictionary for a fixed set of filter values, generates a filter hash
+
+    see also: https://www.doc.ic.ac.uk/~nuric/coding/how-to-hash-a-dictionary-in-python.html
+
+    """
+    filter_hash = hashlib.md5()
+    filter_bytes = json.dumps(filter_dict, sort_keys=True).encode()
+    filter_hash.update(filter_bytes)
+    return filter_hash.hexdigest()
+
+
+def get_rev_ids_for_filters(filters):
+    """
+    1. If filter_hash in rev_cache, then retrieve those revisions
+    2. If filter_hash not in rev_cache, retrieve 10K revs for filter and add them to the cache. Then, GOTO step 1.
+    3. Get user_data on revs, 100 at a time: have these revisions already been annotated?
+    4. If fewer than PAGE_SIZE remain after filtering, retrieve an ADDITIONAL 10K revs for filter and add them to the cache. Then, GOTO step 1.
+    5. Paginate the retrieved revisions based on the query (is it requesting a page offset? How many?)
+    6. Get full data for the page of revisions.
+    7. Return revision data.
+    """
+    filter_hash = get_filter_hash(filters)
 
 
 def sort_page_list_by_edit_count(ns, page_list):
