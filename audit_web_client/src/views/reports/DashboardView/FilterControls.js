@@ -30,6 +30,8 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
+import RevisionFilterControls from './RevisionFilterControls';
+
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -448,6 +450,53 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
   );
 };
 
+const RevisionFilterChip = ({className, onChange, ...rest }) => {
+
+  const classes = useStyles();
+
+  const [revisionAnchorEl, setRevisionAnchorEl] = useState();
+
+  const open = Boolean(revisionAnchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  const handleRevisionChipClick = (event) => {
+    setRevisionAnchorEl(event.currentTarget);
+  };
+    
+  const handleRevisionPopoverClose = (event) => {
+    setRevisionAnchorEl(null);
+  };
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="row"
+      flexWrap="nowrap"
+    >
+      <Chip clickable onClick={handleRevisionChipClick} label="Revision Filters" />
+      <Tooltip title="Help tooltip for the revision filter controls goes here.">
+        <HelpOutlineIcon aria-label="User filter controls help" />
+      </Tooltip>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={revisionAnchorEl}
+        onClose={handleRevisionPopoverClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <RevisionFilterControls onChange={onChange} />
+      </Popover>
+    </Box>
+  );
+};
+
 const FilterControls = ({ className, onChange, ...rest }) => {
 
   const classes = useStyles();
@@ -468,6 +517,7 @@ const FilterControls = ({ className, onChange, ...rest }) => {
           flexDirection="row"
         >
           <PageFilterChip onChange={onChange} />
+          <RevisionFilterChip onChange={onChange} />
           <UserFilterChip onChange={onChange} />
         </Box>
       </Box>
