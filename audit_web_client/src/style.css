@@ -25,6 +25,46 @@
 
 }
 
+.container-g > div {
+  background-color: #b3e7dc;
+  width: 100px;
+  line-height: 50px;
+  margin: 10px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.container-y > div {
+  background-color: #fff0c2;
+  width: 100px;
+  line-height: 50px;
+  margin: 1px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+.container-o > div {
+  background-color: #ffd3bd;
+  width: 100px;
+  line-height: 50px;
+  margin: 1px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.container-r > div {
+  background-color: #f5c2c2;
+  width: 100px;
+  line-height: 50px;
+  margin: 1px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+
 
 
 

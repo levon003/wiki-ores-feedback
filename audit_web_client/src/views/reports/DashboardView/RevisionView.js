@@ -306,11 +306,26 @@ const RevisionView = ({revision, className, ...rest }) => {
     );
   }
 
+
+  function PredColor(){
+    if (revision.damaging_pred <= 0.301) {
+      return ("container-g");
+    } else if (revision.damaging_pred <= 0.629 && revision.damaging_pred > 0.301){
+      return ("container-y");
+    } else if (revision.damaging_pred <= 0.944 && revision.damaging_pred > 0.629){
+      return ("container-o");
+    } else {
+      return ("container-r");
+    }
+  }
+
   function PredictionDisplay(props) {
+    var pred = revision.damaging_pred;
+    pred = pred.toFixed(3);
     return (
-      <Box>
-        ORES prediction: {revision.damaging_pred.toString()}
-      </Box>
+      <div className ={PredColor()}>
+        <div>{pred.toString()}</div>
+    </div>
     );
   }
 
