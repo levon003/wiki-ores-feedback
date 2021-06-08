@@ -1,0 +1,7 @@
+# Let's try not to add any REU data to version control
+*.tsv
+*.csv
+*.pkl
+*.feather
+.*
+
