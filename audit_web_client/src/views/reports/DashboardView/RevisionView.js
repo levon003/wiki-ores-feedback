@@ -92,6 +92,8 @@ const RevisionView = ({revision, className, ...rest }) => {
     }).then(res => res.json())
       .then(data => {
         // update the annotations with the new data (if it was not rejected)
+        // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
+        // that their annotation change was rejected. Should we notify the user in some way?
         setAnnotationData({
           'correctness_type': data.correctness_type,
           'note': data.note,
