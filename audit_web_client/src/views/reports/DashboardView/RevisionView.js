@@ -68,6 +68,9 @@ const RevisionView = ({revision, className, ...rest }) => {
     'note': null,
   });
   const [errorMessage, setErrorMessage ] = useState(null)
+  const [flagButtonState, setFlagButtonState ] = useState({})
+  const [ correctButtonState, setCorrectButtonState ] = useState({})
+  const [ misclassButtonState, setMisclassButtonState ] = useState({})
 
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
@@ -102,6 +105,13 @@ const RevisionView = ({revision, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
+        if (correctness_type === 'flag') {
+          setFlagButtonState({backgroundColor: 'green'})
+        } else if (correctness_type === 'correct'){
+          setCorrectButtonState('green')
+        } else {
+          setMisclassButtonState('green')
+        }
       }).catch(data => {
         setAnnotationData({
           'correctness_type': null,
@@ -345,24 +355,25 @@ const RevisionView = ({revision, className, ...rest }) => {
     return (
       <Box>
         <Button 
-          variant="outlined" 
+          style={flagButtonState}
+          variant="outlined"
+          color="success"
           onClick={(event) => handleButtonClick('flag')}
         >
-          {annotationData.correctness_type === 'flag' ? '(checked)' : ''}
           Flag/IDK/Not Sure/Ambiguous/Interesting
         </Button>
         <Button 
-          variant="outlined" 
+          style={correctButtonState}
+          variant="outlined"
           onClick={(event) => handleButtonClick('correct')}
         >
-          {annotationData.correctness_type === 'correct' ? '(checked)' : ''}
           Confirm damaging
         </Button>
         <Button 
-          variant="outlined" 
+          style={misclassButtonState}
+          variant="outlined"
           onClick={(event) => handleButtonClick('misclassification')}
         >
-          {annotationData.correctness_type === 'misclassification' ? '(checked)' : ''}
           Not damaging / misclassification
         </Button>
         <TextField 
