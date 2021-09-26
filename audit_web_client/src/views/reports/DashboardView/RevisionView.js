@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
 const ErrorNotification = ({ errorMessage }) => {
   return <div className='error'>{errorMessage}</div>
 }
+const SuccessNotification = ({ successMessage }) => {
+  return <div className='success'>{successMessage}</div>
+}
 
 const RevisionView = ({revision, className, ...rest }) => {
   const classes = useStyles();
@@ -68,6 +71,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     'note': null,
   });
   const [errorMessage, setErrorMessage ] = useState(null)
+  const [successMessage, setSuccessMessage ] = useState(null)
 
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
@@ -98,6 +102,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }).then(res => res.json())
       .then(data => {
         // update the annotations with the new data (if it was not rejected)
+        setSuccessMessage("Successfully saved.")
         setAnnotationData({
           'correctness_type': data.correctness_type,
           'note': data.note,
@@ -397,6 +402,7 @@ const RevisionView = ({revision, className, ...rest }) => {
       <Box p={1}>
         <RevisionSummary/>
         <ErrorNotification errorMessage={errorMessage}/>
+        <SuccessNotification successMessage={successMessage}/>
         <RevisionAnnotationControls />
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
