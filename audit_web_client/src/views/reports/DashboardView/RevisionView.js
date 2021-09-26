@@ -41,6 +41,11 @@ const useStyles = makeStyles((theme) => ({
 },
 }));
 
+// move this?? it could be a global error notification
+const ErrorNotification = ({ errorMessage }) => {
+  return <div className='error'>{errorMessage}</div>
+}
+
 const RevisionView = ({revision, className, ...rest }) => {
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
@@ -62,6 +67,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     'correctness_type': null,
     'note': null,
   });
+  const [errorMessage, setErrorMessage ] = useState(null)
 
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
@@ -96,7 +102,13 @@ const RevisionView = ({revision, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
-    });
+      }).catch(data => {
+        setAnnotationData({
+          'correctness_type': null,
+          'note': null
+        })
+        setErrorMessage("Didn't go through, please try again.")
+      });
   }
 
   function getUserLink(user_text, user_id) {
@@ -383,7 +395,8 @@ const RevisionView = ({revision, className, ...rest }) => {
       {...rest}
     >
       <Box p={1}>
-        <RevisionSummary />
+        <RevisionSummary/>
+        <ErrorNotification errorMessage={errorMessage}/>
         <RevisionAnnotationControls />
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
