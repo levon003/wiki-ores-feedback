@@ -105,12 +105,14 @@ const RevisionView = ({revision, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
+        // this changes the color, but multiple buttons can be blue at the same time. 
+        // TODO: make it so only one button can be blue (selected) at one time
         if (correctness_type === 'flag') {
-          setFlagButtonState({backgroundColor: 'green'})
+          setFlagButtonState({backgroundColor: 'blue', color: 'white'})
         } else if (correctness_type === 'correct'){
-          setCorrectButtonState('green')
+          setCorrectButtonState({backgroundColor: 'blue', color: 'white'})
         } else {
-          setMisclassButtonState('green')
+          setMisclassButtonState({backgroundColor: 'blue', color: 'white'})
         }
       }).catch(data => {
         setAnnotationData({
