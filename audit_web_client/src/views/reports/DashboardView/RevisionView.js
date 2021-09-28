@@ -68,9 +68,6 @@ const RevisionView = ({revision, className, ...rest }) => {
     'note': null,
   });
   const [errorMessage, setErrorMessage ] = useState(null)
-  const [flagButtonState, setFlagButtonState ] = useState({})
-  const [ correctButtonState, setCorrectButtonState ] = useState({})
-  const [ misclassButtonState, setMisclassButtonState ] = useState({})
 
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
@@ -105,15 +102,6 @@ const RevisionView = ({revision, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
-        // this changes the color, but multiple buttons can be blue at the same time. 
-        // TODO: make it so only one button can be blue (selected) at one time
-        if (correctness_type === 'flag') {
-          setFlagButtonState({backgroundColor: 'blue', color: 'white'})
-        } else if (correctness_type === 'correct'){
-          setCorrectButtonState({backgroundColor: 'blue', color: 'white'})
-        } else {
-          setMisclassButtonState({backgroundColor: 'blue', color: 'white'})
-        }
       }).catch(data => {
         setAnnotationData({
           'correctness_type': null,
@@ -354,10 +342,13 @@ const RevisionView = ({revision, className, ...rest }) => {
   }
 
   function AnnotationButtons(props) {
+    const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: 'blue', color: 'white'} : {}
+    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: 'blue', color: 'white'} : {}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: 'blue', color: 'white'} : {}
     return (
       <Box>
         <Button 
-          style={flagButtonState}
+          style={flagButtonStyle}
           variant="outlined"
           color="success"
           onClick={(event) => handleButtonClick('flag')}
@@ -365,14 +356,14 @@ const RevisionView = ({revision, className, ...rest }) => {
           Flag/IDK/Not Sure/Ambiguous/Interesting
         </Button>
         <Button 
-          style={correctButtonState}
+          style={correctButtonStyle}
           variant="outlined"
           onClick={(event) => handleButtonClick('correct')}
         >
           Confirm damaging
         </Button>
         <Button 
-          style={misclassButtonState}
+          style={misclassButtonStyle}
           variant="outlined"
           onClick={(event) => handleButtonClick('misclassification')}
         >
