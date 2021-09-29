@@ -347,27 +347,31 @@ const RevisionView = ({revision, className, ...rest }) => {
   }
 
   function AnnotationButtons(props) {
+    const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: 'blue', color: 'white'} : {}
+    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: 'blue', color: 'white'} : {}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: 'blue', color: 'white'} : {}
     return (
       <Box>
         <Button 
-          variant="outlined" 
+          style={flagButtonStyle}
+          variant="outlined"
+          color="success"
           onClick={(event) => handleButtonClick('flag')}
         >
-          {annotationData.correctness_type === 'flag' ? '(checked)' : ''}
           Flag/IDK/Not Sure/Ambiguous/Interesting
         </Button>
         <Button 
-          variant="outlined" 
+          style={correctButtonStyle}
+          variant="outlined"
           onClick={(event) => handleButtonClick('correct')}
         >
-          {annotationData.correctness_type === 'correct' ? '(checked)' : ''}
           Confirm damaging
         </Button>
         <Button 
-          variant="outlined" 
+          style={misclassButtonStyle}
+          variant="outlined"
           onClick={(event) => handleButtonClick('misclassification')}
         >
-          {annotationData.correctness_type === 'misclassification' ? '(checked)' : ''}
           Not damaging / misclassification
         </Button>
         <TextField 
