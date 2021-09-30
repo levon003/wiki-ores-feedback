@@ -47,7 +47,7 @@ const ErrorNotification = ({ errorMessage }) => {
   return <div className='error'>{errorMessage}</div>
 }
 
-const RevisionView = ({revision, className, ...rest }) => {
+const RevisionView = ({ revision, className, ...rest }) => {
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
@@ -114,7 +114,7 @@ const RevisionView = ({revision, className, ...rest }) => {
       });
   }
 
-  function getUserLink(user_text, user_id) {
+  const getUserLink = (user_text, user_id) => {
     if (user_id === 0) {
       return (
         <Box display="inline" component="span">
@@ -130,11 +130,11 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function formatTimestamp(timestamp) {
+  const formatTimestamp = timestamp => {
     return moment.utc(timestamp).utc().format("HH:mm, DD MMMM YYYY");
   }
 
-  function convertRelativeLinks(tpcomment) {
+  const convertRelativeLinks = tpcomment => {
     var doc = new DOMParser().parseFromString(tpcomment, "text/html");
     var links = doc.getElementsByTagName("a");
     for(let link of links){
@@ -188,7 +188,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     });
   }, [revision]);
 
-  function DiffTable(props) {
+  const DiffTable = () => {
     if (revisionMetadata.loaded) {
       return (
         <table className="diff diff-contentalign-left diff-editfont-monospace">
@@ -237,7 +237,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function InlineDescription(props) {
+  const InlineDescription = () => {
     if (revision.has_edit_summary) {
       if (revisionMetadata.loaded) {
         return (<Box display="inline" component="span" fontStyle='italic' dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}></Box>);
@@ -249,7 +249,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function getBytesDeltaDescriptor() {
+  const getBytesDeltaDescriptor = () => {
     let delta_bytes = revision.delta_bytes;
     if (delta_bytes === null) {
       // assume this is a page creation
@@ -289,7 +289,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function RevisionSummary(props) {
+  const RevisionSummary = () => {
     return (
       <Box>
         <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
@@ -322,7 +322,7 @@ const RevisionView = ({revision, className, ...rest }) => {
   }
 
 
-  function PredColor(){
+  const PredColor = () => {
     if (revision.damaging_pred <= 0.301) {
       return ("container-g");
     } else if (revision.damaging_pred <= 0.629 && revision.damaging_pred > 0.301){
@@ -334,7 +334,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function PredictionDisplay(props) {
+  const PredictionDisplay = () => {
     var pred = revision.damaging_pred;
     pred = pred.toFixed(3);
     return (
@@ -344,7 +344,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     );
   }
 
-  function AnnotationButtons(props) {
+  const AnnotationButtons = () => {
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: 'blue', color: 'white'} : {}
     const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: 'blue', color: 'white'} : {}
     const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: 'blue', color: 'white'} : {}
@@ -381,7 +381,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     );
   }
 
-  function RevisionAnnotationControls(props) {
+  const RevisionAnnotationControls = () => {
     return (
       <Box
         display="flex"
