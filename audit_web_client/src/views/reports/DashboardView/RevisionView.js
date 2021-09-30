@@ -41,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
 },
 }));
 
-// move this?? it could be a global error notification
+// gonna keep this here for now, maybe move it later
+// Box can inherit global styles, easier to change styles
 const ErrorNotification = ({ errorMessage }) => {
   return <div className='error'>{errorMessage}</div>
 }
