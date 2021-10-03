@@ -30,8 +30,9 @@ const TopBar = ({
 }) => {
   const classes = useStyles();
   const [notifications] = useState([]);
-  const loading = useContext(LoadingContext)
-  const loadingText = loading ? "Loading..." : null
+  const loadingContext = useContext(LoadingContext)
+  const loadingText = loadingContext.loading ? "Loading" : null
+  console.log(loadingText)
 
   return (
     <AppBar

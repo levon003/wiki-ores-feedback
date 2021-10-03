@@ -33,14 +33,14 @@ const useStyles = makeStyles((theme) => ({
     flexBasis: '33.33%',
   }, 
   mwPlusminusPos: {
-      color: "#006400",
+    color: "#006400",
   },
   mwPlusminusNeg: {
-      color: "#8b0000",
+    color: "#8b0000",
   },
   mwPlusminusNull: {
     color: "#a2a9b1",
-},
+  },
 }));
 
 // gonna keep this here for now, maybe move it later
@@ -71,7 +71,8 @@ const RevisionView = ({ revision, className, ...rest }) => {
     'note': null,
   });
   const [errorMessage, setErrorMessage ] = useState(null)
-
+  const { loading, setLoading } = useContext(LoadingContext)
+  
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
   }
@@ -112,6 +113,10 @@ const RevisionView = ({ revision, className, ...rest }) => {
   const testHandleButtonClick = (button_type, success) => {
     const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
     if (success) {
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000)
       setErrorMessage(null)
       setAnnotationData({
         'correctness_type': correctness_type,
