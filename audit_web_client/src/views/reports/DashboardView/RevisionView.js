@@ -8,6 +8,7 @@ import {
   Paper,
   Typography,
   TextField,
+  useTheme
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
@@ -109,7 +110,6 @@ const RevisionView = ({ revision, className, ...rest }) => {
 
   const testHandleButtonClick = (button_type, success) => {
     const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
-    console.log(success)
     if (success) {
       setErrorMessage(null)
       setAnnotationData({
@@ -353,15 +353,15 @@ const RevisionView = ({ revision, className, ...rest }) => {
   }
 
   const AnnotationButtons = () => {
-    const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: 'blue', color: 'white'} : {}
-    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: 'blue', color: 'white'} : {}
-    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: 'blue', color: 'white'} : {}
+    const theme = useTheme()
+    const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     return (
       <Box>
         <Button 
           style={flagButtonStyle}
           variant="outlined"
-          color="success"
           onClick={(event) => testHandleButtonClick('flag', true)}
         >
           Flag/IDK/Not Sure/Ambiguous/Interesting
