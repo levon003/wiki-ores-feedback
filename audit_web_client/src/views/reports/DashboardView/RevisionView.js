@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -8,6 +8,7 @@ import {
   Paper,
   Typography,
   TextField,
+  useTheme
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
@@ -17,6 +18,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
+import { LoadingContext } from 'src/App';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
 },
 }));
 
-// move this?? it could be a global error notification
+// gonna keep this here for now, maybe move it later
+// Box can inherit global styles, easier to change styles
 const ErrorNotification = ({ errorMessage }) => {
   return <div className='error'>{errorMessage}</div>
 }
@@ -49,7 +52,7 @@ const SuccessNotification = ({ successMessage }) => {
   return <div className='success'>{successMessage}</div>
 }
 
-const RevisionView = ({revision, className, ...rest }) => {
+const RevisionView = ({ revision, className, ...rest }) => {
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
@@ -82,14 +85,10 @@ const RevisionView = ({revision, className, ...rest }) => {
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
-    setAnnotationData({
-      'correctness_type': correctness_type,
-      'note': annotationData.note,
-    })
 
     console.log("Sending annotation to /api/annotation.");
-    fetch('/api/annotation/' , {
-      method: 'post',
+    fetch('/api/annotation' , {
+      method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -101,22 +100,35 @@ const RevisionView = ({revision, className, ...rest }) => {
       }),
     }).then(res => res.json())
       .then(data => {
+        setErrorMessage(null)
         // update the annotations with the new data (if it was not rejected)
         setSuccessMessage("Successfully saved.")
+        // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
+        // that their annotation change was rejected. Should we notify the user in some way?
         setAnnotationData({
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
       }).catch(data => {
-        setAnnotationData({
-          'correctness_type': null,
-          'note': null
-        })
         setErrorMessage("Didn't go through, please try again.")
       });
   }
 
-  function getUserLink(user_text, user_id) {
+  const testHandleButtonClick = (button_type, success) => {
+    const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
+    if (success) {
+      setErrorMessage(null)
+      setAnnotationData({
+        'correctness_type': correctness_type,
+        'note': null
+      })
+    } else {
+      setErrorMessage("Didn't go through, please try again.")
+    }
+
+  }
+
+  const getUserLink = (user_text, user_id) => {
     if (user_id === 0) {
       return (
         <Box display="inline" component="span">
@@ -132,11 +144,11 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function formatTimestamp(timestamp) {
+  const formatTimestamp = timestamp => {
     return moment.utc(timestamp).utc().format("HH:mm, DD MMMM YYYY");
   }
 
-  function convertRelativeLinks(tpcomment) {
+  const convertRelativeLinks = tpcomment => {
     var doc = new DOMParser().parseFromString(tpcomment, "text/html");
     var links = doc.getElementsByTagName("a");
     for(let link of links){
@@ -190,7 +202,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     });
   }, [revision]);
 
-  function DiffTable(props) {
+  const DiffTable = () => {
     if (revisionMetadata.loaded) {
       return (
         <table className="diff diff-contentalign-left diff-editfont-monospace">
@@ -239,7 +251,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function InlineDescription(props) {
+  const InlineDescription = () => {
     if (revision.has_edit_summary) {
       if (revisionMetadata.loaded) {
         return (<Box display="inline" component="span" fontStyle='italic' dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}></Box>);
@@ -251,7 +263,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function getBytesDeltaDescriptor() {
+  const getBytesDeltaDescriptor = () => {
     let delta_bytes = revision.delta_bytes;
     if (delta_bytes === null) {
       // assume this is a page creation
@@ -291,7 +303,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function RevisionSummary(props) {
+  const RevisionSummary = () => {
     return (
       <Box>
         <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
@@ -324,7 +336,7 @@ const RevisionView = ({revision, className, ...rest }) => {
   }
 
 
-  function PredColor(){
+  const PredColor = () => {
     if (revision.damaging_pred <= 0.301) {
       return ("container-g");
     } else if (revision.damaging_pred <= 0.629 && revision.damaging_pred > 0.301){
@@ -336,7 +348,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function PredictionDisplay(props) {
+  const PredictionDisplay = () => {
     var pred = revision.damaging_pred;
     pred = pred.toFixed(3);
     return (
@@ -346,31 +358,32 @@ const RevisionView = ({revision, className, ...rest }) => {
     );
   }
 
-  function AnnotationButtons(props) {
-    const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: 'blue', color: 'white'} : {}
-    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: 'blue', color: 'white'} : {}
-    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: 'blue', color: 'white'} : {}
+  const AnnotationButtons = () => {
+    const loading = useContext(LoadingContext)
+    const theme = useTheme()
+    const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     return (
       <Box>
         <Button 
           style={flagButtonStyle}
           variant="outlined"
-          color="success"
-          onClick={(event) => handleButtonClick('flag')}
+          onClick={(event) => testHandleButtonClick('flag', true)}
         >
           Flag/IDK/Not Sure/Ambiguous/Interesting
         </Button>
         <Button 
           style={correctButtonStyle}
           variant="outlined"
-          onClick={(event) => handleButtonClick('correct')}
+          onClick={(event) => testHandleButtonClick('correct', false)}
         >
           Confirm damaging
         </Button>
         <Button 
           style={misclassButtonStyle}
           variant="outlined"
-          onClick={(event) => handleButtonClick('misclassification')}
+          onClick={(event) => testHandleButtonClick('misclassification', true)}
         >
           Not damaging / misclassification
         </Button>
@@ -383,7 +396,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     );
   }
 
-  function RevisionAnnotationControls(props) {
+  const RevisionAnnotationControls = () => {
     return (
       <Box
         display="flex"

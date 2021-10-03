@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -13,6 +13,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import InputIcon from '@material-ui/icons/Input';
 import Logo from 'src/components/Logo';
+import { LoadingContext } from 'src/App';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -29,6 +30,8 @@ const TopBar = ({
 }) => {
   const classes = useStyles();
   const [notifications] = useState([]);
+  const loading = useContext(LoadingContext)
+  const loadingText = loading ? "Loading..." : null
 
   return (
     <AppBar
@@ -43,6 +46,7 @@ const TopBar = ({
         </RouterLink>
         <Box flexGrow={1} />
         <Typography variant="h1">v0.0.1a</Typography>
+        <div>{loadingText}</div>
       </Toolbar>
     </AppBar>
   );

@@ -9,7 +9,14 @@ The web interface is built using a React front-end and a Flask back-end.
 The Flask back-end uses SQLite as its database.
 The React front-end is based directly on the [Devias Kit - React Admin Dashboard](https://material-ui.com/store/items/devias-kit/) code.
 
-To prepare for development, install `node` and `yarn` (`npm install -g yarn`). Then, from this directory, run `npm install`.
+### Prepare for development
+ - Install `node` and `yarn` (`npm install -g yarn`)
+ - From this directory (`audit_web_client`), run `npm install`.
+ - To use the backend, you'll need the production database credentials.
+   - Ask Zach for the replica.my.cnf file you need.
+ - We use the [Feature Branch Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow), generally speaking. No specific naming guidance for the branches, but `feature/<feature_name>` is a good choice.
+
+### Developing
 
 To start the development backend: `yarn start-flask`
 
