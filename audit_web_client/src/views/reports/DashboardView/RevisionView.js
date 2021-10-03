@@ -364,7 +364,6 @@ const RevisionView = ({ revision, className, ...rest }) => {
   }
 
   const AnnotationButtons = () => {
-    const loading = useContext(LoadingContext)
     const theme = useTheme()
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
