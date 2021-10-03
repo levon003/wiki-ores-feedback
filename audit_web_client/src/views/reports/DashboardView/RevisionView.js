@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -18,6 +18,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
+import { LoadingContext } from 'src/App';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -353,6 +354,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
   }
 
   const AnnotationButtons = () => {
+    const loading = useContext(LoadingContext)
     const theme = useTheme()
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
