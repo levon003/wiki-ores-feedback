@@ -74,6 +74,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
     'note': null,
   });
   const [errorMessage, setErrorMessage ] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
   const { loading, setLoading } = useContext(LoadingContext)
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
