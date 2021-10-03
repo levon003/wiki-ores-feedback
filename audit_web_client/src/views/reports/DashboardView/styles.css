@@ -15,6 +15,11 @@
   padding-top: 10px;
   text-align: center;
 }
+.success {
+  color: green;
+  padding-top: 10px;
+  text-align: center;
+}
 
 .wrapTxt {
     position: relative;

@@ -48,6 +48,9 @@ const useStyles = makeStyles((theme) => ({
 const ErrorNotification = ({ errorMessage }) => {
   return <div className='error'>{errorMessage}</div>
 }
+const SuccessNotification = ({ successMessage }) => {
+  return <div className='success'>{successMessage}</div>
+}
 
 const RevisionView = ({ revision, className, ...rest }) => {
   const classes = useStyles();
@@ -99,6 +102,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
       .then(data => {
         setErrorMessage(null)
         // update the annotations with the new data (if it was not rejected)
+        setSuccessMessage("Successfully saved.")
         // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
         // that their annotation change was rejected. Should we notify the user in some way?
         setAnnotationData({
@@ -419,6 +423,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
       <Box p={1}>
         <RevisionSummary/>
         <ErrorNotification errorMessage={errorMessage}/>
+        <SuccessNotification successMessage={successMessage}/>
         <RevisionAnnotationControls />
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
