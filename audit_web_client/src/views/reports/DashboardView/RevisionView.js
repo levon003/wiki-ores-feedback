@@ -79,14 +79,10 @@ const RevisionView = ({ revision, className, ...rest }) => {
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
-    setAnnotationData({
-      'correctness_type': correctness_type,
-      'note': annotationData.note,
-    })
 
     console.log("Sending annotation to /api/annotation.");
-    fetch('/api/annotation/' , {
-      method: 'post',
+    fetch('/api/annotation' , {
+      method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -106,12 +102,22 @@ const RevisionView = ({ revision, className, ...rest }) => {
           'note': data.note,
         })
       }).catch(data => {
-        setAnnotationData({
-          'correctness_type': null,
-          'note': null
-        })
         setErrorMessage("Didn't go through, please try again.")
       });
+  }
+
+  const testHandleButtonClick = (button_type, success) => {
+    const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
+    console.log(success)
+    if (success) {
+      setAnnotationData({
+        'correctness_type': correctness_type,
+        'note': null
+      })
+    } else {
+      setErrorMessage("Didn't go through, please try again.")
+    }
+
   }
 
   const getUserLink = (user_text, user_id) => {
@@ -354,21 +360,21 @@ const RevisionView = ({ revision, className, ...rest }) => {
           style={flagButtonStyle}
           variant="outlined"
           color="success"
-          onClick={(event) => handleButtonClick('flag')}
+          onClick={(event) => testHandleButtonClick('flag', true)}
         >
           Flag/IDK/Not Sure/Ambiguous/Interesting
         </Button>
         <Button 
           style={correctButtonStyle}
           variant="outlined"
-          onClick={(event) => handleButtonClick('correct')}
+          onClick={(event) => testHandleButtonClick('correct', false)}
         >
           Confirm damaging
         </Button>
         <Button 
           style={misclassButtonStyle}
           variant="outlined"
-          onClick={(event) => handleButtonClick('misclassification')}
+          onClick={(event) => testHandleButtonClick('misclassification', true)}
         >
           Not damaging / misclassification
         </Button>
