@@ -14,6 +14,7 @@ import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import InputIcon from '@material-ui/icons/Input';
 import Logo from 'src/components/Logo';
 import { LoadingContext } from 'src/App';
+import { Hearts } from 'react-loading-icons'
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -22,6 +23,14 @@ const useStyles = makeStyles(() => ({
     height: 60
   }
 }));
+
+const Loading = ({ loading }) => {
+  if (loading) {
+    return <Hearts />
+  } else {
+    return null
+  }
+}
 
 const TopBar = ({
   className,
@@ -32,6 +41,7 @@ const TopBar = ({
   const [notifications] = useState([]);
   const loadingContext = useContext(LoadingContext)
   const loadingText = loadingContext.loading ? "Loading" : null
+  console.log(loadingContext.loading)
 
   return (
     <AppBar
@@ -46,7 +56,7 @@ const TopBar = ({
         </RouterLink>
         <Box flexGrow={1} />
         <Typography variant="h1">v0.0.1a</Typography>
-        <div>{loadingText}</div>
+        <Loading loading={loadingContext.loading} />
       </Toolbar>
     </AppBar>
   );

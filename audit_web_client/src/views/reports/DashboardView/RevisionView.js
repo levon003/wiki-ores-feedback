@@ -86,6 +86,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
+    setLoading(true)
 
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation' , {
@@ -101,6 +102,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
       }),
     }).then(res => res.json())
       .then(data => {
+        setLoading(false)
         setErrorMessage(null)
         // update the annotations with the new data (if it was not rejected)
         setSuccessMessage("Successfully saved.")
