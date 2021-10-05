@@ -25,11 +25,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Loading = ({ loading }) => {
-  if (loading) {
-    return <Hearts />
-  } else {
-    return null
-  }
+  return loading ? <Hearts /> : null
 }
 
 const TopBar = ({
@@ -40,8 +36,6 @@ const TopBar = ({
   const classes = useStyles();
   const [notifications] = useState([]);
   const loadingContext = useContext(LoadingContext)
-  const loadingText = loadingContext.loading ? "Loading" : null
-  console.log(loadingContext.loading)
 
   return (
     <AppBar
