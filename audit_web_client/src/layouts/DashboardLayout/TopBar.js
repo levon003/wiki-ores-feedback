@@ -49,7 +49,10 @@ const TopBar = ({
           {/*Could replace text with a logo per the example like so: <Logo />*/}
         </RouterLink>
         <Box flexGrow={1} />
+        {/* Make this smaller, or move to bottom, or remove */}
         <Typography variant="h1">v0.0.1a</Typography>
+        {/* change to more standard loading format */}
+        {/* think about flickering loading icon, too distracting? */}
         <Loading loading={loadingContext.loading} />
       </Toolbar>
     </AppBar>

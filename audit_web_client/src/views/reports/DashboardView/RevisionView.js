@@ -370,6 +370,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    // add icons to buttons
     return (
       <Box>
         <Button 
@@ -377,6 +378,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
           variant="outlined"
           onClick={(event) => testHandleButtonClick('flag', true)}
         >
+          {/* change to flag icon, maybe keep icon and text */}
           Flag/IDK/Not Sure/Ambiguous/Interesting
         </Button>
         <Button 
@@ -398,6 +400,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
           label="Notes" 
           value={annotationData.note !== null ? annotationData.note : ""}
         />
+        {/* wait for 200ms to send request, configurable setting */}
       </Box>
     );
   }
