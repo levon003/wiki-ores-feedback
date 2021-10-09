@@ -1,4 +1,9 @@
 flask
+Werkzeug
+click
+tqdm
 numpy
+pytz
 sqlalchemy==1.4.*
 mysqlclient
+
