@@ -9,13 +9,18 @@ The web interface is built using a React front-end and a Flask back-end.
 The Flask back-end uses SQLite as its database.
 The React front-end is based directly on the [Devias Kit - React Admin Dashboard](https://material-ui.com/store/items/devias-kit/) code.
 
-### Prepare for development
+### Prepare for local development
  - Install `node` and `yarn` (`npm install -g yarn`)
  - From this directory (`audit_web_client`), run `npm install`.
  - We use the [Feature Branch Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow), generally speaking. No specific naming guidance for the branches, but `feature/<feature_name>` is a good choice.
+ - Get a Wikitech account
+   - Follow these instructions to create an account: https://wikitech.wikimedia.org/wiki/Help:Create_a_Wikimedia_developer_account  Follow the "Toolforge users" instructions after doing the prerequisites.
+   - Follow these steps (which include the step of creating and uploading SSH keys to your account, which you will need to do): https://wikitech.wikimedia.org/wiki/Help:Getting_Started#Get_started_with_Toolforge
+   - Tell Zach to add you to the maintainers list: https://toolsadmin.wikimedia.org/tools/id/ores-inspect/maintainers/
 
 #### Backend set-up
 
+ - You'll need Python to run the backend: I recommend installing Anaconda, but if you already have a 3.5+ Python version on your system that's probably fine (Verify with `python --version` from the command line).
  - To use the backend, you'll need the production database credentials. 
    - Ask Zach for the replica.my.cnf file you need.
    - Place the replica.my.cnf file in this directory (wiki-ores-feedback/audit_web_client) on your development system.
@@ -62,3 +67,10 @@ Currently just scratch notes for this process.
   - I recommend adding your local SSH key to authorized_hosts on dev.toolforge.org, to make opening this tunnel easier.
   - See additional documentation [here](https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database#SSH_tunneling_for_local_testing_which_makes_use_of_Wiki_Replica_databases).
 
+### Other useful links
+ 
+ - React tutorial: https://reactjs.org/docs/hello-world.html
+ - React Hooks tutorial: https://reactjs.org/docs/hooks-intro.html
+ - Material-UI: https://material-ui.com/getting-started/usage/
+ 
+ 
