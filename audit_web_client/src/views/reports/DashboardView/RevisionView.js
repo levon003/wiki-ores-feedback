@@ -19,7 +19,9 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
 import { LoadingContext } from 'src/App';
-
+import FlagIcon from '@material-ui/icons/Flag';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -313,6 +315,8 @@ const RevisionView = ({ revision, className, ...rest }) => {
   const RevisionSummary = () => {
     return (
       <Box>
+        <Typography variant="h3">v0.0.1a</Typography>
+        <br></br>
         <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
@@ -369,23 +373,18 @@ const RevisionView = ({ revision, className, ...rest }) => {
     const theme = useTheme()
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginLeft: 5, marginRight: 5} : {marginLeft: 5, marginRight: 5}
     // add icons to buttons
     return (
       <Box>
-        <Button 
-          style={flagButtonStyle}
-          variant="outlined"
-          onClick={(event) => testHandleButtonClick('flag', true)}
-        >
-          {/* change to flag icon, maybe keep icon and text */}
-          Flag/IDK/Not Sure/Ambiguous/Interesting
-        </Button>
         <Button 
           style={correctButtonStyle}
           variant="outlined"
           onClick={(event) => testHandleButtonClick('correct', false)}
         >
+          <CheckIcon 
+            style={{paddingRight: 5}}
+          />
           Confirm damaging
         </Button>
         <Button 
@@ -393,8 +392,22 @@ const RevisionView = ({ revision, className, ...rest }) => {
           variant="outlined"
           onClick={(event) => testHandleButtonClick('misclassification', true)}
         >
-          Not damaging / misclassification
+          <CloseIcon 
+            style={{paddingRight: 5}}
+          />
+          Not damaging
         </Button>
+        <Button 
+          style={flagButtonStyle}
+          variant="outlined"
+          onClick={(event) => testHandleButtonClick('flag', true)}
+        >
+          <FlagIcon 
+            style={{paddingRight: 5}}
+          />
+          Flag
+        </Button>
+        <br></br>
         <TextField 
           id="notes" 
           label="Notes" 

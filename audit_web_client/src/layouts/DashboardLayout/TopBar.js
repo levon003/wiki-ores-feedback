@@ -14,7 +14,7 @@ import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import InputIcon from '@material-ui/icons/Input';
 import Logo from 'src/components/Logo';
 import { LoadingContext } from 'src/App';
-import { Hearts } from 'react-loading-icons'
+import { Oval } from 'react-loading-icons'
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Loading = ({ loading }) => {
-  return loading ? <Hearts /> : null
+  return loading ? <Oval /> : null
 }
 
 const TopBar = ({
@@ -50,7 +50,6 @@ const TopBar = ({
         </RouterLink>
         <Box flexGrow={1} />
         {/* Make this smaller, or move to bottom, or remove */}
-        <Typography variant="h1">v0.0.1a</Typography>
         {/* change to more standard loading format */}
         {/* think about flickering loading icon, too distracting? */}
         <Loading loading={loadingContext.loading} />
