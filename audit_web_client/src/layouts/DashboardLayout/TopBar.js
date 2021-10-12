@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Loading = ({ loading }) => {
-  return loading ? <Oval /> : null
+  return loading ? <Oval/> : null
 }
 
 const TopBar = ({

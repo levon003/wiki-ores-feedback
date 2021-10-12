@@ -22,6 +22,7 @@ import { LoadingContext } from 'src/App';
 import FlagIcon from '@material-ui/icons/Flag';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
+import { Oval } from 'react-loading-icons'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,6 +45,16 @@ const useStyles = makeStyles((theme) => ({
     color: "#a2a9b1",
   },
 }));
+
+const NotesIcon = ({ typing, firstTyped }) => {
+  if (typing) {
+    return <Oval stroke="#000000"/>
+  } else if (!typing && firstTyped) {
+    return <CheckIcon />
+  } else {
+    return null
+  }
+}
 
 // gonna keep this here for now, maybe move it later
 // Box can inherit global styles, easier to change styles
@@ -75,9 +86,18 @@ const RevisionView = ({ revision, className, ...rest }) => {
     'correctness_type': null,
     'note': null,
   });
+  const [ note, setNote ] = useState("")
+  const [typing, setTyping ] = useState(false)
+  const [ firstTyped, setFirstTyped ] = useState(false)
   const [errorMessage, setErrorMessage ] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   const { loading, setLoading } = useContext(LoadingContext)
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setTyping(false), 1000)
+    return () => clearTimeout(timeout)
+  }, [note])
+
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
@@ -101,6 +121,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         rev_id: revision.rev_id,
         annotation_type: 'correctness',
         correctness_type: correctness_type,
+        note: note
       }),
     }).then(res => res.json())
       .then(data => {
@@ -114,6 +135,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
+        setNote(data.note)
       }).catch(data => {
         setErrorMessage("Didn't go through, please try again.")
       });
@@ -408,15 +430,10 @@ const RevisionView = ({ revision, className, ...rest }) => {
           Flag
         </Button>
         <br></br>
-        <TextField 
-          id="notes" 
-          label="Notes" 
-          value={annotationData.note !== null ? annotationData.note : ""}
-        />
-        {/* wait for 200ms to send request, configurable setting */}
       </Box>
     );
   }
+  console.log(typing)
 
   const RevisionAnnotationControls = () => {
     return (
@@ -428,6 +445,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         <AnnotationButtons />
       </Box>
     );
+
   }
 
   return (
@@ -443,6 +461,18 @@ const RevisionView = ({ revision, className, ...rest }) => {
         <ErrorNotification errorMessage={errorMessage}/>
         <SuccessNotification successMessage={successMessage}/>
         <RevisionAnnotationControls />
+        {/* Notes */}
+        <TextField 
+          label="Notes" 
+          value={note} 
+          onChange={(event) => {
+            setNote(event.target.value)
+            setTyping(true)
+            setFirstTyped(true)
+          }} 
+          style={{marginLeft: 125}}
+        />
+        <NotesIcon typing={typing} firstTyped={firstTyped}/>
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
         {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
