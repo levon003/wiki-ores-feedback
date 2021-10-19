@@ -165,13 +165,15 @@ const RevisionView = ({ revision, className, ...rest }) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        annotation_type: 'correctness',
-        note: note,
+        rev_id: revision.rev_id,
+        annotation_type: 'note',
+        note_text: note,
       })
     }).then(res => res.json())
     .then(data => {
       setNoteSuccess(true)
       setNote(data.note)
+      console.log(data.note)
     })
     .catch(data => {
       setNoteSuccess(false)
@@ -481,7 +483,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         <SuccessNotification successMessage={successMessage}/>
         <RevisionAnnotationControls />
         {/* Notes */}
-        <TextField 
+        <TextField
           label="Notes" 
           value={note} 
           onChange={(event) => {
@@ -489,7 +491,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
             setTyping(true)
             setFirstTyped(true)
           }} 
-          style={{marginLeft: 125}}
+          style={{marginLeft: 125, width: 470}}
         />
         <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
