@@ -95,16 +95,8 @@ const RevisionView = ({ revision, className, ...rest }) => {
   const [errorMessage, setErrorMessage ] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   const { loading, setLoading } = useContext(LoadingContext)
-  console.log(annotationData.correctness_type)
-
 
 // this is for setting the typing state
-  useEffect(() => {
-    if (!typing && firstTyped) {
-      handleNoteSave()
-    }
-  }, [typing])
-
   useEffect(() => {
     const timeout = setTimeout(() => {
       setTyping(false)
@@ -113,6 +105,12 @@ const RevisionView = ({ revision, className, ...rest }) => {
       clearTimeout(timeout)
     }
   }, [note])
+  useEffect(() => {
+    if (!typing && firstTyped) {
+      handleNoteSave()
+    }
+  }, [typing])
+
 
 
   
