@@ -173,7 +173,6 @@ const RevisionView = ({ revision, className, ...rest }) => {
     .then(data => {
       setNoteSuccess(true)
       setNote(data.note)
-      console.log(data.note)
     })
     .catch(data => {
       setNoteSuccess(false)
