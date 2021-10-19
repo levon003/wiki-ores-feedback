@@ -484,6 +484,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         <RevisionAnnotationControls />
         {/* Notes */}
         <TextField
+          multiline
           label="Notes" 
           value={note} 
           onChange={(event) => {
