@@ -29,6 +29,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBox from '@material-ui/icons/CheckBox';
 
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
@@ -46,11 +47,36 @@ const useStyles = makeStyles((theme) => ({
 
 const RevisionFilterControls = ({ className, onChange, ...rest }) => {
 
+  const [revisionFilter, setRevisionFilter] = useState({
+    large: false
+  })
+
   const classes = useStyles();
 
   return (
     <Paper variant='elevation'>
+      <List
+        component="nav"
+        aria-labelledby="revision-filter-list-subheader"
+        subheader={
+          <ListSubheader component="div" id="revision-filter-list-subheader">
+            Filter by Revision Size
+          </ListSubheader>
+        }
+      >
+        <ListItem key="large" dense button>
+          <ListItemIcon>
+            <Checkbox 
+            edge="start"
+            checked={revisionFilter.large}
+            tabIndex={-1}
+            inputprops={{ 'aria-labelledby': 'user-type-unregistered-desc' }}
+            />
+          </ListItemIcon>
+          <ListItemText id='user-type-unregistered-desc' primary="Large revision" />
+        </ListItem>
 
+      </List>
       <Button
         onClick={null}
       >
