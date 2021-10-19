@@ -46,11 +46,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NotesIcon = ({ typing, firstTyped }) => {
+const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
   if (typing) {
-    return <Oval stroke="#000000"/>
-  } else if (!typing && firstTyped) {
-    return <CheckIcon />
+    return <Oval stroke="#000000" style={{height: 20, width: 20, marginTop: 20, marginLeft: 5}}/>
+  } else if (!typing && firstTyped && noteSuccess) {
+    return <CheckIcon style={{fill: "green", marginTop: 20, marginLeft: 5}}/>
+  } else if (!typing && firstTyped && !noteSuccess) {
+    return <CloseIcon style={{fill: "red", marginTop: 20, marginLeft: 5}}/>
   } else {
     return null
   }
@@ -87,16 +89,31 @@ const RevisionView = ({ revision, className, ...rest }) => {
     'note': null,
   });
   const [ note, setNote ] = useState("")
+  const [ noteSuccess, setNoteSuccess ] = useState(true)
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
   const [errorMessage, setErrorMessage ] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   const { loading, setLoading } = useContext(LoadingContext)
+  console.log(annotationData.correctness_type)
+
+
+// this is for setting the typing state
+  useEffect(() => {
+    if (!typing && firstTyped) {
+      handleNoteSave()
+    }
+  }, [typing])
 
   useEffect(() => {
-    const timeout = setTimeout(() => setTyping(false), 1000)
-    return () => clearTimeout(timeout)
+    const timeout = setTimeout(() => {
+      setTyping(false)
+    }, 1000)
+    return () => {
+      clearTimeout(timeout)
+    }
   }, [note])
+
 
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
@@ -111,7 +128,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
     setLoading(true)
 
     console.log("Sending annotation to /api/annotation.");
-    fetch('/api/annotation' , {
+    fetch('/api/annotation/' , {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -137,26 +154,30 @@ const RevisionView = ({ revision, className, ...rest }) => {
         })
         setNote(data.note)
       }).catch(data => {
+        setLoading(false)
         setErrorMessage("Didn't go through, please try again.")
       });
   }
 
-  const testHandleButtonClick = (button_type, success) => {
-    const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
-    if (success) {
-      setLoading(true)
-      setTimeout(() => {
-        setLoading(false)
-      }, 1000)
-      setErrorMessage(null)
-      setAnnotationData({
-        'correctness_type': correctness_type,
-        'note': null
+  const handleNoteSave = () => {
+    fetch('/api/annotation/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        annotation_type: 'correctness',
+        note: note,
       })
-    } else {
-      setErrorMessage("Didn't go through, please try again.")
-    }
-
+    }).then(res => res.json())
+    .then(data => {
+      setNoteSuccess(true)
+      setNote(data.note)
+    })
+    .catch(data => {
+      setNoteSuccess(false)
+    })
   }
 
   const getUserLink = (user_text, user_id) => {
@@ -226,6 +247,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
     })
       .then(res => res.json())
       .then(data => {
+        // this is causing button to automatically be set to misclassification?
         setAnnotationData({
           'correctness_type': data.correctness_type,
           'note': data.note,
@@ -402,7 +424,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         <Button 
           style={correctButtonStyle}
           variant="outlined"
-          onClick={(event) => testHandleButtonClick('correct', false)}
+          onClick={(event) => handleButtonClick('correct')}
         >
           <CheckIcon 
             style={{paddingRight: 5}}
@@ -412,7 +434,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         <Button 
           style={misclassButtonStyle}
           variant="outlined"
-          onClick={(event) => testHandleButtonClick('misclassification', true)}
+          onClick={(event) => handleButtonClick('misclassification')}
         >
           <CloseIcon 
             style={{paddingRight: 5}}
@@ -422,7 +444,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         <Button 
           style={flagButtonStyle}
           variant="outlined"
-          onClick={(event) => testHandleButtonClick('flag', true)}
+          onClick={(event) => handleButtonClick('flag')}
         >
           <FlagIcon 
             style={{paddingRight: 5}}
@@ -433,7 +455,6 @@ const RevisionView = ({ revision, className, ...rest }) => {
       </Box>
     );
   }
-  console.log(typing)
 
   const RevisionAnnotationControls = () => {
     return (
@@ -472,7 +493,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
           }} 
           style={{marginLeft: 125}}
         />
-        <NotesIcon typing={typing} firstTyped={firstTyped}/>
+        <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
         {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
