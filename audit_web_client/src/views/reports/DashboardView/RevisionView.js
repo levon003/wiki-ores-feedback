@@ -491,7 +491,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
             setTyping(true)
             setFirstTyped(true)
           }} 
-          style={{marginLeft: 125, width: 470}}
+          style={{marginLeft: 125, marginBottom: 20, width: 470}}
         />
         <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
