@@ -53,7 +53,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
     neutral: true,
     smallRemovals: true,
     largeRemovals: true,
-    isMinor: true
+    isMinor: false
   })
 
   const classes = useStyles();
@@ -131,7 +131,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
           <ListItemIcon>
             <Checkbox
             edge="start"
-            checked={true}
+            checked={revisionFilter.isMinor}
             tabIndex={-1}
             inputprops={{'aria-labelledby': 'is-minor'}}
             />
