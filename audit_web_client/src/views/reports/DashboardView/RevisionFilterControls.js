@@ -50,7 +50,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
   const [revisionFilter, setRevisionFilter] = useState({
     large: false,
     minor: true,
-    zero: false
+    neutral: false
   })
 
   const classes = useStyles();
@@ -92,12 +92,12 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
           <ListItemIcon>
             <Checkbox 
             edge="start"
-            checked={revisionFilter.zero}
+            checked={revisionFilter.neutral}
             tabIndex={-1}
             inputprops={{ 'aria-labelledby': 'revision-size-0' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-size-0' primary="0 bytes" />
+          <ListItemText id='revision-size-0' primary="Neutral" />
         </ListItem>
 
       </List>
