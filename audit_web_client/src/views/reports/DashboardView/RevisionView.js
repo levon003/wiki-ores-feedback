@@ -61,10 +61,10 @@ const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
 // gonna keep this here for now, maybe move it later
 // Box can inherit global styles, easier to change styles
 const ErrorNotification = ({ errorMessage }) => {
-  return <div className='error'>{errorMessage}</div>
+  return <Box style={{color: 'red', paddingTop: 10, textAlign: 'center'}}>{errorMessage}</Box>
 }
 const SuccessNotification = ({ successMessage }) => {
-  return <div className='success'>{successMessage}</div>
+  return <Box style={{color: 'green', paddingTop: 10, textAlign: 'center'}}>{successMessage}</Box>
 }
 
 const RevisionView = ({ revision, className, ...rest }) => {
