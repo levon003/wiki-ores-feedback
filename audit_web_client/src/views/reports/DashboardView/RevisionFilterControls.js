@@ -48,7 +48,9 @@ const useStyles = makeStyles((theme) => ({
 const RevisionFilterControls = ({ className, onChange, ...rest }) => {
 
   const [revisionFilter, setRevisionFilter] = useState({
-    large: false
+    large: false,
+    minor: true,
+    zero: false
   })
 
   const classes = useStyles();
@@ -70,10 +72,32 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
             edge="start"
             checked={revisionFilter.large}
             tabIndex={-1}
-            inputprops={{ 'aria-labelledby': 'user-type-unregistered-desc' }}
+            inputprops={{ 'aria-labelledby': 'revision-size-large' }}
             />
           </ListItemIcon>
-          <ListItemText id='user-type-unregistered-desc' primary="Large revision" />
+          <ListItemText id='revision-size-large' primary="Large" />
+        </ListItem>
+        <ListItem key="Minor" dense button>
+          <ListItemIcon>
+            <Checkbox 
+            edge="start"
+            checked={revisionFilter.minor}
+            tabIndex={-1}
+            inputprops={{ 'aria-labelledby': 'revision-size-minor' }}
+            />
+          </ListItemIcon>
+          <ListItemText id='revision-size-minor' primary="Minor" />
+        </ListItem>
+        <ListItem key="large" dense button>
+          <ListItemIcon>
+            <Checkbox 
+            edge="start"
+            checked={revisionFilter.zero}
+            tabIndex={-1}
+            inputprops={{ 'aria-labelledby': 'revision-size-0' }}
+            />
+          </ListItemIcon>
+          <ListItemText id='revision-size-0' primary="0 bytes" />
         </ListItem>
 
       </List>
