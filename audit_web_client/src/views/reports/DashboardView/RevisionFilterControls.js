@@ -48,9 +48,12 @@ const useStyles = makeStyles((theme) => ({
 const RevisionFilterControls = ({ className, onChange, ...rest }) => {
 
   const [revisionFilter, setRevisionFilter] = useState({
-    large: false,
-    minor: true,
-    neutral: false
+    largeAdditions: true,
+    smallAdditions: true,
+    neutral: true,
+    smallRemovals: true,
+    largeRemovals: true,
+    isMinor: true
   })
 
   const classes = useStyles();
@@ -66,29 +69,29 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
           </ListSubheader>
         }
       >
-        <ListItem key="large" dense button>
+        <ListItem key="largeAdditions" dense button>
           <ListItemIcon>
             <Checkbox 
             edge="start"
-            checked={revisionFilter.large}
+            checked={revisionFilter.largeAdditions}
             tabIndex={-1}
-            inputprops={{ 'aria-labelledby': 'revision-size-large' }}
+            inputprops={{ 'aria-labelledby': 'revision-large-additions' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-size-large' primary="Large" />
+          <ListItemText id='revision-large-additions' primary="Large additions" />
         </ListItem>
-        <ListItem key="Minor" dense button>
+        <ListItem key="smallAdditions" dense button>
           <ListItemIcon>
             <Checkbox 
             edge="start"
-            checked={revisionFilter.minor}
+            checked={revisionFilter.smallAdditions}
             tabIndex={-1}
-            inputprops={{ 'aria-labelledby': 'revision-size-minor' }}
+            inputprops={{ 'aria-labelledby': 'revision-small-addition' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-size-minor' primary="Minor" />
+          <ListItemText id='revision-small-addition' primary="Small additions" />
         </ListItem>
-        <ListItem key="large" dense button>
+        <ListItem key="neutral" dense button>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -98,6 +101,42 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
             />
           </ListItemIcon>
           <ListItemText id='revision-size-0' primary="Neutral" />
+        </ListItem>
+        <ListItem key="smallRemoval" dense button>
+          <ListItemIcon>
+            <Checkbox 
+            edge="start"
+            checked={revisionFilter.smallRemovals}
+            tabIndex={-1}
+            inputprops={{ 'aria-labelledby': 'revision-small-removal' }}
+            />
+          </ListItemIcon>
+          <ListItemText id='revision-small-removal' primary="Small removals" />
+        </ListItem>
+        <ListItem key="largeRemoval" dense button>
+          <ListItemIcon>
+            <Checkbox 
+            edge="start"
+            checked={revisionFilter.largeRemovals}
+            tabIndex={-1}
+            inputprops={{ 'aria-labelledby': 'revision-large-removal' }}
+            />
+          </ListItemIcon>
+          <ListItemText id='revision-size-0' primary="Large removals" />
+        </ListItem>
+        <ListSubheader>
+          Is Minor
+        </ListSubheader>
+        <ListItem key="isMinor" dense button>
+          <ListItemIcon>
+            <Checkbox
+            edge="start"
+            checked={true}
+            tabIndex={-1}
+            inputprops={{'aria-labelledby': 'is-minor'}}
+            />
+          </ListItemIcon>
+          <ListItemText id='is-minor' primary="Is Minor"/>
         </ListItem>
 
       </List>
