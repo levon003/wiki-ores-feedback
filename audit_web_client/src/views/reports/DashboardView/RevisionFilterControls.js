@@ -45,16 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const RevisionFilterControls = ({ className, onChange, ...rest }) => {
-
-  const [revisionFilter, setRevisionFilter] = useState({
-    largeAdditions: true,
-    smallAdditions: true,
-    neutral: true,
-    smallRemovals: true,
-    largeRemovals: true,
-    isMinor: false
-  })
+const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, onChange, ...rest }) => {
 
   const handleToggle = (value) => () => {  
     var newState = { ... revisionFilter, [value]: !revisionFilter[value]};

@@ -455,6 +455,22 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
   const classes = useStyles();
 
   const [revisionAnchorEl, setRevisionAnchorEl] = useState();
+  const [revisionFilter, setRevisionFilter] = useState({
+    largeAdditions: true,
+    smallAdditions: true,
+    neutral: true,
+    smallRemovals: true,
+    largeRemovals: true,
+    isMinor: false
+  })
+
+  const revisionFilterPrettyNames = {
+    largeAdditions: "large additions",
+    smallAdditions: "small additions",
+    neutral: "neutral revisions",
+    smallRemovals: "small removals",
+    largeRemovals: "large removals"
+  }
 
   const open = Boolean(revisionAnchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -468,9 +484,50 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
   };
 
   const getRevisionFilterSummary = () => {
-    // TODO: add logic for the revision filter label here
-    return "Revision Filters"; //default
+    const total_checked = revisionFilter.largeAdditions + revisionFilter.smallAdditions + revisionFilter.neutral + revisionFilter.smallRemovals + revisionFilter.largeRemovals
+    if (total_checked == 0) {
+      return "No revisions selected"
+    } else if (total_checked == 1 || total_checked == 2 || total_checked == 3) {
+      if (revisionFilter.largeAdditions && revisionFilter.largeRemovals && total_checked == 2) {
+        return "Only large changes"
+      } else if (revisionFilter.smallAdditions && revisionFilter.smallRemovals && total_checked == 2) {
+        return "Only small changes"
+      } else if (revisionFilter.smallAdditions && revisionFilter.largeAdditions && total_checked == 2) {
+        return "Only additions"
+      } else if (revisionFilter.largeRemovals && revisionFilter.smallRemovals && total_checked == 2) {
+        return "Only removals"
+      } else {
+        let summaryString = "Only "
+        let count = 0;
+        for (let k in revisionFilter) {
+          if (revisionFilter[k]) {
+            if (count > 0) {
+              summaryString += "and " + revisionFilterPrettyNames[k] + " "
+            } else {
+              summaryString += revisionFilterPrettyNames[k] + " "
+            }
+            count++
+          }
+        }
+        return summaryString
+      }
+    } else if (total_checked == 4) {
+      if (!revisionFilter.largeAdditions) {
+        return "Everything except large additions"
+      } else if (!revisionFilter.smallAdditions) {
+        return "Everything except small additions"
+      } else if (!revisionFilter.neutral) {
+        return "Everything except neutral revisions"
+      } else if (!revisionFilter.smallRemovals) {
+        return "Everything except small removals"
+      } else if (!revisionFilter.largeRemovals) {
+        return "Everything except large removals"
+      }
+    }
+    return "Revision Filters"
   }
+  const infoItems = ["Large additions (>= 1000 bytes)", "Small additions (>20 bytes)", "Neutral/Tiny Edits (between -20 and 20 bytes)", "Small removals (< -20 bytes)", "Large Removals (<= -1000 bytes)"]
+  const tip = infoItems.join('\n')
 
   return (
     <Box
@@ -479,7 +536,9 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
       flexWrap="nowrap"
     >
       <Chip clickable onClick={handleRevisionChipClick} label={getRevisionFilterSummary()} />
-      <Tooltip title="Help tooltip for the revision filter controls goes here.">
+      <Tooltip title={
+        <Box style={{whiteSpace: 'pre-line'}}>{tip}</Box>
+      }>
         <HelpOutlineIcon aria-label="User filter controls help" />
       </Tooltip>
       <Popover
@@ -497,7 +556,7 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
         }}
       >
 
-        <RevisionFilterControls onChange={onChange} />
+        <RevisionFilterControls onChange={onChange} revisionFilter={revisionFilter} setRevisionFilter={setRevisionFilter}/>
       </Popover>
     </Box>
   );
