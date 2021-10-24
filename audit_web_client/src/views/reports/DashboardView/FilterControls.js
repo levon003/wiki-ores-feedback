@@ -467,13 +467,18 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
     setRevisionAnchorEl(null);
   };
 
+  const getRevisionFilterSummary = () => {
+    // TODO: add logic for the revision filter label here
+    return "Revision Filters"; //default
+  }
+
   return (
     <Box
       display="flex"
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Chip clickable onClick={handleRevisionChipClick} label="Revision Filters" />
+      <Chip clickable onClick={handleRevisionChipClick} label={getRevisionFilterSummary()} />
       <Tooltip title="Help tooltip for the revision filter controls goes here.">
         <HelpOutlineIcon aria-label="User filter controls help" />
       </Tooltip>

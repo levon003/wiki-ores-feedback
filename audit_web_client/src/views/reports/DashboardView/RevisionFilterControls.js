@@ -56,6 +56,70 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
     isMinor: false
   })
 
+  const handleToggle = (value) => () => {  
+    var newState = { ... revisionFilter, [value]: !revisionFilter[value]};
+    setRevisionFilter(newState);
+
+    if (value == 'isMinor') {
+      if (revisionFilter.isMinor) {
+        setRevisionFilter ({
+          largeAdditions: true,
+          smallAdditions: false,
+          neutral: false,
+          smallRemovals: false,
+          largeRemovals: true,
+          isMinor: false
+        })
+
+      }
+      else {
+        setRevisionFilter ({
+          largeAdditions: false,
+          smallAdditions: true,
+          neutral: false,
+          smallRemovals: true,
+          largeRemovals: false,
+          isMinor: true
+        })
+      }
+    }
+    // if (value == 'registered') {
+    //     if (userTypeFilter.registered) {
+    //         // registered turning off, so deactivate all subs
+    //         setUserTypeFilter({
+    //             unregistered: userTypeFilter.unregistered,
+    //             registered: false,
+    //             newcomers: false,
+    //             learners: false,
+    //             experienced: false,
+    //             bots: false
+    //         });
+    //     } else {
+    //         //registered turning on, so activate all subs
+    //         setUserTypeFilter({
+    //             unregistered: userTypeFilter.unregistered,
+    //             registered: true,
+    //             newcomers: true,
+    //             learners: true,
+    //             experienced: true,
+    //             bots: true
+    //         });
+    //     }
+    // } else {
+    //     // toggle the value
+    //     var newState = { ... userTypeFilter, [value]: !userTypeFilter[value]};
+    //     // check for all sub-types off
+    //     if (newState.newcomers && newState.learners && newState.experienced && newState.bots) {
+    //         // all sub-types true, set registered == true
+    //         newState = { ... newState, 'registered': true};
+    //     } else {
+    //         // at least one sub-type is false, so ensure registered == false
+    //         newState = { ... newState, 'registered': false};
+    //     }
+    //     setUserTypeFilter(newState);
+    // }
+  };
+
   const classes = useStyles();
 
   return (
@@ -69,7 +133,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
           </ListSubheader>
         }
       >
-        <ListItem key="largeAdditions" dense button>
+        <ListItem key="largeAdditions" dense button onClick={handleToggle("largeAdditions")}> 
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -80,7 +144,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
           </ListItemIcon>
           <ListItemText id='revision-large-additions' primary="Large additions" />
         </ListItem>
-        <ListItem key="smallAdditions" dense button>
+        <ListItem key="smallAdditions" dense button onClick={handleToggle("smallAdditions")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -91,7 +155,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
           </ListItemIcon>
           <ListItemText id='revision-small-addition' primary="Small additions" />
         </ListItem>
-        <ListItem key="neutral" dense button>
+        <ListItem key="neutral" dense button onClick={handleToggle("neutral")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -102,7 +166,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
           </ListItemIcon>
           <ListItemText id='revision-size-0' primary="Neutral" />
         </ListItem>
-        <ListItem key="smallRemoval" dense button>
+        <ListItem key="smallRemovals" dense button onClick={handleToggle("smallRemovals")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -113,7 +177,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
           </ListItemIcon>
           <ListItemText id='revision-small-removal' primary="Small removals" />
         </ListItem>
-        <ListItem key="largeRemoval" dense button>
+        <ListItem key="largeRemovals" dense button onClick={handleToggle("largeRemovals")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -127,7 +191,7 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
         <ListSubheader>
           Is Minor
         </ListSubheader>
-        <ListItem key="isMinor" dense button>
+        <ListItem key="isMinor" dense button onClick={handleToggle("isMinor")}>
           <ListItemIcon>
             <Checkbox
             edge="start"
@@ -141,7 +205,18 @@ const RevisionFilterControls = ({ className, onChange, ...rest }) => {
 
       </List>
       <Button
-        onClick={null}
+        onClick={ () => {
+          setRevisionFilter ({
+            largeAdditions: true,
+            smallAdditions: true,
+            neutral: true,
+            smallRemovals: true,
+            largeRemovals: true,
+            isMinor: false
+          }  
+          )  
+        }
+        }
       >
       Reset to defaults
       </Button>
