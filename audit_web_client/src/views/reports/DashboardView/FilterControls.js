@@ -491,20 +491,6 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
           horizontal: 'center',
         }}
       >
-        <label>
-        <input type="checkbox" />
-        &nbsp;Large
-        </label>
-        <br></br>
-        <label>
-        <input type="checkbox" />
-        &nbsp;Minor
-        </label>
-        <br></br>
-        <label>
-        <input type="checkbox" />
-        &nbsp;0 Byte
-        </label>
 
         <RevisionFilterControls onChange={onChange} />
       </Popover>
