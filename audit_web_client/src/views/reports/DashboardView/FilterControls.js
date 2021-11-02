@@ -526,8 +526,6 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
     }
     return "Revision Filters"
   }
-  const infoItems = ["Large additions (>= 1000 bytes)", "Small additions (>20 bytes)", "Neutral/Tiny Edits (between -20 and 20 bytes)", "Small removals (< -20 bytes)", "Large Removals (<= -1000 bytes)"]
-  const tip = infoItems.join('\n')
 
   return (
     <Box
@@ -537,7 +535,7 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
     >
       <Chip clickable onClick={handleRevisionChipClick} label={getRevisionFilterSummary()} />
       <Tooltip title={
-        <Box style={{whiteSpace: 'pre-line'}}>{tip}</Box>
+        <Box style={{whiteSpace: 'pre-line'}}>Minor edits: https://en.wikipedia.org/wiki/Help:Minor_edit</Box>
       }>
         <HelpOutlineIcon aria-label="User filter controls help" />
       </Tooltip>

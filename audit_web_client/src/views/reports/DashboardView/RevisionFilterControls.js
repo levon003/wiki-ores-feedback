@@ -133,7 +133,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
             inputprops={{ 'aria-labelledby': 'revision-large-additions' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-large-additions' primary="Large additions" />
+          <ListItemText id='revision-large-additions' primary="Large additions" secondary="(>= 1000 bytes)"/>
         </ListItem>
         <ListItem key="smallAdditions" dense button onClick={handleToggle("smallAdditions")}>
           <ListItemIcon>
@@ -144,7 +144,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
             inputprops={{ 'aria-labelledby': 'revision-small-addition' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-small-addition' primary="Small additions" />
+          <ListItemText id='revision-small-addition' primary="Small additions" secondary="(>20 bytes)"/>
         </ListItem>
         <ListItem key="neutral" dense button onClick={handleToggle("neutral")}>
           <ListItemIcon>
@@ -155,7 +155,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
             inputprops={{ 'aria-labelledby': 'revision-size-0' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-size-0' primary="Neutral" />
+          <ListItemText id='revision-size-0' primary="Neutral" secondary="(between -20 and 20 bytes)"/>
         </ListItem>
         <ListItem key="smallRemovals" dense button onClick={handleToggle("smallRemovals")}>
           <ListItemIcon>
@@ -166,7 +166,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
             inputprops={{ 'aria-labelledby': 'revision-small-removal' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-small-removal' primary="Small removals" />
+          <ListItemText id='revision-small-removal' primary="Small removals" secondary="(< -20 bytes)"/>
         </ListItem>
         <ListItem key="largeRemovals" dense button onClick={handleToggle("largeRemovals")}>
           <ListItemIcon>
@@ -177,7 +177,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
             inputprops={{ 'aria-labelledby': 'revision-large-removal' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-size-0' primary="Large removals" />
+          <ListItemText id='revision-size-0' primary="Large removals" secondary="(<= -1000 bytes)"/>
         </ListItem>
         <ListSubheader>
           Is Minor
