@@ -314,6 +314,19 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
   const [isActiveQuery, setActiveQuery] = useState(false);
   const loading = open && isActiveQuery;
 
+  const [pageAnchorEl, setPageAnchorEl] = useState();
+
+  const pageFilterOpen = Boolean(pageAnchorEl);
+  const id = pageFilterOpen ? 'simple-popover' : undefined;
+
+  const handlePageChipClick = (event) => {
+    setPageAnchorEl(event.currentTarget)
+  }
+
+  const handlePagePopoverClose = () => {
+    setPageAnchorEl(null)
+  }
+
   const throttledAutocompleteFetch = useMemo(
     () =>
       throttle((request, callback) => {
@@ -376,6 +389,29 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
   }
 
   return (
+    <Box
+    display="flex"
+    flexDirection="row"
+    flexWrap="nowrap">
+    <Chip clickable label="Page Filters" onClick={handlePageChipClick}/>
+    <Tooltip title={
+        <Box style={{whiteSpace: 'pre-line'}}>Minor edits: https://en.wikipedia.org/wiki/Help:Minor_edit</Box>
+      }>
+        <HelpOutlineIcon aria-label="User filter controls help" />
+      </Tooltip>
+    <Popover
+      id={id}
+      open={pageFilterOpen}
+      anchorEl={pageAnchorEl}
+        onClose={handlePagePopoverClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}>
     <Autocomplete
       multiple
       id="specific-site-filter"
@@ -447,6 +483,79 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
         );
       }}
     />
+    <Autocomplete
+      multiple
+      id="specific-site-filter"
+      style={{ width: 300 }}
+      open={open}
+      onOpen={() => {
+        setOpen(true);
+      }}
+      onClose={() => {
+        setOpen(false);
+      }}
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
+      filterOptions={(x) => x}
+      options={options}
+      autoComplete
+      includeInputInList
+      filterSelectedOptions
+      value={values}
+      onChange={(event, newValues) => {
+        setOptions(newValues ? [...newValues, ...options] : options);
+        setValues(newValues);
+        // TODO call onChange with new set of filter criteria
+      }}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
+      renderInput={(params) => (
+        <TextField {...params} 
+          label="Namespaces" 
+          variant="outlined" 
+          fullWidth 
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+          />
+      )}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip label={option.primary_text} {...getTagProps({ index })} />
+        ))
+      }
+      renderOption={(option) => {
+        const matches = match(option.primary_text, inputValue);
+        const parts = parse(
+          option.primary_text,
+          matches
+        );
+
+        return (
+          <Grid container alignItems="center">
+            <Grid item xs>
+              {parts.map((part, index) => (
+                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                  {part.text}
+                </span>
+              ))}
+
+              <Typography variant="body2" color="textSecondary">
+                {option.secondary_text}
+              </Typography>
+            </Grid>
+          </Grid>
+        );
+      }}
+    />
+    </Popover>
+    </Box>
   );
 };
 
