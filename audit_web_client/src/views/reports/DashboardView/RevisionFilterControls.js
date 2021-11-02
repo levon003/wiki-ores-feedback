@@ -45,71 +45,17 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, onChange, ...rest }) => {
+const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, className, onChange, ...rest }) => {
 
-  const handleToggle = (value) => () => {  
+  const handleRevisionToggle = (value) => () => {  
     var newState = { ... revisionFilter, [value]: !revisionFilter[value]};
     setRevisionFilter(newState);
-
-    if (value == 'isMinor') {
-      if (revisionFilter.isMinor) {
-        setRevisionFilter ({
-          largeAdditions: true,
-          smallAdditions: false,
-          neutral: false,
-          smallRemovals: false,
-          largeRemovals: true,
-          isMinor: false
-        })
-
-      }
-      else {
-        setRevisionFilter ({
-          largeAdditions: false,
-          smallAdditions: true,
-          neutral: false,
-          smallRemovals: true,
-          largeRemovals: false,
-          isMinor: true
-        })
-      }
-    }
-    // if (value == 'registered') {
-    //     if (userTypeFilter.registered) {
-    //         // registered turning off, so deactivate all subs
-    //         setUserTypeFilter({
-    //             unregistered: userTypeFilter.unregistered,
-    //             registered: false,
-    //             newcomers: false,
-    //             learners: false,
-    //             experienced: false,
-    //             bots: false
-    //         });
-    //     } else {
-    //         //registered turning on, so activate all subs
-    //         setUserTypeFilter({
-    //             unregistered: userTypeFilter.unregistered,
-    //             registered: true,
-    //             newcomers: true,
-    //             learners: true,
-    //             experienced: true,
-    //             bots: true
-    //         });
-    //     }
-    // } else {
-    //     // toggle the value
-    //     var newState = { ... userTypeFilter, [value]: !userTypeFilter[value]};
-    //     // check for all sub-types off
-    //     if (newState.newcomers && newState.learners && newState.experienced && newState.bots) {
-    //         // all sub-types true, set registered == true
-    //         newState = { ... newState, 'registered': true};
-    //     } else {
-    //         // at least one sub-type is false, so ensure registered == false
-    //         newState = { ... newState, 'registered': false};
-    //     }
-    //     setUserTypeFilter(newState);
-    // }
   };
+
+  const handleMinorToggle = (value) => () => {
+    const newState = {...minorFilter, [value]: !minorFilter[value]}
+    setMinorFilter(newState)
+  }
 
   const classes = useStyles();
 
@@ -124,7 +70,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
           </ListSubheader>
         }
       >
-        <ListItem key="largeAdditions" dense button onClick={handleToggle("largeAdditions")}> 
+        <ListItem key="largeAdditions" dense button onClick={handleRevisionToggle("largeAdditions")}> 
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -135,7 +81,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
           </ListItemIcon>
           <ListItemText id='revision-large-additions' primary="Large additions" secondary="(>= 1000 bytes)"/>
         </ListItem>
-        <ListItem key="smallAdditions" dense button onClick={handleToggle("smallAdditions")}>
+        <ListItem key="smallAdditions" dense button onClick={handleRevisionToggle("smallAdditions")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -146,7 +92,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
           </ListItemIcon>
           <ListItemText id='revision-small-addition' primary="Small additions" secondary="(>20 bytes)"/>
         </ListItem>
-        <ListItem key="neutral" dense button onClick={handleToggle("neutral")}>
+        <ListItem key="neutral" dense button onClick={handleRevisionToggle("neutral")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -155,9 +101,9 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
             inputprops={{ 'aria-labelledby': 'revision-size-0' }}
             />
           </ListItemIcon>
-          <ListItemText id='revision-size-0' primary="Neutral" secondary="(between -20 and 20 bytes)"/>
+          <ListItemText id='revision-size-0' primary="Near zero change" secondary="(between -20 and 20 bytes)"/>
         </ListItem>
-        <ListItem key="smallRemovals" dense button onClick={handleToggle("smallRemovals")}>
+        <ListItem key="smallRemovals" dense button onClick={handleRevisionToggle("smallRemovals")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -168,7 +114,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
           </ListItemIcon>
           <ListItemText id='revision-small-removal' primary="Small removals" secondary="(< -20 bytes)"/>
         </ListItem>
-        <ListItem key="largeRemovals" dense button onClick={handleToggle("largeRemovals")}>
+        <ListItem key="largeRemovals" dense button onClick={handleRevisionToggle("largeRemovals")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -182,16 +128,27 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
         <ListSubheader>
           Is Minor
         </ListSubheader>
-        <ListItem key="isMinor" dense button onClick={handleToggle("isMinor")}>
+        <ListItem key="isMinor" dense button onClick={handleMinorToggle("isMinor")}>
           <ListItemIcon>
             <Checkbox
             edge="start"
-            checked={revisionFilter.isMinor}
+            checked={minorFilter.isMinor}
             tabIndex={-1}
             inputprops={{'aria-labelledby': 'is-minor'}}
             />
           </ListItemIcon>
-          <ListItemText id='is-minor' primary="Is Minor"/>
+          <ListItemText id='is-minor' primary="Minor edit"/>
+        </ListItem>
+        <ListItem key="isMajor" dense button onClick={handleMinorToggle("isMajor")}>
+          <ListItemIcon>
+            <Checkbox
+            edge="start"
+            checked={minorFilter.isMajor}
+            tabIndex={-1}
+            inputprops={{'aria-labelledby': 'is-major'}}
+            />
+          </ListItemIcon>
+          <ListItemText id='is-major' primary="Major edit"/>
         </ListItem>
 
       </List>
@@ -203,9 +160,12 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, className, 
             neutral: true,
             smallRemovals: true,
             largeRemovals: true,
-            isMinor: false
           }  
           )  
+          setMinorFilter({
+            isMinor: false,
+            isMajor: false
+          })
         }
         }
       >

@@ -460,8 +460,11 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
     smallAdditions: true,
     neutral: true,
     smallRemovals: true,
-    largeRemovals: true,
-    isMinor: false
+    largeRemovals: true
+  })
+  const [minorFilter, setMinorFilter] = useState({
+    isMinor: false,
+    isMajor: false
   })
 
   const revisionFilterPrettyNames = {
@@ -554,7 +557,7 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
         }}
       >
 
-        <RevisionFilterControls onChange={onChange} revisionFilter={revisionFilter} setRevisionFilter={setRevisionFilter}/>
+        <RevisionFilterControls onChange={onChange} revisionFilter={revisionFilter} setRevisionFilter={setRevisionFilter} minorFilter={minorFilter} setMinorFilter={setMinorFilter}/>
       </Popover>
     </Box>
   );
