@@ -65,9 +65,11 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
         component="nav"
         aria-labelledby="revision-filter-list-subheader"
         subheader={
-          <ListSubheader component="div" id="revision-filter-list-subheader">
-            Filter by Revision Size
-          </ListSubheader>
+          <ListItem>
+            <ListItemText component="div" id="revision-filter-list-subheader">
+              Filter by Revision Size
+            </ListItemText>
+          </ListItem>
         }
       >
         <ListItem key="largeAdditions" dense button onClick={handleRevisionToggle("largeAdditions")}> 
@@ -125,9 +127,11 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
           </ListItemIcon>
           <ListItemText id='revision-size-0' primary="Large removals" secondary="(<= -1000 bytes)"/>
         </ListItem>
-        <ListSubheader>
-          Is Minor
-        </ListSubheader>
+        <ListItem>
+          <ListItemText>
+            Is Minor
+          </ListItemText>
+        </ListItem>
         <ListItem key="isMinor" dense button onClick={handleMinorToggle("isMinor")}>
           <ListItemIcon>
             <Checkbox

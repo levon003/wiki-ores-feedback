@@ -450,27 +450,14 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
   );
 };
 
-const RevisionFilterChip = ({className, onChange, ...rest }) => {
+const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, revisionAnchorEl, setRevisionAnchorEl, ...rest}) => {
 
-  const classes = useStyles();
-
-  const [revisionAnchorEl, setRevisionAnchorEl] = useState();
-  const [revisionFilter, setRevisionFilter] = useState({
-    largeAdditions: true,
-    smallAdditions: true,
-    neutral: true,
-    smallRemovals: true,
-    largeRemovals: true
-  })
-  const [minorFilter, setMinorFilter] = useState({
-    isMinor: false,
-    isMajor: false
-  })
-
+  const classes = useStyles(); //remove?
+  
   const revisionFilterPrettyNames = {
     largeAdditions: "large additions",
     smallAdditions: "small additions",
-    neutral: "neutral revisions",
+    neutral: "near zero changes",
     smallRemovals: "small removals",
     largeRemovals: "large removals"
   }
@@ -567,6 +554,51 @@ const FilterControls = ({ className, onChange, ...rest }) => {
 
   const classes = useStyles();
 
+  const [revisionAnchorEl, setRevisionAnchorEl] = useState();
+
+  const [revisionFilter, setRevisionFilter] = useState({
+    largeAdditions: true,
+    smallAdditions: true,
+    neutral: true,
+    smallRemovals: true,
+    largeRemovals: true
+  })
+  const [minorFilter, setMinorFilter] = useState({
+    isMinor: false,
+    isMajor: false
+  })
+
+  const WarningMessage = () => {
+    if ((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) {
+    return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
+      Warning: No Revision Filters Selected
+        <Button
+          onClick={ () => {
+            setRevisionFilter ({
+              largeAdditions: true,
+              smallAdditions: true,
+              neutral: true,
+              smallRemovals: true,
+              largeRemovals: true,
+            }  
+            )  
+            setMinorFilter({
+              isMinor: false,
+              isMajor: false
+            })
+            setRevisionAnchorEl(true)  
+          }
+          }
+          >
+          Reset to defaults
+        </Button>
+      </Box>
+    }
+    else {
+      return null
+    }
+  }
+
   return (
     <Card
       className={clsx(classes.root, className)}
@@ -583,9 +615,11 @@ const FilterControls = ({ className, onChange, ...rest }) => {
           flexDirection="row"
         >
           <PageFilterChip onChange={onChange} />
-          <RevisionFilterChip onChange={onChange} />
+          <RevisionFilterChip onChange={onChange} revisionFilter={revisionFilter} setRevisionFilter={setRevisionFilter} minorFilter={minorFilter} setMinorFilter={setMinorFilter} revisionAnchorEl={revisionAnchorEl} setRevisionAnchorEl={setRevisionAnchorEl}/>
           <UserFilterChip onChange={onChange} />
         </Box>
+        <WarningMessage>
+        </WarningMessage>
       </Box>
     </Card>
   );
