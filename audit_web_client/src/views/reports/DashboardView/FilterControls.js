@@ -327,6 +327,24 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
     setPageAnchorEl(null)
   }
 
+  const namespaces = [ 
+    { namespace: "Main/Article - 0", selected: true},
+    { namespace: "Talk - 1", selected: true},
+    { namespace: "User - 2", selected: true},
+    { namespace: "User talk - 3", selected: true},
+    { namespace: "Wikipedia - 4", selected: true},
+    { namespace: "Wikipedia talk - 5", selected: true},
+    { namespace: "File - 6", selected: true},
+    { namespace: "File talk - 7", selected: true},
+    { namespace: "MediaWiki - 8", selected: true},
+    { namespace: "MediaWiki talk - 9", selected: true},
+    { namespace: "Template - 10", selected: true},
+    { namespace: "Template talk - 11", selected: true},
+    { namespace: "Help - 12", selected: true},
+    { namespace: "Help talk - 13", selected: true},
+    { namespace: "Category - 14", selected: true},
+    { namespace: "Category talk - 15", selected: true},
+  ]
   const throttledAutocompleteFetch = useMemo(
     () =>
       throttle((request, callback) => {
@@ -485,74 +503,25 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
     />
     <Autocomplete
       multiple
-      id="specific-site-filter"
-      style={{ width: 300 }}
-      open={open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      onClose={() => {
-        setOpen(false);
-      }}
-      getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
-      filterOptions={(x) => x}
-      options={options}
-      autoComplete
-      includeInputInList
-      filterSelectedOptions
-      value={values}
-      onChange={(event, newValues) => {
-        setOptions(newValues ? [...newValues, ...options] : options);
-        setValues(newValues);
-        // TODO call onChange with new set of filter criteria
-      }}
-      onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
-      }}
-      renderInput={(params) => (
-        <TextField {...params} 
-          label="Namespaces" 
-          variant="outlined" 
-          fullWidth 
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <React.Fragment>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </React.Fragment>
-            ),
-          }}
+      id="checkboxes-tags-demo"
+      options={namespaces}
+      disableCloseOnSelect
+      getOptionLabel={(option) => option.namespace}
+      renderOption={(option, { selected }) => (
+        <React.Fragment>
+          <Checkbox
+            icon={checkboxIcon}
+            checkedIcon={checkboxCheckedIcon}
+            style={{ marginRight: 8 }}
+            checked={selected}
           />
+          {option.namespace}
+        </React.Fragment>
       )}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
-      }
-      renderOption={(option) => {
-        const matches = match(option.primary_text, inputValue);
-        const parts = parse(
-          option.primary_text,
-          matches
-        );
-
-        return (
-          <Grid container alignItems="center">
-            <Grid item xs>
-              {parts.map((part, index) => (
-                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                  {part.text}
-                </span>
-              ))}
-
-              <Typography variant="body2" color="textSecondary">
-                {option.secondary_text}
-              </Typography>
-            </Grid>
-          </Grid>
-        );
-      }}
+      style={{ width: 500 }}
+      renderInput={(params) => (
+        <TextField {...params} variant="outlined" label="Namespaces" placeholder="Namespace" />
+      )}
     />
     </Popover>
     </Box>
@@ -584,19 +553,20 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 
   const getRevisionFilterSummary = () => {
     const total_checked = revisionFilter.largeAdditions + revisionFilter.smallAdditions + revisionFilter.neutral + revisionFilter.smallRemovals + revisionFilter.largeRemovals
+    let summaryString = "Revision Filters"
     if (total_checked == 0) {
-      return "No revisions selected"
+      summaryString = "No revisions selected"
     } else if (total_checked == 1 || total_checked == 2 || total_checked == 3) {
       if (revisionFilter.largeAdditions && revisionFilter.largeRemovals && total_checked == 2) {
-        return "Only large changes"
+        summaryString = "Only large changes"
       } else if (revisionFilter.smallAdditions && revisionFilter.smallRemovals && total_checked == 2) {
-        return "Only small changes"
+        summaryString = "Only small changes"
       } else if (revisionFilter.smallAdditions && revisionFilter.largeAdditions && total_checked == 2) {
-        return "Only additions"
+        summaryString = "Only additions"
       } else if (revisionFilter.largeRemovals && revisionFilter.smallRemovals && total_checked == 2) {
-        return "Only removals"
-      } else {
-        let summaryString = "Only "
+        summaryString = "Only removals"
+      } else if (total_checked == 1 || total_checked == 2) {
+        summaryString = "Only "
         let count = 0;
         for (let k in revisionFilter) {
           if (revisionFilter[k]) {
@@ -608,22 +578,41 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
             count++
           }
         }
-        return summaryString
+      } else if (total_checked == 3) {
+        summaryString = "Everything except "
+        let count = 0;
+        for (let k in revisionFilter) {
+          if (!revisionFilter[k]) {
+            if (count > 0) {
+              summaryString += "and " + revisionFilterPrettyNames[k] + " "
+            } else {
+              summaryString += revisionFilterPrettyNames[k] + " "
+            }
+            count++
+          }
+        }
       }
     } else if (total_checked == 4) {
       if (!revisionFilter.largeAdditions) {
-        return "Everything except large additions"
+        summaryString = "Everything except large additions"
       } else if (!revisionFilter.smallAdditions) {
-        return "Everything except small additions"
+        summaryString = "Everything except small additions"
       } else if (!revisionFilter.neutral) {
-        return "Everything except neutral revisions"
+        summaryString = "Everything except near zero changes"
       } else if (!revisionFilter.smallRemovals) {
-        return "Everything except small removals"
+        summaryString = "Everything except small removals"
       } else if (!revisionFilter.largeRemovals) {
-        return "Everything except large removals"
+        summaryString = "Everything except large removals"
       }
     }
-    return "Revision Filters"
+    if (minorFilter.isMinor && summaryString != "Revision Filters") {
+      if (total_checked == 1 || total_checked == 2) {
+        summaryString = summaryString.slice(0, 5) + "minor " + summaryString.slice(5)
+      } else {
+        summaryString = summaryString.slice(0, 18) + "minor " + summaryString.slice(17)
+      }
+    }
+    return summaryString
   }
 
   return (
@@ -727,8 +716,7 @@ const FilterControls = ({ className, onChange, ...rest }) => {
           <RevisionFilterChip onChange={onChange} revisionFilter={revisionFilter} setRevisionFilter={setRevisionFilter} minorFilter={minorFilter} setMinorFilter={setMinorFilter} revisionAnchorEl={revisionAnchorEl} setRevisionAnchorEl={setRevisionAnchorEl}/>
           <UserFilterChip onChange={onChange} />
         </Box>
-        <WarningMessage>
-        </WarningMessage>
+        <WarningMessage />
       </Box>
     </Card>
   );
