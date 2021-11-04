@@ -9,6 +9,18 @@
     /* transform: scale(1.1);; */
 }
 
+.error {
+  /* background-color: red; */
+  color: red;
+  padding-top: 10px;
+  text-align: center;
+}
+.success {
+  color: green;
+  padding-top: 10px;
+  text-align: center;
+}
+
 .wrapTxt {
     position: relative;
   }

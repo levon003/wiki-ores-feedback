@@ -411,7 +411,7 @@ def add_derived_columns_to_rev_data(rev_data):
         elif rev_data['delta_bytes'] >= -20:
             delta_bytes_filter = 0
         elif rev_data['delta_bytes'] < -20:
-            delta_bytes_filter = -2
+            delta_bytes_filter = -1
         elif rev_data['delta_bytes'] <= -1000:
             delta_bytes_filter = -2
         else:

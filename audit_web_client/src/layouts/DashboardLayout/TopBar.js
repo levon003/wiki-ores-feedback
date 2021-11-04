@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -13,6 +13,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import InputIcon from '@material-ui/icons/Input';
 import Logo from 'src/components/Logo';
+import { LoadingContext } from 'src/App';
+import { Oval } from 'react-loading-icons'
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -22,6 +24,10 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+const Loading = ({ loading }) => {
+  return loading ? <Oval/> : null
+}
+
 const TopBar = ({
   className,
   onMobileNavOpen,
@@ -29,6 +35,7 @@ const TopBar = ({
 }) => {
   const classes = useStyles();
   const [notifications] = useState([]);
+  const loadingContext = useContext(LoadingContext)
 
   return (
     <AppBar
@@ -42,7 +49,10 @@ const TopBar = ({
           {/*Could replace text with a logo per the example like so: <Logo />*/}
         </RouterLink>
         <Box flexGrow={1} />
-        <Typography variant="h1">v0.0.1a</Typography>
+        {/* Make this smaller, or move to bottom, or remove */}
+        {/* change to more standard loading format */}
+        {/* think about flickering loading icon, too distracting? */}
+        <Loading loading={loadingContext.loading} />
       </Toolbar>
     </AppBar>
   );

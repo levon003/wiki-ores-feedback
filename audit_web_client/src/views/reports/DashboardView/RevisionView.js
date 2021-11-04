@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -8,6 +8,7 @@ import {
   Paper,
   Typography,
   TextField,
+  useTheme
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
@@ -17,7 +18,11 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
-
+import { LoadingContext } from 'src/App';
+import FlagIcon from '@material-ui/icons/Flag';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
+import { Oval } from 'react-loading-icons'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,17 +36,38 @@ const useStyles = makeStyles((theme) => ({
     flexBasis: '33.33%',
   }, 
   mwPlusminusPos: {
-      color: "#006400",
+    color: "#006400",
   },
   mwPlusminusNeg: {
-      color: "#8b0000",
+    color: "#8b0000",
   },
   mwPlusminusNull: {
     color: "#a2a9b1",
-},
+  },
 }));
 
-const RevisionView = ({revision, className, ...rest }) => {
+const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
+  if (typing) {
+    return <Oval stroke="#000000" style={{height: 20, width: 20, marginTop: 20, marginLeft: 5}}/>
+  } else if (!typing && firstTyped && noteSuccess) {
+    return <CheckIcon style={{fill: "green", marginTop: 20, marginLeft: 5}}/>
+  } else if (!typing && firstTyped && !noteSuccess) {
+    return <CloseIcon style={{fill: "red", marginTop: 20, marginLeft: 5}}/>
+  } else {
+    return null
+  }
+}
+
+// gonna keep this here for now, maybe move it later
+// Box can inherit global styles, easier to change styles
+const ErrorNotification = ({ errorMessage }) => {
+  return <div className='error'>{errorMessage}</div>
+}
+const SuccessNotification = ({ successMessage }) => {
+  return <div className='success'>{successMessage}</div>
+}
+
+const RevisionView = ({ revision, className, ...rest }) => {
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
@@ -62,7 +88,32 @@ const RevisionView = ({revision, className, ...rest }) => {
     'correctness_type': null,
     'note': null,
   });
+  const [ note, setNote ] = useState("")
+  const [ noteSuccess, setNoteSuccess ] = useState(true)
+  const [typing, setTyping ] = useState(false)
+  const [ firstTyped, setFirstTyped ] = useState(false)
+  const [errorMessage, setErrorMessage ] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
+  const { loading, setLoading } = useContext(LoadingContext)
 
+// this is for setting the typing state
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setTyping(false)
+    }, 1000)
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [note])
+  useEffect(() => {
+    if (!typing && firstTyped) {
+      handleNoteSave()
+    }
+  }, [typing])
+
+
+
+  
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
   }
@@ -72,14 +123,11 @@ const RevisionView = ({revision, className, ...rest }) => {
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
-    setAnnotationData({
-      'correctness_type': correctness_type,
-      'note': annotationData.note,
-    })
+    setLoading(true)
 
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
-      method: 'post',
+      method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -88,18 +136,50 @@ const RevisionView = ({revision, className, ...rest }) => {
         rev_id: revision.rev_id,
         annotation_type: 'correctness',
         correctness_type: correctness_type,
+        note: note
       }),
     }).then(res => res.json())
       .then(data => {
+        setLoading(false)
+        setErrorMessage(null)
         // update the annotations with the new data (if it was not rejected)
+        setSuccessMessage("Successfully saved.")
+        // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
+        // that their annotation change was rejected. Should we notify the user in some way?
         setAnnotationData({
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
-    });
+        setNote(data.note)
+      }).catch(data => {
+        setLoading(false)
+        setErrorMessage("Didn't go through, please try again.")
+      });
   }
 
-  function getUserLink(user_text, user_id) {
+  const handleNoteSave = () => {
+    fetch('/api/annotation/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        rev_id: revision.rev_id,
+        annotation_type: 'note',
+        note_text: note,
+      })
+    }).then(res => res.json())
+    .then(data => {
+      setNoteSuccess(true)
+      setNote(data.note)
+    })
+    .catch(data => {
+      setNoteSuccess(false)
+    })
+  }
+
+  const getUserLink = (user_text, user_id) => {
     if (user_id === 0) {
       return (
         <Box display="inline" component="span">
@@ -115,11 +195,11 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function formatTimestamp(timestamp) {
+  const formatTimestamp = timestamp => {
     return moment.utc(timestamp).utc().format("HH:mm, DD MMMM YYYY");
   }
 
-  function convertRelativeLinks(tpcomment) {
+  const convertRelativeLinks = tpcomment => {
     var doc = new DOMParser().parseFromString(tpcomment, "text/html");
     var links = doc.getElementsByTagName("a");
     for(let link of links){
@@ -166,6 +246,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     })
       .then(res => res.json())
       .then(data => {
+        // this is causing button to automatically be set to misclassification?
         setAnnotationData({
           'correctness_type': data.correctness_type,
           'note': data.note,
@@ -173,7 +254,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     });
   }, [revision]);
 
-  function DiffTable(props) {
+  const DiffTable = () => {
     if (revisionMetadata.loaded) {
       return (
         <table className="diff diff-contentalign-left diff-editfont-monospace">
@@ -222,7 +303,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function InlineDescription(props) {
+  const InlineDescription = () => {
     if (revision.has_edit_summary) {
       if (revisionMetadata.loaded) {
         return (<Box display="inline" component="span" fontStyle='italic' dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}></Box>);
@@ -234,7 +315,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function getBytesDeltaDescriptor() {
+  const getBytesDeltaDescriptor = () => {
     let delta_bytes = revision.delta_bytes;
     if (delta_bytes === null) {
       // assume this is a page creation
@@ -274,9 +355,11 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function RevisionSummary(props) {
+  const RevisionSummary = () => {
     return (
       <Box>
+        <Typography variant="h3">v0.0.1a</Typography>
+        <br></br>
         <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
@@ -307,7 +390,7 @@ const RevisionView = ({revision, className, ...rest }) => {
   }
 
 
-  function PredColor(){
+  const PredColor = () => {
     if (revision.damaging_pred <= 0.301) {
       return ("container-g");
     } else if (revision.damaging_pred <= 0.629 && revision.damaging_pred > 0.301){
@@ -319,7 +402,7 @@ const RevisionView = ({revision, className, ...rest }) => {
     }
   }
 
-  function PredictionDisplay(props) {
+  const PredictionDisplay = () => {
     var pred = revision.damaging_pred;
     pred = pred.toFixed(3);
     return (
@@ -329,40 +412,50 @@ const RevisionView = ({revision, className, ...rest }) => {
     );
   }
 
-  function AnnotationButtons(props) {
+  const AnnotationButtons = () => {
+    const theme = useTheme()
+    const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginLeft: 5, marginRight: 5} : {marginLeft: 5, marginRight: 5}
+    // add icons to buttons
     return (
       <Box>
         <Button 
-          variant="outlined" 
-          onClick={(event) => handleButtonClick('flag')}
-        >
-          {annotationData.correctness_type === 'flag' ? '(checked)' : ''}
-          Flag/IDK/Not Sure/Ambiguous/Interesting
-        </Button>
-        <Button 
-          variant="outlined" 
+          style={correctButtonStyle}
+          variant="outlined"
           onClick={(event) => handleButtonClick('correct')}
         >
-          {annotationData.correctness_type === 'correct' ? '(checked)' : ''}
+          <CheckIcon 
+            style={{paddingRight: 5}}
+          />
           Confirm damaging
         </Button>
         <Button 
-          variant="outlined" 
+          style={misclassButtonStyle}
+          variant="outlined"
           onClick={(event) => handleButtonClick('misclassification')}
         >
-          {annotationData.correctness_type === 'misclassification' ? '(checked)' : ''}
-          Not damaging / misclassification
+          <CloseIcon 
+            style={{paddingRight: 5}}
+          />
+          Not damaging
         </Button>
-        <TextField 
-          id="notes" 
-          label="Notes" 
-          value={annotationData.note !== null ? annotationData.note : ""}
-        />
+        <Button 
+          style={flagButtonStyle}
+          variant="outlined"
+          onClick={(event) => handleButtonClick('flag')}
+        >
+          <FlagIcon 
+            style={{paddingRight: 5}}
+          />
+          Flag
+        </Button>
+        <br></br>
       </Box>
     );
   }
 
-  function RevisionAnnotationControls(props) {
+  const RevisionAnnotationControls = () => {
     return (
       <Box
         display="flex"
@@ -372,6 +465,7 @@ const RevisionView = ({revision, className, ...rest }) => {
         <AnnotationButtons />
       </Box>
     );
+
   }
 
   return (
@@ -383,8 +477,23 @@ const RevisionView = ({revision, className, ...rest }) => {
       {...rest}
     >
       <Box p={1}>
-        <RevisionSummary />
+        <RevisionSummary/>
+        <ErrorNotification errorMessage={errorMessage}/>
+        <SuccessNotification successMessage={successMessage}/>
         <RevisionAnnotationControls />
+        {/* Notes */}
+        <TextField
+          multiline
+          label="Notes" 
+          value={note} 
+          onChange={(event) => {
+            setNote(event.target.value)
+            setTyping(true)
+            setFirstTyped(true)
+          }} 
+          style={{marginLeft: 125, marginBottom: 20, width: 470}}
+        />
+        <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
         {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
