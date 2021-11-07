@@ -315,7 +315,7 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
     "Category - 14": false,
     "Category talk - 15": false
   })
-  // const [namespaceInputValue, setNamespaceInputValue] = useState('')
+  const [namespaceInputValue, setNamespaceInputValue] = useState('')
 
   const namespaces = [ 
     { namespace: "Main/Article - 0"},
