@@ -224,7 +224,7 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
         vertical: 'top',
         horizontal: 'center',
       }}>
-        User Filters Popup Placeholder
+        <p style={{margin: 5, fontSize: 12}}>User Filters Popup Placeholder</p>
         {/* TODO: add something here */}
     </Popover>
       <Popover
@@ -248,7 +248,7 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
             subheader={
               <ListItem>
                 <ListItemText component="div" id="user-type-list-subheader">
-                  Filter users by type
+                  Filter by User Type
                 </ListItemText>
               </ListItem>
             }
@@ -317,7 +317,7 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
           <Button
             onClick={handleUserFilterReset}
           >
-          Reset to defaults
+          Reset to default
           </Button>
         </Paper>
       </Popover>
@@ -464,33 +464,36 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
 
   return (
     <Box
-    display="flex"
-    flexDirection="row"
-    flexWrap="nowrap">
-    <Chip clickable label="Page Filters" onClick={handlePageChipClick}/>
-    <IconButton color="primary" size="small" onClick={handleIconClick}>
-      <HelpIcon/>
-    </IconButton>
-    <Popover
-      id={helpID}
-      open={pageHelpOpen}
-      anchorEl={pageHelpPopup}
+      display="flex"
+      flexDirection="row"
+      flexWrap="nowrap">
+      <Chip clickable label="Page Filters" onClick={handlePageChipClick}/>
+      <IconButton color="primary" size="small" onClick={handleIconClick}>
+        <HelpIcon/>
+      </IconButton>
+      <Popover
+        id={helpID}
+        open={pageHelpOpen}
+        anchorEl={pageHelpPopup}
         onClose={handleIconClickClose}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
         }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}>
-        Page Filters Popup Placeholder
-        {/* TODO: add something here */}
-    </Popover>
-    <Popover
-      id={id}
-      open={pageFilterOpen}
-      anchorEl={pageAnchorEl}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <p style={{margin: 5, fontSize: 12}}>
+          Page Filters Popup Placeholder
+          {/* TODO: add something here */}
+        </p>
+      </Popover>
+      <Popover
+        id={id}
+        open={pageFilterOpen}
+        anchorEl={pageAnchorEl}
         onClose={handlePagePopoverClose}
         anchorOrigin={{
           vertical: 'bottom',
@@ -499,115 +502,128 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
         transformOrigin={{
           vertical: 'top',
           horizontal: 'center',
-        }}>
-    <Autocomplete
-      multiple
-      id="specific-site-filter"
-      style={{ width: 300 }}
-      open={open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      onClose={() => {
-        setOpen(false);
-      }}
-      getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
-      filterOptions={(x) => x}
-      options={options}
-      autoComplete
-      includeInputInList
-      filterSelectedOptions
-      value={pageValues}
-      onChange={(event, newValues) => {
-        setOptions(newValues ? [...newValues, ...options] : options);
-        setPageValues(newValues);
-        // TODO call onChange with new set of filter criteria
-      }}
-      onInputChange={(event, newInputValue) => {
-        setPageInputValue(newInputValue);
-      }}
-      renderInput={(params) => (
-        <TextField {...params} 
-          label="Specific page titles" 
-          variant="outlined" 
-          fullWidth 
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <React.Fragment>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </React.Fragment>
-            ),
-          }}
-          />
-      )}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
-      }
-      renderOption={(option) => {
-        const matches = match(option.primary_text, pageInputValue);
-        const parts = parse(
-          option.primary_text,
-          matches
-        );
-
-        return (
-          <Grid container alignItems="center">
-            <Grid item xs>
-              {parts.map((part, index) => (
-                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                  {part.text}
-                </span>
-              ))}
-
-              <Typography variant="body2" color="textSecondary">
-                {option.secondary_text}
-              </Typography>
-            </Grid>
-          </Grid>
-        );
-      }}
-    />
-    <Autocomplete
-      multiple
-      id="checkboxes-tags-demo"
-      options={namespaces}
-      disableCloseOnSelect
-      getOptionLabel={(option) => option.namespace}
-      onInputChange={(event, newInputValue) => {
-        setNamespaceInputValue(newInputValue);
-      }}
-      onChange={(event, newInputValue) => {
-
-      }}
-      renderOption={(option) => (
-        <React.Fragment>
-          <Checkbox
-            icon={checkboxIcon}
-            checkedIcon={checkboxCheckedIcon}
-            style={{ marginRight: 8 }}
-            checked={namespaceValues[option.namespace]}
-            onClick={
-              () => setNamespaceValues({...namespaceValues, [option.namespace]: !namespaceValues[option.namespace]})
+        }}
+      >
+        <Paper variant='elevation'>
+          <List
+            component="nav"
+            aria-labelledby="page-filter-list-subheader"
+            subheader={
+              <ListItem>
+                <ListItemText component="div" id="page-filter-list-subheader">
+                  Filter by Page Type
+                </ListItemText>
+              </ListItem>
             }
-          />
-          {option.namespace}
-        </React.Fragment>
-      )}
-      style={{ width: 500 }}
-      renderInput={(params) => (
-        <TextField {...params} variant="outlined" label="Namespaces" placeholder="Namespace" />
-      )}
-    />
-    <Button
-      onClick={handlePageFilterReset}
-    >
-    Reset to defaults
-    </Button>
-    </Popover>
+          >
+              <Autocomplete
+                multiple
+                id="specific-site-filter"
+                style={{ width: 300 }}
+                open={open}
+                onOpen={() => {
+                  setOpen(true);
+                }}
+                onClose={() => {
+                  setOpen(false);
+                }}
+                getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
+                filterOptions={(x) => x}
+                options={options}
+                autoComplete
+                includeInputInList
+                filterSelectedOptions
+                value={pageValues}
+                onChange={(event, newValues) => {
+                  setOptions(newValues ? [...newValues, ...options] : options);
+                  setPageValues(newValues);
+                  // TODO call onChange with new set of filter criteria
+                }}
+                onInputChange={(event, newInputValue) => {
+                  setPageInputValue(newInputValue);
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} 
+                    label="Specific page titles" 
+                    variant="outlined" 
+                    fullWidth 
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <React.Fragment>
+                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </React.Fragment>
+                      ),
+                    }}
+                    />
+                )}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip label={option.primary_text} {...getTagProps({ index })} />
+                  ))
+                }
+                renderOption={(option) => {
+                  const matches = match(option.primary_text, pageInputValue);
+                  const parts = parse(
+                    option.primary_text,
+                    matches
+                  );
+
+                  return (
+                    <Grid container alignItems="center">
+                      <Grid item xs>
+                        {parts.map((part, index) => (
+                          <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                            {part.text}
+                          </span>
+                        ))}
+
+                        <Typography variant="body2" color="textSecondary">
+                          {option.secondary_text}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  );
+                }}
+              />
+              <Autocomplete style={{marginTop: 10}}
+                multiple
+                id="checkboxes-tags-demo"
+                options={namespaces}
+                disableCloseOnSelect
+                getOptionLabel={(option) => option.namespace}
+                onInputChange={(event, newInputValue) => {
+                  setNamespaceInputValue(newInputValue);
+                }}
+                onChange={(event, newInputValue) => {
+
+                }}
+                renderOption={(option) => (
+                  <React.Fragment>
+                    <Checkbox
+                      icon={checkboxIcon}
+                      checkedIcon={checkboxCheckedIcon}
+                      checked={namespaceValues[option.namespace]}
+                      onClick={
+                        () => setNamespaceValues({...namespaceValues, [option.namespace]: !namespaceValues[option.namespace]})
+                      }
+                    />
+                    {option.namespace}
+                  </React.Fragment>
+                )}
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" label="Namespaces" placeholder="Namespace" />
+                )}
+              />
+          </List>
+          <Button
+            onClick={handlePageFilterReset}
+          >
+          Reset to default
+          </Button>
+        </Paper>
+      </Popover>
     </Box>
   );
 };
@@ -735,7 +751,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
           vertical: 'top',
           horizontal: 'center',
         }}>
-          <a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank">Minor Edit Definition</a>
+          <p style={{margin: 5, fontSize: 12}}><a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank">Minor Edit Definition</a></p>
           {/* TODO: add something here */}
       </Popover>
       <Popover
@@ -789,7 +805,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
             }
             }
             >
-            Reset to defaults
+            Reset to default
           </Button>
         </Box>
     }
@@ -811,7 +827,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
           }
           }
           >
-          Reset to defaults
+          Reset to default
         </Button>
       </Box>
       

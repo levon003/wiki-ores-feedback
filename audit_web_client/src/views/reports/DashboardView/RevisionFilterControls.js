@@ -173,7 +173,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
         }
         }
       >
-      Reset to defaults
+      Reset to default
       </Button>
     </Paper>
   );

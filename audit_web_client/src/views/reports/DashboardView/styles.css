@@ -1,3 +1,7 @@
+* {
+  font-family: "Roboto";
+}
+
 .bar:hover {
   stroke: #9ebff0;
     opacity: 1;
