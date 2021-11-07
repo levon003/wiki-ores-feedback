@@ -835,8 +835,10 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         <Box
           display="flex"
           flexDirection="row"
+          style= {{ paddingTop : 10, paddingLeft : 10}}
         >
-          <PageFilterChip onChange={onChange} 
+          <PageFilterChip 
+                onChange={onChange} 
                 pageValues={pageValues}
                 setPageValues={setPageValues}
                 pageInputValue={pageInputValue}
@@ -844,23 +846,25 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
                 options={options}
                 setOptions={setOptions}
           />
-          <RevisionFilterChip onChange={onChange} 
-          revisionFilter={revisionFilter} 
-          setRevisionFilter={setRevisionFilter} 
-          minorFilter={minorFilter} 
-          setMinorFilter={setMinorFilter} 
-          revisionAnchorEl={revisionAnchorEl} 
-          setRevisionAnchorEl={setRevisionAnchorEl}
+
+          <RevisionFilterChip
+                onChange={onChange} 
+                revisionFilter={revisionFilter} 
+                setRevisionFilter={setRevisionFilter} 
+                minorFilter={minorFilter} 
+                setMinorFilter={setMinorFilter} 
+                revisionAnchorEl={revisionAnchorEl} 
+                setRevisionAnchorEl={setRevisionAnchorEl}
           />
 
           <UserFilterChip 
-          onChange={onChange} 
-          userTypeFilter={userTypeFilter} 
-          setUserTypeFilter={setUserTypeFilter} 
-          filteredUsernames={filteredUsernames} 
-          setFilteredUsernames={setFilteredUsernames}
-          userTypeAnchorEl={userTypeAnchorEl}
-          setUserTypeAnchorEl={setUserTypeAnchorEl}
+                onChange={onChange} 
+                userTypeFilter={userTypeFilter} 
+                setUserTypeFilter={setUserTypeFilter} 
+                filteredUsernames={filteredUsernames} 
+                setFilteredUsernames={setFilteredUsernames}
+                userTypeAnchorEl={userTypeAnchorEl}
+                setUserTypeAnchorEl={setUserTypeAnchorEl}
           />
         </Box>
         <WarningMessage />
