@@ -23,7 +23,8 @@ import {
   TextField,
   Tooltip,
   Typography,
-  makeStyles
+  makeStyles,
+  IconButton,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
@@ -31,6 +32,8 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 import RevisionFilterControls from './RevisionFilterControls';
+
+import HelpIcon from '@material-ui/icons/Help'
 
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
@@ -56,11 +59,9 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, ...rest }) => {
+const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl,...rest }) => {
 
   const classes = useStyles();
-    
-  const [userTypeAnchorEl, setUserTypeAnchorEl] = useState();
     
   const userTypePrettyNames = {
       "newcomers": "Newcomers",
@@ -167,6 +168,19 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
   const handleClose = (event) => {
     setUserTypeAnchorEl(null);
   };
+
+  const [pageHelpPopup, setPageHelpPopup] = useState();
+
+  const pageHelpOpen = Boolean(pageHelpPopup);
+  const helpID = pageHelpOpen ? 'simple-popover' : undefined;
+
+  const handleIconClick = (event) => {
+    setPageHelpPopup(event.currentTarget)
+  }
+
+  const handleIconClickClose = () => {
+    setPageHelpPopup(null)
+  }
     
   const handleUsernameFilterChange = (event, value, reason) => {
       setFilteredUsernames(value);
@@ -194,9 +208,25 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
       flexWrap="nowrap"
     >
       <Chip clickable onClick={handleClick} label={getUserFilterSummary()} />
-      <Tooltip title="Help tooltip for the user filter controls goes here.">
-        <HelpOutlineIcon aria-label="User filter controls help" />
-      </Tooltip>
+      <IconButton color="primary" size="small" onClick={handleIconClick}>
+        <HelpIcon/>
+      </IconButton>
+      <Popover
+      id={helpID}
+      open={pageHelpOpen}
+      anchorEl={pageHelpPopup}
+        onClose={handleIconClickClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}>
+        User Filters Popup Placeholder
+        {/* TODO: add something here */}
+    </Popover>
       <Popover
         id={id}
         open={open}
@@ -216,9 +246,11 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
             component="nav"
             aria-labelledby="user-type-list-subheader"
             subheader={
-              <ListSubheader component="div" id="user-type-list-subheader">
-                Filter users by type
-              </ListSubheader>
+              <ListItem>
+                <ListItemText component="div" id="user-type-list-subheader">
+                  Filter users by type
+                </ListItemText>
+              </ListItem>
             }
             className={classes.root}
           >
@@ -341,10 +373,10 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
   const loading = open && isActiveQuery;
 
   const [pageAnchorEl, setPageAnchorEl] = useState();
+  const [pageHelpPopup, setPageHelpPopup] = useState();
 
   const pageFilterOpen = Boolean(pageAnchorEl);
   const id = pageFilterOpen ? 'simple-popover' : undefined;
-  console.log(pageValues)
 
   const handlePageChipClick = (event) => {
     setPageAnchorEl(event.currentTarget)
@@ -353,6 +385,22 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
   const handlePagePopoverClose = () => {
     setPageAnchorEl(null)
   }
+
+  const pageHelpOpen = Boolean(pageHelpPopup);
+  const helpID = pageHelpOpen ? 'simple-popover' : undefined;
+
+  const handleIconClick = (event) => {
+    setPageHelpPopup(event.currentTarget)
+  }
+
+  const handleIconClickClose = () => {
+    setPageHelpPopup(null)
+  }
+
+  const handlePageFilterReset = (event) => {
+    // TODO: add
+};
+
   const throttledAutocompleteFetch = useMemo(
     () =>
       throttle((request, callback) => {
@@ -420,11 +468,25 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
     flexDirection="row"
     flexWrap="nowrap">
     <Chip clickable label="Page Filters" onClick={handlePageChipClick}/>
-    <Tooltip title={
-        <Box style={{whiteSpace: 'pre-line'}}>Minor edits: https://en.wikipedia.org/wiki/Help:Minor_edit</Box>
-      }>
-        <HelpOutlineIcon aria-label="User filter controls help" />
-      </Tooltip>
+    <IconButton color="primary" size="small" onClick={handleIconClick}>
+      <HelpIcon/>
+    </IconButton>
+    <Popover
+      id={helpID}
+      open={pageHelpOpen}
+      anchorEl={pageHelpPopup}
+        onClose={handleIconClickClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}>
+        Page Filters Popup Placeholder
+        {/* TODO: add something here */}
+    </Popover>
     <Popover
       id={id}
       open={pageFilterOpen}
@@ -540,6 +602,11 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
         <TextField {...params} variant="outlined" label="Namespaces" placeholder="Namespace" />
       )}
     />
+    <Button
+      onClick={handlePageFilterReset}
+    >
+    Reset to defaults
+    </Button>
     </Popover>
     </Box>
   );
@@ -567,6 +634,19 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   const handleRevisionPopoverClose = (event) => {
     setRevisionAnchorEl(null);
   };
+
+  const [pageHelpPopup, setPageHelpPopup] = useState();
+
+  const pageHelpOpen = Boolean(pageHelpPopup);
+  const helpID = pageHelpOpen ? 'simple-popover' : undefined;
+
+  const handleIconClick = (event) => {
+    setPageHelpPopup(event.currentTarget)
+  }
+
+  const handleIconClickClose = () => {
+    setPageHelpPopup(null)
+  }
 
   const getRevisionFilterSummary = () => {
     const total_checked = revisionFilter.largeAdditions + revisionFilter.smallAdditions + revisionFilter.neutral + revisionFilter.smallRemovals + revisionFilter.largeRemovals
@@ -639,11 +719,25 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
       flexWrap="nowrap"
     >
       <Chip clickable onClick={handleRevisionChipClick} label={getRevisionFilterSummary()} />
-      <Tooltip title={
-        <Box style={{whiteSpace: 'pre-line'}}>Minor edits: https://en.wikipedia.org/wiki/Help:Minor_edit</Box>
-      }>
-        <HelpOutlineIcon aria-label="User filter controls help" />
-      </Tooltip>
+      <IconButton color="primary" size="small" onClick={handleIconClick}>
+      <HelpIcon/>
+      </IconButton>
+      <Popover
+        id={helpID}
+        open={pageHelpOpen}
+        anchorEl={pageHelpPopup}
+          onClose={handleIconClickClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}>
+          <a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank">Minor Edit Definition</a>
+          {/* TODO: add something here */}
+      </Popover>
       <Popover
         id={id}
         open={open}
@@ -671,32 +765,56 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
   const classes = useStyles();
 
   const [revisionAnchorEl, setRevisionAnchorEl] = useState();
+  const [userTypeAnchorEl, setUserTypeAnchorEl] = useState();
 
   const WarningMessage = () => {
     if ((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) {
-    return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
-      Warning: No Revision Filters Selected
+      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
+        Warning: No Revision Filters Selected
+          <Button
+            onClick={ () => {
+              setRevisionFilter ({
+                largeAdditions: true,
+                smallAdditions: true,
+                neutral: true,
+                smallRemovals: true,
+                largeRemovals: true,
+              }  
+              )  
+              setMinorFilter({
+                isMinor: false,
+                isMajor: false
+              })
+              setRevisionAnchorEl(true)  
+            }
+            }
+            >
+            Reset to defaults
+          </Button>
+        </Box>
+    }
+    else if ((!userTypeFilter.unregistered) && (!userTypeFilter.registered) && (!userTypeFilter.newcomers) && (!userTypeFilter.learners) && (!userTypeFilter.experienced) && (!userTypeFilter.bots)) {
+      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
+      Warning: No User Filters Selected
         <Button
           onClick={ () => {
-            setRevisionFilter ({
-              largeAdditions: true,
-              smallAdditions: true,
-              neutral: true,
-              smallRemovals: true,
-              largeRemovals: true,
-            }  
-            )  
-            setMinorFilter({
-              isMinor: false,
-              isMajor: false
-            })
-            setRevisionAnchorEl(true)  
+            setFilteredUsernames([]);
+            setUserTypeFilter({
+                unregistered: true,
+                registered: false,
+                newcomers: true,
+                learners: true,
+                experienced: true,
+                bots: false,
+            });
+            setUserTypeAnchorEl(true)
           }
           }
           >
           Reset to defaults
         </Button>
       </Box>
+      
     }
     else {
       return null
@@ -741,6 +859,8 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
           setUserTypeFilter={setUserTypeFilter} 
           filteredUsernames={filteredUsernames} 
           setFilteredUsernames={setFilteredUsernames}
+          userTypeAnchorEl={userTypeAnchorEl}
+          setUserTypeAnchorEl={setUserTypeAnchorEl}
           />
         </Box>
         <WarningMessage />
