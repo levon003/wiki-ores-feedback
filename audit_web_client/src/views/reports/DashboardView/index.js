@@ -45,6 +45,31 @@ const Dashboard = () => {
     has_edit_summary: true,
     damaging_pred: 0.11111111,
   }]); // TODO should be empty, but has one entry for testing
+
+  const [revisionFilter, setRevisionFilter] = useState({
+    largeAdditions: true,
+    smallAdditions: true,
+    neutral: true,
+    smallRemovals: true,
+    largeRemovals: true
+  })
+  const [minorFilter, setMinorFilter] = useState({
+    isMinor: true,
+    isMajor: true
+  })
+  const [userTypeFilter, setUserTypeFilter] = useState({
+    unregistered: true,
+    registered: false,
+    newcomers: true,
+    learners: true,
+    experienced: true,
+    bots: false
+  })
+  const [filteredUsernames, setFilteredUsernames] = useState([]);
+  
+  const [pageValues, setPageValues] = useState([]);
+  const [pageInputValue, setPageInputValue] = useState('');
+  const [options, setOptions] = useState([]);
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
@@ -147,6 +172,20 @@ const Dashboard = () => {
           >
              <FilterControls 
                 onChange={handleStateUpdate}
+                revisionFilter={revisionFilter}
+                setRevisionFilter={setRevisionFilter}
+                minorFilter={minorFilter}
+                setMinorFilter={setMinorFilter}
+                userTypeFilter={userTypeFilter}
+                setUserTypeFilter={setUserTypeFilter}
+                filteredUsernames={filteredUsernames}
+                setFilteredUsernames={setFilteredUsernames}
+                pageValues={pageValues}
+                setPageValues={setPageValues}
+                pageInputValue={pageInputValue}
+                setPageInputValue={setPageInputValue}
+                options={options}
+                setOptions={setOptions}
             />
           </Grid>
           <Grid

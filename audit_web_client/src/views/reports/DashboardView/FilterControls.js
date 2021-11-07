@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UserFilterChip = ({ className, onChange, ...rest }) => {
+const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, ...rest }) => {
 
   const classes = useStyles();
     
@@ -68,15 +68,6 @@ const UserFilterChip = ({ className, onChange, ...rest }) => {
       "experienced": "Experienced users",
       "bots": "Bots",
   }
-  const [userTypeFilter, setUserTypeFilter] = useState({
-      unregistered: true,
-      registered: false,
-      newcomers: true,
-      learners: true,
-      experienced: true,
-      bots: false
-  });
-  const [filteredUsernames, setFilteredUsernames] = useState([]);
   
   const getUserFilterSummary = () => {
       if (filteredUsernames.length > 0) {
@@ -302,13 +293,48 @@ const UserFilterChip = ({ className, onChange, ...rest }) => {
   );
 };
 
-const PageFilterChip = ({className, onChange, ...rest }) => {
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, ...rest }) => {
 
   const classes = useStyles();
 
-  const [values, setValues] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState([]);
+  const [namespaceValues, setNamespaceValues] = useState({
+    "Main/Article - 0": true,
+    "Talk - 1": false,
+    "User - 2": false,
+    "User talk - 3": false,
+    "Wikipedia - 4": false, 
+    "Wikipedia talk - 5": false,
+    "File - 6": false,
+    "File talk - 7": false,
+    "MediaWiki - 8": false,
+    "MediaWiki talk - 9": false,
+    "Template - 10": false,
+    "Template talk - 11": false,
+    "Help - 12": false,
+    "Help talk - 13": false,
+    "Category - 14": false,
+    "Category talk - 15": false
+  })
+  // const [namespaceInputValue, setNamespaceInputValue] = useState('')
+
+  const namespaces = [ 
+    { namespace: "Main/Article - 0"},
+    { namespace: "Talk - 1"},
+    { namespace: "User - 2"},
+    { namespace: "User talk - 3"},
+    { namespace: "Wikipedia - 4"},
+    { namespace: "Wikipedia talk - 5"},
+    { namespace: "File - 6"},
+    { namespace: "File talk - 7"},
+    { namespace: "MediaWiki - 8"},
+    { namespace: "MediaWiki talk - 9"},
+    { namespace: "Template - 10"},
+    { namespace: "Template talk - 11"},
+    { namespace: "Help - 12"},
+    { namespace: "Help talk - 13"},
+    { namespace: "Category - 14"},
+    { namespace: "Category talk - 15"},
+  ]
 
   const [open, setOpen] = useState(false);
   const [isActiveQuery, setActiveQuery] = useState(false);
@@ -318,6 +344,7 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
 
   const pageFilterOpen = Boolean(pageAnchorEl);
   const id = pageFilterOpen ? 'simple-popover' : undefined;
+  console.log(pageValues)
 
   const handlePageChipClick = (event) => {
     setPageAnchorEl(event.currentTarget)
@@ -326,25 +353,6 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
   const handlePagePopoverClose = () => {
     setPageAnchorEl(null)
   }
-
-  const namespaces = [ 
-    { namespace: "Main/Article - 0", selected: true},
-    { namespace: "Talk - 1", selected: true},
-    { namespace: "User - 2", selected: true},
-    { namespace: "User talk - 3", selected: true},
-    { namespace: "Wikipedia - 4", selected: true},
-    { namespace: "Wikipedia talk - 5", selected: true},
-    { namespace: "File - 6", selected: true},
-    { namespace: "File talk - 7", selected: true},
-    { namespace: "MediaWiki - 8", selected: true},
-    { namespace: "MediaWiki talk - 9", selected: true},
-    { namespace: "Template - 10", selected: true},
-    { namespace: "Template talk - 11", selected: true},
-    { namespace: "Help - 12", selected: true},
-    { namespace: "Help talk - 13", selected: true},
-    { namespace: "Category - 14", selected: true},
-    { namespace: "Category talk - 15", selected: true},
-  ]
   const throttledAutocompleteFetch = useMemo(
     () =>
       throttle((request, callback) => {
@@ -361,17 +369,17 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
   useEffect(() => {
     let active = true;
 
-    if (inputValue === '') {
-      setOptions(values.length > 0 ? values : []);
+    if (pageInputValue === '') {
+      setOptions(pageValues.length > 0 ? pageValues : []);
       return undefined;
     }
 
-    throttledAutocompleteFetch({ input: inputValue }, (results) => {
+    throttledAutocompleteFetch({ input: pageInputValue }, (results) => {
       if (active) {
         let newOptions = [];
 
-        if (values.length > 0) {
-          newOptions = values;
+        if (pageValues.length > 0) {
+          newOptions = pageValues;
         }
 
         if (results) {
@@ -387,7 +395,7 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
       active = false;
       setActiveQuery(false);
     };
-  }, [values, inputValue, throttledAutocompleteFetch]);
+  }, [pageValues, pageInputValue, throttledAutocompleteFetch]);
 
   useEffect(() => {
     if (!open) {
@@ -447,14 +455,14 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
       autoComplete
       includeInputInList
       filterSelectedOptions
-      value={values}
+      value={pageValues}
       onChange={(event, newValues) => {
         setOptions(newValues ? [...newValues, ...options] : options);
-        setValues(newValues);
+        setPageValues(newValues);
         // TODO call onChange with new set of filter criteria
       }}
       onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
+        setPageInputValue(newInputValue);
       }}
       renderInput={(params) => (
         <TextField {...params} 
@@ -478,7 +486,7 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
         ))
       }
       renderOption={(option) => {
-        const matches = match(option.primary_text, inputValue);
+        const matches = match(option.primary_text, pageInputValue);
         const parts = parse(
           option.primary_text,
           matches
@@ -507,13 +515,22 @@ const PageFilterChip = ({className, onChange, ...rest }) => {
       options={namespaces}
       disableCloseOnSelect
       getOptionLabel={(option) => option.namespace}
-      renderOption={(option, { selected }) => (
+      onInputChange={(event, newInputValue) => {
+        setNamespaceInputValue(newInputValue);
+      }}
+      onChange={(event, newInputValue) => {
+
+      }}
+      renderOption={(option) => (
         <React.Fragment>
           <Checkbox
             icon={checkboxIcon}
             checkedIcon={checkboxCheckedIcon}
             style={{ marginRight: 8 }}
-            checked={selected}
+            checked={namespaceValues[option.namespace]}
+            onClick={
+              () => setNamespaceValues({...namespaceValues, [option.namespace]: !namespaceValues[option.namespace]})
+            }
           />
           {option.namespace}
         </React.Fragment>
@@ -648,23 +665,12 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   );
 };
 
-const FilterControls = ({ className, onChange, ...rest }) => {
+const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
+  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, ...rest }) => {
 
   const classes = useStyles();
 
   const [revisionAnchorEl, setRevisionAnchorEl] = useState();
-
-  const [revisionFilter, setRevisionFilter] = useState({
-    largeAdditions: true,
-    smallAdditions: true,
-    neutral: true,
-    smallRemovals: true,
-    largeRemovals: true
-  })
-  const [minorFilter, setMinorFilter] = useState({
-    isMinor: false,
-    isMajor: false
-  })
 
   const WarningMessage = () => {
     if ((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) {
@@ -712,9 +718,30 @@ const FilterControls = ({ className, onChange, ...rest }) => {
           display="flex"
           flexDirection="row"
         >
-          <PageFilterChip onChange={onChange} />
-          <RevisionFilterChip onChange={onChange} revisionFilter={revisionFilter} setRevisionFilter={setRevisionFilter} minorFilter={minorFilter} setMinorFilter={setMinorFilter} revisionAnchorEl={revisionAnchorEl} setRevisionAnchorEl={setRevisionAnchorEl}/>
-          <UserFilterChip onChange={onChange} />
+          <PageFilterChip onChange={onChange} 
+                pageValues={pageValues}
+                setPageValues={setPageValues}
+                pageInputValue={pageInputValue}
+                setPageInputValue={setPageInputValue}
+                options={options}
+                setOptions={setOptions}
+          />
+          <RevisionFilterChip onChange={onChange} 
+          revisionFilter={revisionFilter} 
+          setRevisionFilter={setRevisionFilter} 
+          minorFilter={minorFilter} 
+          setMinorFilter={setMinorFilter} 
+          revisionAnchorEl={revisionAnchorEl} 
+          setRevisionAnchorEl={setRevisionAnchorEl}
+          />
+
+          <UserFilterChip 
+          onChange={onChange} 
+          userTypeFilter={userTypeFilter} 
+          setUserTypeFilter={setUserTypeFilter} 
+          filteredUsernames={filteredUsernames} 
+          setFilteredUsernames={setFilteredUsernames}
+          />
         </Box>
         <WarningMessage />
       </Box>
