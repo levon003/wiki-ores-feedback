@@ -661,11 +661,17 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
         summaryString = "Everything except large removals"
       }
     }
-    if (minorFilter.isMinor && summaryString != "Revision Filters") {
+    if (minorFilter.isMinor && !minorFilter.isMajor && summaryString != "Revision Filters") {
       if (total_checked == 1 || total_checked == 2) {
         summaryString = summaryString.slice(0, 5) + "minor " + summaryString.slice(5)
       } else {
         summaryString = summaryString.slice(0, 18) + "minor " + summaryString.slice(17)
+      }
+    } else if (!minorFilter.isMinor && minorFilter.isMajor && summaryString != "Revision Filters") {
+      if (total_checked == 1 || total_checked == 2) {
+        summaryString = summaryString.slice(0, 5) + "major " + summaryString.slice(5)
+      } else {
+        summaryString = summaryString.slice(0, 18) + "major " + summaryString.slice(17)
       }
     }
     return summaryString
@@ -727,9 +733,9 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
   const [userTypeAnchorEl, setUserTypeAnchorEl] = useState();
 
   const WarningMessage = () => {
-    if ((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) {
+    if (((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) || ((!minorFilter.isMinor) && (!minorFilter.isMajor))) {
       return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
-        Warning: No Revision Filters Selected
+        Warning: Current revision filter selection will not yield any results.
           <Button
             onClick={ () => {
               setRevisionFilter ({
@@ -741,8 +747,8 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
               }  
               )  
               setMinorFilter({
-                isMinor: false,
-                isMajor: false
+                isMinor: true,
+                isMajor: true
               })
               setRevisionAnchorEl(true)  
             }
