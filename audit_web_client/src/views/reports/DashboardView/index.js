@@ -46,6 +46,9 @@ const Dashboard = () => {
     damaging_pred: 0.11111111,
   }]); // TODO should be empty, but has one entry for testing
 
+  // All of this state has been lifted up from the RevisionFilterChip, UserfilterChip, and PageFilterChip components.
+
+  // Revision filter state
   const [revisionFilter, setRevisionFilter] = useState({
     largeAdditions: true,
     smallAdditions: true,
@@ -57,6 +60,8 @@ const Dashboard = () => {
     isMinor: true,
     isMajor: true
   })
+
+  // user filter state
   const [userTypeFilter, setUserTypeFilter] = useState({
     unregistered: true,
     registered: false,
@@ -66,10 +71,31 @@ const Dashboard = () => {
     bots: false
   })
   const [filteredUsernames, setFilteredUsernames] = useState([]);
-  
+
+  // page filter state
   const [pageValues, setPageValues] = useState([]);
   const [pageInputValue, setPageInputValue] = useState('');
   const [options, setOptions] = useState([]);
+
+  const [namespaces, setNamespaces] = useState([ 
+    { namespace: "Main/Article - 0", selected: true},
+    { namespace: "Talk - 1", selected: false},
+    { namespace: "User - 2", selected: false},
+    { namespace: "User talk - 3", selected: false},
+    { namespace: "Wikipedia - 4", selected: false},
+    { namespace: "Wikipedia talk - 5", selected: false},
+    { namespace: "File - 6", selected: false},
+    { namespace: "File talk - 7", selected: false},
+    { namespace: "MediaWiki - 8", selected: false},
+    { namespace: "MediaWiki talk - 9", selected: false},
+    { namespace: "Template - 10", selected: false},
+    { namespace: "Template talk - 11", selected: false},
+    { namespace: "Help - 12", selected: false},
+    { namespace: "Help talk - 13", selected: false},
+    { namespace: "Category - 14", selected: false},
+    { namespace: "Category talk - 15", selected: false},
+  ])
+  const [namespaceSelected, setNameSpaceSelected] = useState(namespaces.filter(namespace => namespace.selected))
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
@@ -186,6 +212,10 @@ const Dashboard = () => {
                 setPageInputValue={setPageInputValue}
                 options={options}
                 setOptions={setOptions}
+                namespaceSelected={namespaceSelected}
+                setNameSpaceSelected={setNameSpaceSelected}
+                namespaces={namespaces}
+                setNamespaces={setNamespaces}
             />
           </Grid>
           <Grid

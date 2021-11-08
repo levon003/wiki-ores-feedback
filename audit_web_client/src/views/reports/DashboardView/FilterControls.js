@@ -325,48 +325,9 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
   );
 };
 
-const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, ...rest }) => {
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, ...rest }) => {
 
   const classes = useStyles();
-
-  const [namespaceValues, setNamespaceValues] = useState({
-    "Main/Article - 0": true,
-    "Talk - 1": false,
-    "User - 2": false,
-    "User talk - 3": false,
-    "Wikipedia - 4": false, 
-    "Wikipedia talk - 5": false,
-    "File - 6": false,
-    "File talk - 7": false,
-    "MediaWiki - 8": false,
-    "MediaWiki talk - 9": false,
-    "Template - 10": false,
-    "Template talk - 11": false,
-    "Help - 12": false,
-    "Help talk - 13": false,
-    "Category - 14": false,
-    "Category talk - 15": false
-  })
-  const [namespaceInputValue, setNamespaceInputValue] = useState('')
-
-  const namespaces = [ 
-    { namespace: "Main/Article - 0"},
-    { namespace: "Talk - 1"},
-    { namespace: "User - 2"},
-    { namespace: "User talk - 3"},
-    { namespace: "Wikipedia - 4"},
-    { namespace: "Wikipedia talk - 5"},
-    { namespace: "File - 6"},
-    { namespace: "File talk - 7"},
-    { namespace: "MediaWiki - 8"},
-    { namespace: "MediaWiki talk - 9"},
-    { namespace: "Template - 10"},
-    { namespace: "Template talk - 11"},
-    { namespace: "Help - 12"},
-    { namespace: "Help talk - 13"},
-    { namespace: "Category - 14"},
-    { namespace: "Category talk - 15"},
-  ]
 
   const [open, setOpen] = useState(false);
   const [isActiveQuery, setActiveQuery] = useState(false);
@@ -573,26 +534,21 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
     />
     <Autocomplete
       multiple
-      id="checkboxes-tags-demo"
+      id="namespace-filter"
+      value={namespaceSelected}
       options={namespaces}
       disableCloseOnSelect
       getOptionLabel={(option) => option.namespace}
-      onInputChange={(event, newInputValue) => {
-        setNamespaceInputValue(newInputValue);
+      onChange={(event, newValues) => {
+        setNameSpaceSelected(newValues)
       }}
-      onChange={(event, newInputValue) => {
-
-      }}
-      renderOption={(option) => (
+      renderOption={(option, { selected }) => (
         <React.Fragment>
           <Checkbox
             icon={checkboxIcon}
             checkedIcon={checkboxCheckedIcon}
             style={{ marginRight: 8 }}
-            checked={namespaceValues[option.namespace]}
-            onClick={
-              () => setNamespaceValues({...namespaceValues, [option.namespace]: !namespaceValues[option.namespace]})
-            }
+            checked={selected}
           />
           {option.namespace}
         </React.Fragment>
@@ -760,7 +716,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 };
 
 const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
-  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, ...rest }) => {
+  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, ...rest }) => {
 
   const classes = useStyles();
 
@@ -837,30 +793,34 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
           flexDirection="row"
         >
           <PageFilterChip onChange={onChange} 
-                pageValues={pageValues}
-                setPageValues={setPageValues}
-                pageInputValue={pageInputValue}
-                setPageInputValue={setPageInputValue}
-                options={options}
-                setOptions={setOptions}
+              pageValues={pageValues}
+              setPageValues={setPageValues}
+              pageInputValue={pageInputValue}
+              setPageInputValue={setPageInputValue}
+              options={options}
+              setOptions={setOptions}
+              namespaceSelected={namespaceSelected}
+              setNameSpaceSelected={setNameSpaceSelected}
+              namespaces={namespaces}
+              setNamespaces={setNamespaces}
           />
           <RevisionFilterChip onChange={onChange} 
-          revisionFilter={revisionFilter} 
-          setRevisionFilter={setRevisionFilter} 
-          minorFilter={minorFilter} 
-          setMinorFilter={setMinorFilter} 
-          revisionAnchorEl={revisionAnchorEl} 
-          setRevisionAnchorEl={setRevisionAnchorEl}
+            revisionFilter={revisionFilter} 
+            setRevisionFilter={setRevisionFilter} 
+            minorFilter={minorFilter} 
+            setMinorFilter={setMinorFilter} 
+            revisionAnchorEl={revisionAnchorEl} 
+            setRevisionAnchorEl={setRevisionAnchorEl}
           />
 
           <UserFilterChip 
-          onChange={onChange} 
-          userTypeFilter={userTypeFilter} 
-          setUserTypeFilter={setUserTypeFilter} 
-          filteredUsernames={filteredUsernames} 
-          setFilteredUsernames={setFilteredUsernames}
-          userTypeAnchorEl={userTypeAnchorEl}
-          setUserTypeAnchorEl={setUserTypeAnchorEl}
+            onChange={onChange} 
+            userTypeFilter={userTypeFilter} 
+            setUserTypeFilter={setUserTypeFilter} 
+            filteredUsernames={filteredUsernames} 
+            setFilteredUsernames={setFilteredUsernames}
+            userTypeAnchorEl={userTypeAnchorEl}
+            setUserTypeAnchorEl={setUserTypeAnchorEl}
           />
         </Box>
         <WarningMessage />
