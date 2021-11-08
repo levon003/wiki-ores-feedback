@@ -224,7 +224,7 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
         vertical: 'top',
         horizontal: 'center',
       }}>
-        User Filters Popup Placeholder
+        <p style={{margin: 5, fontSize: 12}}>User Filters Popup Placeholder</p>
         {/* TODO: add something here */}
     </Popover>
       <Popover
@@ -248,7 +248,7 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
             subheader={
               <ListItem>
                 <ListItemText component="div" id="user-type-list-subheader">
-                  Filter users by type
+                  Filter by User Type
                 </ListItemText>
               </ListItem>
             }
@@ -317,7 +317,7 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
           <Button
             onClick={handleUserFilterReset}
           >
-          Reset to defaults
+          Reset to default
           </Button>
         </Paper>
       </Popover>
@@ -425,33 +425,36 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
 
   return (
     <Box
-    display="flex"
-    flexDirection="row"
-    flexWrap="nowrap">
-    <Chip clickable label="Page Filters" onClick={handlePageChipClick}/>
-    <IconButton color="primary" size="small" onClick={handleIconClick}>
-      <HelpIcon/>
-    </IconButton>
-    <Popover
-      id={helpID}
-      open={pageHelpOpen}
-      anchorEl={pageHelpPopup}
+      display="flex"
+      flexDirection="row"
+      flexWrap="nowrap">
+      <Chip clickable label="Page Filters" onClick={handlePageChipClick}/>
+      <IconButton color="primary" size="small" onClick={handleIconClick}>
+        <HelpIcon/>
+      </IconButton>
+      <Popover
+        id={helpID}
+        open={pageHelpOpen}
+        anchorEl={pageHelpPopup}
         onClose={handleIconClickClose}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
         }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}>
-        Page Filters Popup Placeholder
-        {/* TODO: add something here */}
-    </Popover>
-    <Popover
-      id={id}
-      open={pageFilterOpen}
-      anchorEl={pageAnchorEl}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <p style={{margin: 5, fontSize: 12}}>
+          Page Filters Popup Placeholder
+          {/* TODO: add something here */}
+        </p>
+      </Popover>
+      <Popover
+        id={id}
+        open={pageFilterOpen}
+        anchorEl={pageAnchorEl}
         onClose={handlePagePopoverClose}
         anchorOrigin={{
           vertical: 'bottom',
@@ -691,7 +694,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
           vertical: 'top',
           horizontal: 'center',
         }}>
-          <a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank">Minor Edit Definition</a>
+          <p style={{margin: 5, fontSize: 12}}><a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank">Minor Edit Definition</a></p>
           {/* TODO: add something here */}
       </Popover>
       <Popover
@@ -745,7 +748,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
             }
             }
             >
-            Reset to defaults
+            Reset to default
           </Button>
         </Box>
     }
@@ -767,7 +770,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
           }
           }
           >
-          Reset to defaults
+          Reset to default
         </Button>
       </Box>
       
@@ -791,7 +794,9 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         <Box
           display="flex"
           flexDirection="row"
+          style= {{ paddingTop : 10, paddingLeft : 10}}
         >
+<<<<<<< HEAD
           <PageFilterChip onChange={onChange} 
               pageValues={pageValues}
               setPageValues={setPageValues}
@@ -821,6 +826,36 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
             setFilteredUsernames={setFilteredUsernames}
             userTypeAnchorEl={userTypeAnchorEl}
             setUserTypeAnchorEl={setUserTypeAnchorEl}
+=======
+          <PageFilterChip 
+                onChange={onChange} 
+                pageValues={pageValues}
+                setPageValues={setPageValues}
+                pageInputValue={pageInputValue}
+                setPageInputValue={setPageInputValue}
+                options={options}
+                setOptions={setOptions}
+          />
+
+          <RevisionFilterChip
+                onChange={onChange} 
+                revisionFilter={revisionFilter} 
+                setRevisionFilter={setRevisionFilter} 
+                minorFilter={minorFilter} 
+                setMinorFilter={setMinorFilter} 
+                revisionAnchorEl={revisionAnchorEl} 
+                setRevisionAnchorEl={setRevisionAnchorEl}
+          />
+
+          <UserFilterChip 
+                onChange={onChange} 
+                userTypeFilter={userTypeFilter} 
+                setUserTypeFilter={setUserTypeFilter} 
+                filteredUsernames={filteredUsernames} 
+                setFilteredUsernames={setFilteredUsernames}
+                userTypeAnchorEl={userTypeAnchorEl}
+                setUserTypeAnchorEl={setUserTypeAnchorEl}
+>>>>>>> 354143577de4d39cf7b54d507b7afbf109b32852
           />
         </Box>
         <WarningMessage />
