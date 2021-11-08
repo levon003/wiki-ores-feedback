@@ -796,7 +796,6 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
           flexDirection="row"
           style= {{ paddingTop : 10, paddingLeft : 10}}
         >
-<<<<<<< HEAD
           <PageFilterChip onChange={onChange} 
               pageValues={pageValues}
               setPageValues={setPageValues}
@@ -826,36 +825,6 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
             setFilteredUsernames={setFilteredUsernames}
             userTypeAnchorEl={userTypeAnchorEl}
             setUserTypeAnchorEl={setUserTypeAnchorEl}
-=======
-          <PageFilterChip 
-                onChange={onChange} 
-                pageValues={pageValues}
-                setPageValues={setPageValues}
-                pageInputValue={pageInputValue}
-                setPageInputValue={setPageInputValue}
-                options={options}
-                setOptions={setOptions}
-          />
-
-          <RevisionFilterChip
-                onChange={onChange} 
-                revisionFilter={revisionFilter} 
-                setRevisionFilter={setRevisionFilter} 
-                minorFilter={minorFilter} 
-                setMinorFilter={setMinorFilter} 
-                revisionAnchorEl={revisionAnchorEl} 
-                setRevisionAnchorEl={setRevisionAnchorEl}
-          />
-
-          <UserFilterChip 
-                onChange={onChange} 
-                userTypeFilter={userTypeFilter} 
-                setUserTypeFilter={setUserTypeFilter} 
-                filteredUsernames={filteredUsernames} 
-                setFilteredUsernames={setFilteredUsernames}
-                userTypeAnchorEl={userTypeAnchorEl}
-                setUserTypeAnchorEl={setUserTypeAnchorEl}
->>>>>>> 354143577de4d39cf7b54d507b7afbf109b32852
           />
         </Box>
         <WarningMessage />
