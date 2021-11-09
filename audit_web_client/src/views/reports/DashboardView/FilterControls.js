@@ -364,6 +364,8 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
   const handleIconClickClose = () => {
     setPageHelpPopup(null)
   }
+  console.log(namespaces)
+  console.log(namespaceSelected)
 
   const handlePageFilterReset = (event) => {
     setNamespaces ([
@@ -384,9 +386,9 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
         { namespace: "Category - 14", selected: false},
         { namespace: "Category talk - 15", selected: false}
     ]);
-    setNameSpaceSelected ([ //appears in bar
-      { namespace: "Main/Article - 0", selected: true},
-    ]); 
+    setNameSpaceSelected ( //appears in bar
+      namespaces.filter(namespace => namespace.selected),
+    ); 
     //todo: this button should not uncheck the main/article - 0, also makes a duplicate of "main/article-0" in the bar because of that
     console.log(namespaces[0].selected) //todo: delete
     console.log(namespaceSelected[0].selected) //todo: delete
@@ -671,6 +673,7 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
       options={namespaces}
       disableCloseOnSelect
       getOptionLabel={(option) => option.namespace}
+      getOptionSelected={(option, value) => option.namespace === value.namespace}
       onChange={(event, newValues) => {
         setNameSpaceSelected(newValues)
       }}
@@ -1053,7 +1056,11 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
       
     }
     // TODO: this works if index.js namespaces are all set to false
-    else if ((!namespaces[0].selected) && (!namespaces[1].selected) && (!namespaces[2].selected) && (!namespaces[3].selected) && (!namespaces[4].selected) && (!namespaces[5].selected) && (!namespaces[6].selected) && (!namespaces[7].selected) && (!namespaces[8].selected) && (!namespaces[9].selected) && (!namespaces[10].selected) && (!namespaces[11].selected) && (!namespaces[12].selected) && (!namespaces[13].selected) && (!namespaces[14].selected) && (!namespaces[15].selected)) {
+    // delete?
+    // else if ((!namespaces[0].selected) && (!namespaces[1].selected) && (!namespaces[2].selected) && (!namespaces[3].selected) && (!namespaces[4].selected) && (!namespaces[5].selected) && (!namespaces[6].selected) && (!namespaces[7].selected) && (!namespaces[8].selected) && (!namespaces[9].selected) && (!namespaces[10].selected) && (!namespaces[11].selected) && (!namespaces[12].selected) && (!namespaces[13].selected) && (!namespaces[14].selected) && (!namespaces[15].selected))
+
+    // only need to check if any namespaces are selected
+    else if (namespaceSelected.length === 0) {
       return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
       Warning: No Page Filters Selected
         <Button
