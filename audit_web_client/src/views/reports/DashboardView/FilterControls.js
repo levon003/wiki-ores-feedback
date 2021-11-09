@@ -325,13 +325,20 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
   );
 };
 
-const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, ...rest }) => {
-
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedToInputValue, setLinkedToInputValue, linkedToOptions, setLinkedToOptions, linkedFromValues, setLinkedFromValues, linkedFromInputValue, setLinkedFromInputValue, linkedFromOptions, setLinkedFromOptions, ...rest }) => {
   const classes = useStyles();
 
   const [open, setOpen] = useState(false);
   const [isActiveQuery, setActiveQuery] = useState(false);
   const loading = open && isActiveQuery;
+
+  const [linkedToOpen, setLinkedToOpen] = useState(false);
+  const [linkedToActiveQuery, setLinkedToActiveQuery] = useState(false);
+  const linkedToLoading = linkedToOpen && linkedToActiveQuery;
+
+  const [linkedFromOpen, setLinkedFromOpen] = useState(false);
+  const [linkedFromActiveQuery, setLinkedFromActiveQuery] = useState(false);
+  const linkedFromLoading = linkedFromOpen && linkedFromActiveQuery;
 
   const [pageAnchorEl, setPageAnchorEl] = useState();
   const [pageHelpPopup, setPageHelpPopup] = useState();
@@ -362,7 +369,7 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
     // TODO: add
 };
 
-  const throttledAutocompleteFetch = useMemo(
+  const specificThrottledAutocompleteFetch = useMemo(
     () =>
       throttle((request, callback) => {
         setActiveQuery(true);
@@ -374,7 +381,32 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
       }, 200),
     [],
   );
+  const linkedToThrottledAutocompleteFetch = useMemo(
+    () =>
+      throttle((request, callback) => {
+        setLinkedToActiveQuery(true);
+        const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(request.input);
+        fetch(page_autocomplete_url, {method: 'GET'})
+          .then(res => res.json())
+          .then(data => data.options)
+          .then(callback);
+      }, 200),
+    [],
+  );
+  const linkedFromThrottledAutocompleteFetch = useMemo(
+    () =>
+      throttle((request, callback) => {
+        setLinkedFromActiveQuery(true);
+        const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(request.input);
+        fetch(page_autocomplete_url, {method: 'GET'})
+          .then(res => res.json())
+          .then(data => data.options)
+          .then(callback);
+      }, 200),
+    [],
+  );
 
+  // use effect for specific page filters
   useEffect(() => {
     let active = true;
 
@@ -383,7 +415,7 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
       return undefined;
     }
 
-    throttledAutocompleteFetch({ input: pageInputValue }, (results) => {
+    specificThrottledAutocompleteFetch({ input: pageInputValue }, (results) => {
       if (active) {
         let newOptions = [];
 
@@ -404,13 +436,87 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
       active = false;
       setActiveQuery(false);
     };
-  }, [pageValues, pageInputValue, throttledAutocompleteFetch]);
+  }, [pageValues, pageInputValue, specificThrottledAutocompleteFetch]);
+  
+  // use effect for linked to autocomplete
+  useEffect(() => {
+    let active = true;
+
+    if (linkedToInputValue === '') {
+      setLinkedToOptions(linkedToValues.length > 0 ? linkedToValues : []);
+      return undefined;
+    }
+
+    linkedToThrottledAutocompleteFetch({ input: linkedToInputValue }, (results) => {
+      if (active) {
+        let newOptions = [];
+
+        if (linkedToValues.length > 0) {
+          newOptions = linkedToValues;
+        }
+
+        if (results) {
+          newOptions = [...newOptions, ...results];
+        }
+
+        setLinkedToOptions(newOptions);
+        setLinkedToActiveQuery(false);
+      }
+    });
+
+    return () => {
+      active = false;
+      setLinkedToActiveQuery(false);
+    };
+  }, [linkedToValues, linkedToInputValue, linkedToThrottledAutocompleteFetch]);
+
+  // use effect for linked from autocomplete
+  useEffect(() => {
+    let active = true;
+
+    if (linkedFromInputValue === '') {
+      setLinkedToOptions(linkedFromValues.length > 0 ? linkedFromValues : []);
+      return undefined;
+    }
+
+    linkedFromThrottledAutocompleteFetch({ input: linkedFromInputValue }, (results) => {
+      if (active) {
+        let newOptions = [];
+
+        if (linkedFromValues.length > 0) {
+          newOptions = linkedFromValues;
+        }
+
+        if (results) {
+          newOptions = [...newOptions, ...results];
+        }
+
+        setLinkedFromOptions(newOptions);
+        setLinkedFromActiveQuery(false);
+      }
+    });
+
+    return () => {
+      active = false;
+      setLinkedFromActiveQuery(false);
+    };
+  }, [linkedFromValues, linkedFromInputValue, linkedFromThrottledAutocompleteFetch]);
 
   useEffect(() => {
     if (!open) {
       setOptions([]);
     }
   }, [open]);
+  useEffect(() => {
+    if (!linkedToOpen) {
+      setLinkedToOptions([]);
+    }
+  }, [linkedToOpen]);
+  useEffect(() => {
+    if (!linkedFromOpen) {
+      setLinkedFromOptions([]);
+    }
+  }, [linkedFromOpen]);
 
   const getAutocompleteOptions = (queryString) => {
     // TODO ensure this is safe to delete
@@ -560,6 +666,148 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
       renderInput={(params) => (
         <TextField {...params} variant="outlined" label="Namespaces" placeholder="Namespace" />
       )}
+    />
+    <Autocomplete
+      multiple
+      id="linked-to"
+      style={{ width: 300 }}
+      open={linkedToOpen}
+      onOpen={() => {
+        setLinkedToOpen(true);
+      }}
+      onClose={() => {
+        setLinkedToOpen(false);
+      }}
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
+      filterOptions={(x) => x}
+      options={linkedToOptions}
+      autoComplete
+      includeInputInList
+      filterSelectedOptions
+      value={linkedToValues}
+      onChange={(event, newValues) => {
+        setLinkedToOptions(newValues ? [...newValues, ...linkedToOptions] : linkedToOptions);
+        setLinkedToValues(newValues);
+        // TODO call onChange with new set of filter criteria
+      }}
+      onInputChange={(event, newInputValue) => {
+        setLinkedToInputValue(newInputValue);
+      }}
+      renderInput={(params) => (
+        <TextField {...params} 
+          label="Linked to" 
+          variant="outlined" 
+          fullWidth 
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {linkedToLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+          />
+      )}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip label={option.primary_text} {...getTagProps({ index })} />
+        ))
+      }
+      renderOption={(option) => {
+        const matches = match(option.primary_text, linkedToInputValue);
+        const parts = parse(
+          option.primary_text,
+          matches
+        );
+
+        return (
+          <Grid container alignItems="center">
+            <Grid item xs>
+              {parts.map((part, index) => (
+                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                  {part.text}
+                </span>
+              ))}
+
+              <Typography variant="body2" color="textSecondary">
+                {option.secondary_text}
+              </Typography>
+            </Grid>
+          </Grid>
+        );
+      }}
+    />
+    <Autocomplete
+      multiple
+      id="linked-from"
+      style={{ width: 300 }}
+      open={linkedFromOpen}
+      onOpen={() => {
+        setLinkedFromOpen(true);
+      }}
+      onClose={() => {
+        setLinkedFromOpen(false);
+      }}
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
+      filterOptions={(x) => x}
+      options={linkedFromOptions}
+      autoComplete
+      includeInputInList
+      filterSelectedOptions
+      value={linkedFromValues}
+      onChange={(event, newValues) => {
+        setLinkedFromOptions(newValues ? [...newValues, ...linkedFromOptions] : linkedFromOptions);
+        setLinkedFromValues(newValues);
+        // TODO call onChange with new set of filter criteria
+      }}
+      onInputChange={(event, newInputValue) => {
+        setLinkedFromInputValue(newInputValue);
+      }}
+      renderInput={(params) => (
+        <TextField {...params} 
+          label="Linked from" 
+          variant="outlined" 
+          fullWidth 
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {linkedFromLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+          />
+      )}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip label={option.primary_text} {...getTagProps({ index })} />
+        ))
+      }
+      renderOption={(option) => {
+        const matches = match(option.primary_text, linkedFromInputValue);
+        const parts = parse(
+          option.primary_text,
+          matches
+        );
+
+        return (
+          <Grid container alignItems="center">
+            <Grid item xs>
+              {parts.map((part, index) => (
+                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                  {part.text}
+                </span>
+              ))}
+
+              <Typography variant="body2" color="textSecondary">
+                {option.secondary_text}
+              </Typography>
+            </Grid>
+          </Grid>
+        );
+      }}
     />
     <Button
       onClick={handlePageFilterReset}
@@ -725,7 +973,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 };
 
 const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
-  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, ...rest }) => {
+  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedToInputValue, setLinkedToInputValue, linkedToOptions, setLinkedToOptions, linkedFromValues, setLinkedFromValues, linkedFromInputValue, setLinkedFromInputValue, linkedFromOptions, setLinkedFromOptions, ...rest }) => {
 
   const classes = useStyles();
 
@@ -813,6 +1061,18 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
               setNameSpaceSelected={setNameSpaceSelected}
               namespaces={namespaces}
               setNamespaces={setNamespaces}
+              linkedToValues={linkedToValues}
+              setLinkedToValues={setLinkedToValues}
+              linkedToInputValue={linkedToInputValue}
+              setLinkedToInputValue={setLinkedToInputValue}
+              linkedToOptions={linkedToOptions}
+              setLinkedToOptions={setLinkedToOptions}
+              linkedFromValues={linkedFromValues}
+              setLinkedFromValues={setLinkedFromValues}
+              linkedFromInputValue={linkedFromInputValue}
+              setLinkedFromInputValue={setLinkedFromInputValue}
+              linkedFromOptions={linkedFromOptions}
+              setLinkedFromOptions={setLinkedFromOptions}
           />
           <RevisionFilterChip onChange={onChange} 
             revisionFilter={revisionFilter} 

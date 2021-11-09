@@ -96,6 +96,14 @@ const Dashboard = () => {
     { namespace: "Category talk - 15", selected: false},
   ])
   const [namespaceSelected, setNameSpaceSelected] = useState(namespaces.filter(namespace => namespace.selected))
+
+  const [linkedToValues, setLinkedToValues] = useState([])
+  const [linkedToInputValue, setLinkedToInputValue] = useState('')
+  const [linkedToOptions, setLinkedToOptions] = useState([])
+
+  const [linkedFromValues, setLinkedFromValues] = useState([])
+  const [linkedFromInputValue, setLinkedFromInputValue] = useState('')
+  const [linkedFromOptions, setLinkedFromOptions] = useState([])
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
@@ -216,6 +224,18 @@ const Dashboard = () => {
                 setNameSpaceSelected={setNameSpaceSelected}
                 namespaces={namespaces}
                 setNamespaces={setNamespaces}
+                linkedToValues={linkedToValues}
+                setLinkedToValues={setLinkedToValues}
+                linkedToInputValue={linkedToInputValue}
+                setLinkedToInputValue={setLinkedToInputValue}
+                linkedToOptions={linkedToOptions}
+                setLinkedToOptions={setLinkedToOptions}
+                linkedFromValues={linkedFromValues}
+                setLinkedFromValues={setLinkedFromValues}
+                linkedFromInputValue={linkedFromInputValue}
+                setLinkedFromInputValue={setLinkedFromInputValue}
+                linkedFromOptions={linkedFromOptions}
+                setLinkedFromOptions={setLinkedFromOptions}
             />
           </Grid>
           <Grid
