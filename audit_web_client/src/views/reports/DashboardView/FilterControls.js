@@ -366,7 +366,30 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
   }
 
   const handlePageFilterReset = (event) => {
-    // TODO: add
+    setNamespaces ([
+        { namespace: "Main/Article - 0", selected: true},
+        { namespace: "Talk - 1", selected: false},
+        { namespace: "User - 2", selected: false},
+        { namespace: "User talk - 3", selected: false},
+        { namespace: "Wikipedia - 4", selected: false},
+        { namespace: "Wikipedia talk - 5", selected: false},
+        { namespace: "File - 6", selected: false},
+        { namespace: "File talk - 7", selected: false},
+        { namespace: "MediaWiki - 8", selected: false},
+        { namespace: "MediaWiki talk - 9", selected: false},
+        { namespace: "Template - 10", selected: false},
+        { namespace: "Template talk - 11", selected: false},
+        { namespace: "Help - 12", selected: false},
+        { namespace: "Help talk - 13", selected: false},
+        { namespace: "Category - 14", selected: false},
+        { namespace: "Category talk - 15", selected: false}
+    ]);
+    setNameSpaceSelected ([ //appears in bar
+      { namespace: "Main/Article - 0", selected: true},
+    ]); 
+    //todo: this button should not uncheck the main/article - 0, also makes a duplicate of "main/article-0" in the bar because of that
+    console.log(namespaces[0].selected) //todo: delete
+    console.log(namespaceSelected[0].selected) //todo: delete
 };
 
   const specificThrottledAutocompleteFetch = useMemo(
@@ -1028,6 +1051,24 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         </Button>
       </Box>
       
+    }
+    // TODO: this works if index.js namespaces are all set to false
+    else if ((!namespaces[0].selected) && (!namespaces[1].selected) && (!namespaces[2].selected) && (!namespaces[3].selected) && (!namespaces[4].selected) && (!namespaces[5].selected) && (!namespaces[6].selected) && (!namespaces[7].selected) && (!namespaces[8].selected) && (!namespaces[9].selected) && (!namespaces[10].selected) && (!namespaces[11].selected) && (!namespaces[12].selected) && (!namespaces[13].selected) && (!namespaces[14].selected) && (!namespaces[15].selected)) {
+      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
+      Warning: No Page Filters Selected
+        <Button
+          onClick={ () => {
+            alert("works")
+            //todo: same as reset to default
+
+            //todo: open popup
+            //setPageAnchorEl(true)
+          }
+          }
+          >
+          Reset to default
+        </Button>
+      </Box>  
     }
     else {
       return null
