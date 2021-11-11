@@ -325,7 +325,7 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
   );
 };
 
-const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, ...rest }) => {
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, ...rest }) => {
   const classes = useStyles();
 
   const [linkedToInputValue, setLinkedToInputValue] = useState('')
@@ -354,6 +354,29 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespa
   const pageFilterOpen = Boolean(pageAnchorEl);
   const id = pageFilterOpen ? 'simple-popover' : undefined;
 
+  const namespaces = [ 
+    { namespace: "Main/Article - 0"},
+    { namespace: "Talk - 1"},
+    { namespace: "User - 2"},
+    { namespace: "User talk - 3"},
+    { namespace: "Wikipedia - 4"},
+    { namespace: "Wikipedia talk - 5"},
+    { namespace: "File - 6"},
+    { namespace: "File talk - 7"},
+    { namespace: "MediaWiki - 8"},
+    { namespace: "MediaWiki talk - 9"},
+    { namespace: "Template - 10"},
+    { namespace: "Template talk - 11"},
+    { namespace: "Help - 12"},
+    { namespace: "Help talk - 13"},
+    { namespace: "Category - 14"},
+    { namespace: "Category talk - 15"},
+    { namespace: "Portal - 100"},
+    { namespace: "Portal talk - 101"},
+    { namespace: "Draft - 118"},
+    { namespace: "Draft talk - 119"}
+  ]
+  
   const handlePageChipClick = (event) => {
     setPageAnchorEl(event.currentTarget)
   }
@@ -372,30 +395,10 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespa
   const handleIconClickClose = () => {
     setPageHelpPopup(null)
   }
-  console.log(namespaces)
-  console.log(namespaceSelected)
 
   const handlePageFilterReset = (event) => {
-    setNamespaces ([
-        { namespace: "Main/Article - 0", selected: true},
-        { namespace: "Talk - 1", selected: false},
-        { namespace: "User - 2", selected: false},
-        { namespace: "User talk - 3", selected: false},
-        { namespace: "Wikipedia - 4", selected: false},
-        { namespace: "Wikipedia talk - 5", selected: false},
-        { namespace: "File - 6", selected: false},
-        { namespace: "File talk - 7", selected: false},
-        { namespace: "MediaWiki - 8", selected: false},
-        { namespace: "MediaWiki talk - 9", selected: false},
-        { namespace: "Template - 10", selected: false},
-        { namespace: "Template talk - 11", selected: false},
-        { namespace: "Help - 12", selected: false},
-        { namespace: "Help talk - 13", selected: false},
-        { namespace: "Category - 14", selected: false},
-        { namespace: "Category talk - 15", selected: false}
-    ]);
     setNameSpaceSelected ( //appears in bar
-      namespaces.filter(namespace => namespace.selected),
+      namespaces.filter(namespace => namespace.namespace === "Main/Article - 0"),
     ); 
     setPageValues([])
     setLinkedToValues([])
@@ -1007,7 +1010,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 };
 
 const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
-  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, ...rest }) => {
+  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, ...rest }) => {
 
   const classes = useStyles();
 
@@ -1074,27 +1077,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
       Warning: No Page Filters Selected
         <Button
           onClick={ () => {
-            setNamespaces ([
-              { namespace: "Main/Article - 0", selected: true},
-              { namespace: "Talk - 1", selected: false},
-              { namespace: "User - 2", selected: false},
-              { namespace: "User talk - 3", selected: false},
-              { namespace: "Wikipedia - 4", selected: false},
-              { namespace: "Wikipedia talk - 5", selected: false},
-              { namespace: "File - 6", selected: false},
-              { namespace: "File talk - 7", selected: false},
-              { namespace: "MediaWiki - 8", selected: false},
-              { namespace: "MediaWiki talk - 9", selected: false},
-              { namespace: "Template - 10", selected: false},
-              { namespace: "Template talk - 11", selected: false},
-              { namespace: "Help - 12", selected: false},
-              { namespace: "Help talk - 13", selected: false},
-              { namespace: "Category - 14", selected: false},
-              { namespace: "Category talk - 15", selected: false}
-          ]);
-          setNameSpaceSelected ( //appears in bar
-            namespaces.filter(namespace => namespace.selected),
-          ); 
+          setNameSpaceSelected([{namespace: "Main/Article - 0"}]); 
           setPageAnchorEl(true)
           }
           }
@@ -1129,8 +1112,6 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
               setPageValues={setPageValues}
               namespaceSelected={namespaceSelected}
               setNameSpaceSelected={setNameSpaceSelected}
-              namespaces={namespaces}
-              setNamespaces={setNamespaces}
               linkedToValues={linkedToValues}
               setLinkedToValues={setLinkedToValues}
               linkedFromValues={linkedFromValues}
