@@ -325,7 +325,7 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
   );
 };
 
-const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, ...rest }) => {
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, ...rest }) => {
   const classes = useStyles();
 
   const [linkedToInputValue, setLinkedToInputValue] = useState('')
@@ -349,7 +349,6 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespa
   const [linkedFromActiveQuery, setLinkedFromActiveQuery] = useState(false);
   const linkedFromLoading = linkedFromOpen && linkedFromActiveQuery;
 
-  const [pageAnchorEl, setPageAnchorEl] = useState();
   const [pageHelpPopup, setPageHelpPopup] = useState();
 
   const pageFilterOpen = Boolean(pageAnchorEl);
@@ -398,7 +397,9 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespa
     setNameSpaceSelected ( //appears in bar
       namespaces.filter(namespace => namespace.selected),
     ); 
-    //todo: this button should not uncheck the main/article - 0, also makes a duplicate of "main/article-0" in the bar because of that
+    setPageValues([])
+    setLinkedToValues([])
+    setLinkedFromValues([])
 };
 
   const specificThrottledAutocompleteFetch = useMemo(
@@ -1012,6 +1013,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
 
   const [revisionAnchorEl, setRevisionAnchorEl] = useState();
   const [userTypeAnchorEl, setUserTypeAnchorEl] = useState();
+  const [pageAnchorEl, setPageAnchorEl] = useState();
 
   const WarningMessage = () => {
     if (((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) || ((!minorFilter.isMinor) && (!minorFilter.isMajor))) {
@@ -1072,11 +1074,28 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
       Warning: No Page Filters Selected
         <Button
           onClick={ () => {
-            alert("works")
-            //todo: same as reset to default
-
-            //todo: open popup
-            //setPageAnchorEl(true)
+            setNamespaces ([
+              { namespace: "Main/Article - 0", selected: true},
+              { namespace: "Talk - 1", selected: false},
+              { namespace: "User - 2", selected: false},
+              { namespace: "User talk - 3", selected: false},
+              { namespace: "Wikipedia - 4", selected: false},
+              { namespace: "Wikipedia talk - 5", selected: false},
+              { namespace: "File - 6", selected: false},
+              { namespace: "File talk - 7", selected: false},
+              { namespace: "MediaWiki - 8", selected: false},
+              { namespace: "MediaWiki talk - 9", selected: false},
+              { namespace: "Template - 10", selected: false},
+              { namespace: "Template talk - 11", selected: false},
+              { namespace: "Help - 12", selected: false},
+              { namespace: "Help talk - 13", selected: false},
+              { namespace: "Category - 14", selected: false},
+              { namespace: "Category talk - 15", selected: false}
+          ]);
+          setNameSpaceSelected ( //appears in bar
+            namespaces.filter(namespace => namespace.selected),
+          ); 
+          setPageAnchorEl(true)
           }
           }
           >
@@ -1116,6 +1135,8 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
               setLinkedToValues={setLinkedToValues}
               linkedFromValues={linkedFromValues}
               setLinkedFromValues={setLinkedFromValues}
+              pageAnchorEl={pageAnchorEl}
+              setPageAnchorEl={setPageAnchorEl}
           />
           <RevisionFilterChip onChange={onChange} 
             revisionFilter={revisionFilter} 
