@@ -74,8 +74,6 @@ const Dashboard = () => {
 
   // page filter state
   const [pageValues, setPageValues] = useState([]);
-  const [pageInputValue, setPageInputValue] = useState('');
-  const [options, setOptions] = useState([]);
 
   const [namespaces, setNamespaces] = useState([ 
     { namespace: "Main/Article - 0", selected: true},
@@ -98,12 +96,8 @@ const Dashboard = () => {
   const [namespaceSelected, setNameSpaceSelected] = useState(namespaces.filter(namespace => namespace.selected))
 
   const [linkedToValues, setLinkedToValues] = useState([])
-  const [linkedToInputValue, setLinkedToInputValue] = useState('')
-  const [linkedToOptions, setLinkedToOptions] = useState([])
 
   const [linkedFromValues, setLinkedFromValues] = useState([])
-  const [linkedFromInputValue, setLinkedFromInputValue] = useState('')
-  const [linkedFromOptions, setLinkedFromOptions] = useState([])
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
@@ -216,26 +210,14 @@ const Dashboard = () => {
                 setFilteredUsernames={setFilteredUsernames}
                 pageValues={pageValues}
                 setPageValues={setPageValues}
-                pageInputValue={pageInputValue}
-                setPageInputValue={setPageInputValue}
-                options={options}
-                setOptions={setOptions}
                 namespaceSelected={namespaceSelected}
                 setNameSpaceSelected={setNameSpaceSelected}
                 namespaces={namespaces}
                 setNamespaces={setNamespaces}
                 linkedToValues={linkedToValues}
                 setLinkedToValues={setLinkedToValues}
-                linkedToInputValue={linkedToInputValue}
-                setLinkedToInputValue={setLinkedToInputValue}
-                linkedToOptions={linkedToOptions}
-                setLinkedToOptions={setLinkedToOptions}
                 linkedFromValues={linkedFromValues}
                 setLinkedFromValues={setLinkedFromValues}
-                linkedFromInputValue={linkedFromInputValue}
-                setLinkedFromInputValue={setLinkedFromInputValue}
-                linkedFromOptions={linkedFromOptions}
-                setLinkedFromOptions={setLinkedFromOptions}
             />
           </Grid>
           <Grid

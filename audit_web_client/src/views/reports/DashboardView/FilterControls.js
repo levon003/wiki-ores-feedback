@@ -325,8 +325,17 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
   );
 };
 
-const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedToInputValue, setLinkedToInputValue, linkedToOptions, setLinkedToOptions, linkedFromValues, setLinkedFromValues, linkedFromInputValue, setLinkedFromInputValue, linkedFromOptions, setLinkedFromOptions, ...rest }) => {
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, ...rest }) => {
   const classes = useStyles();
+
+  const [linkedToInputValue, setLinkedToInputValue] = useState('')
+  const [linkedToOptions, setLinkedToOptions] = useState([])
+
+  const [pageInputValue, setPageInputValue] = useState('');
+  const [options, setOptions] = useState([]);
+
+  const [linkedFromInputValue, setLinkedFromInputValue] = useState('')
+  const [linkedFromOptions, setLinkedFromOptions] = useState([])
 
   const [open, setOpen] = useState(false);
   const [isActiveQuery, setActiveQuery] = useState(false);
@@ -997,7 +1006,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 };
 
 const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
-  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, pageInputValue, setPageInputValue, options, setOptions, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedToInputValue, setLinkedToInputValue, linkedToOptions, setLinkedToOptions, linkedFromValues, setLinkedFromValues, linkedFromInputValue, setLinkedFromInputValue, linkedFromOptions, setLinkedFromOptions, ...rest }) => {
+  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, namespaces, setNamespaces, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, ...rest }) => {
 
   const classes = useStyles();
 
@@ -1099,26 +1108,14 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
           <PageFilterChip onChange={onChange} 
               pageValues={pageValues}
               setPageValues={setPageValues}
-              pageInputValue={pageInputValue}
-              setPageInputValue={setPageInputValue}
-              options={options}
-              setOptions={setOptions}
               namespaceSelected={namespaceSelected}
               setNameSpaceSelected={setNameSpaceSelected}
               namespaces={namespaces}
               setNamespaces={setNamespaces}
               linkedToValues={linkedToValues}
               setLinkedToValues={setLinkedToValues}
-              linkedToInputValue={linkedToInputValue}
-              setLinkedToInputValue={setLinkedToInputValue}
-              linkedToOptions={linkedToOptions}
-              setLinkedToOptions={setLinkedToOptions}
               linkedFromValues={linkedFromValues}
               setLinkedFromValues={setLinkedFromValues}
-              linkedFromInputValue={linkedFromInputValue}
-              setLinkedFromInputValue={setLinkedFromInputValue}
-              linkedFromOptions={linkedFromOptions}
-              setLinkedFromOptions={setLinkedFromOptions}
           />
           <RevisionFilterChip onChange={onChange} 
             revisionFilter={revisionFilter} 
