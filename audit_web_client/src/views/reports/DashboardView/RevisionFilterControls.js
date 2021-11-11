@@ -167,8 +167,8 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
           }  
           )  
           setMinorFilter({
-            isMinor: false,
-            isMajor: false
+            isMinor: true,
+            isMajor: true
           })
         }
         }

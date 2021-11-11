@@ -165,7 +165,7 @@ const Dashboard = () => {
     const filter_conditions_changed = false;
     const should_get_new_revisions = false;
     if (filter_conditions_changed) {
-      fetch('/api/rev_counts', {method: 'GET'})
+      fetch('/api/revision_counts', {method: 'GET'})
         .then(res => res.json())
         .then(data => {
           setData(data.counts);

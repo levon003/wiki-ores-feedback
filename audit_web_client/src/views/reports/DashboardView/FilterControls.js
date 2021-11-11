@@ -390,8 +390,6 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, pageInp
       namespaces.filter(namespace => namespace.selected),
     ); 
     //todo: this button should not uncheck the main/article - 0, also makes a duplicate of "main/article-0" in the bar because of that
-    console.log(namespaces[0].selected) //todo: delete
-    console.log(namespaceSelected[0].selected) //todo: delete
 };
 
   const specificThrottledAutocompleteFetch = useMemo(
