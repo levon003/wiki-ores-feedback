@@ -1,33 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import clsx from 'clsx';
 import Grid from '@material-ui/core/Grid';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import throttle from 'lodash/throttle';
-import PropTypes from 'prop-types';
 import {
   Box,
   Button,
-  Card,
   Checkbox,
   Chip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListSubheader,
-  Paper,
   Popover,
   TextField,
-  Tooltip,
   Typography,
-  makeStyles,
   IconButton,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import HelpIcon from '@material-ui/icons/Help'
