@@ -1,6 +1,6 @@
 
 import click
-from flask import current_app, g, request, make_response, Blueprint
+from flask import current_app, g, request, make_response, Blueprint, jsonify
 from flask.cli import with_appcontext
 
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -83,13 +83,24 @@ def get_sample_revisions():
     logger = logging.getLogger('sample.get_sample')
     start = datetime.now()
     
-    filters = request.form['filters']
-    user_filters = filters['user']
-    include_bot = user_filters['bot']
+    filters = request.get_json()['filters']
+    user_filters = filters['user_type_filter']
+    include_bot = user_filters['bots']
     include_unregistered = user_filters['unregistered']
     include_newcomers = user_filters['newcomers']
     include_learners = user_filters['learners']
     include_experienced = user_filters['experienced']
+    include_registered = user_filters['registered']
+
+    filtered_usernames = filters['filtered_usernames']
+    linked_from_values = filters['linked_from_values']
+    linked_to_values = filters['linked_to_values']
+    page_values = filters['page_values']
+
+    minor_filters = filters['minor_filters']
+    namespace_selected = filters['namespace_selected']
+
+    revision_filters = filters['revision_filters']
 
     rt = db.get_revision_table()
     pt = db.get_page_table()
@@ -110,3 +121,5 @@ def get_sample_revisions():
 
     return {'revisions': revision_list}
 
+    # used this for testing purposes - wanted to see that state was correctly being sent to the backend
+    # return request.get_json()

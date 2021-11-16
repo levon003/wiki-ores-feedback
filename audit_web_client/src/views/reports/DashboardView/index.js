@@ -30,7 +30,6 @@ const Dashboard = () => {
     vlg_nr  : 400,
   });
 
-  const [globalFilterState, setGlobalFilterState] = useState();
   const [revisions, setRevisions] = useState([{
     rev_id: 1001836878, 
     prev_rev_id: 1001836865,
@@ -45,9 +44,9 @@ const Dashboard = () => {
     has_edit_summary: true,
     damaging_pred: 0.11111111,
   }]); // TODO should be empty, but has one entry for testing
-
+  
   // All of this state has been lifted up from the RevisionFilterChip, UserfilterChip, and PageFilterChip components.
-
+  
   // Revision filter state
   const [revisionFilter, setRevisionFilter] = useState({
     largeAdditions: true,
@@ -60,7 +59,7 @@ const Dashboard = () => {
     isMinor: true,
     isMajor: true
   })
-
+  
   // user filter state
   const [userTypeFilter, setUserTypeFilter] = useState({
     unregistered: true,
@@ -71,16 +70,20 @@ const Dashboard = () => {
     bots: false
   })
   const [filteredUsernames, setFilteredUsernames] = useState([]);
-
+  
   // page filter state
   
   const [pageValues, setPageValues] = useState([]);
-
+  
   const [namespaceSelected, setNameSpaceSelected] = useState([{namespace: "Main/Article - 0"}])
-
+  
   const [linkedToValues, setLinkedToValues] = useState([])
-
+  
   const [linkedFromValues, setLinkedFromValues] = useState([])
+
+  useEffect(() => {
+    handleStateUpdate()
+  }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues])
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
@@ -130,8 +133,8 @@ const Dashboard = () => {
     .catch(err => console.error(err));
   };
 
-  const handleStateUpdate = (new_state) => {
-    setGlobalFilterState(new_state);
+  const handleStateUpdate = () => {
+    // setGlobalFilterState(new_state);
     // TODO do a POST request to the backend with the new filters
     // Get the new revisions and save them
     // ALSO get the new counts of each of the conditions
@@ -139,22 +142,38 @@ const Dashboard = () => {
     //fetch().then({
     //    setRevisions(...data from backend...)
     //})
-    const filter_conditions_changed = false;
-    const should_get_new_revisions = false;
-    if (filter_conditions_changed) {
-      fetch('/api/revision_counts', {method: 'GET'})
-        .then(res => res.json())
-        .then(data => {
-          setData(data.counts);
-      });
-    }
-    if (should_get_new_revisions) {
-      fetch('/api/sample', {method: 'GET'})
-        .then(res => res.json())
-        .then(data => {
-          setRevisions(data.revisions);
-      });
-    }
+    // const filter_conditions_changed = false;
+    // const should_get_new_revisions = false;
+    // if (filter_conditions_changed) {
+    fetch('/api/revision_counts', {method: 'GET'})
+      .then(res => res.json())
+      .then(data => {
+        setData(data.counts);
+    });
+    // }
+    // if (should_get_new_revisions) {
+
+    fetch('/api/sample/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filters: {
+          revision_filters: revisionFilter,
+          minor_filters: minorFilter,
+          user_type_filter: userTypeFilter,
+          filtered_usernames: filteredUsernames,
+          page_values: pageValues,
+          namespace_selected: namespaceSelected,
+          linked_to_values: linkedToValues,
+          linked_from_values: linkedFromValues
+        }
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setRevisions(data.revisions);
+    });
+    // }
     fetch('/api/activity_log', {method: 'GET'})
       .then(res => res.json())
       .then(data => {
