@@ -544,7 +544,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
     <Button
       onClick={handlePageFilterReset}
     >
-    Reset to defaults
+    Reset to default
     </Button>
     </Popover>
     </Box>
