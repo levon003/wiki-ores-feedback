@@ -90,7 +90,6 @@ def get_sample_revisions():
     include_newcomers = user_filters['newcomers']
     include_learners = user_filters['learners']
     include_experienced = user_filters['experienced']
-    include_registered = user_filters['registered']
 
     filtered_usernames = filters['filtered_usernames']
     linked_from_values = filters['linked_from_values']
@@ -103,21 +102,41 @@ def get_sample_revisions():
     revision_filters = filters['revision_filters']
 
     rt = db.get_revision_table()
-    pt = db.get_page_table()
-    s = select(rt.c.rev_id, rt.c.diff_bytes)
-    s = s.join_from(rt, pt)
+    s = select(rt.c.rev_id)  # TODO add the other columns here that are expected by the frontend
 
-    if include_newcomers and include_experienced and include_learners and include_bot and not include_unregistered:
-        s = s.where(rt.c.is_user_registered == True)
-    else:
-        # TODO figure out how to structure this logic so that the query is constructed appropriately
-        pass
-
+    valid_user_types = []
+    if include_unregistered:
+        valid_user_types.append(0)
+    if include_bot:
+        valid_user_types.append(1)
+    if include_newcomers:
+        valid_user_types.append(2)
+    if include_learners:
+        valid_user_types.append(3)
+    if include_experienced:
+        valid_user_types.append(4)
+    s = s.where(rt.c.user_type.in_(valid_user_types))
     
+    valid_revision_filters = []
+    if minor_filters['isMinor']:
+        valid_revision_filters.extend([4, 5, 6, 7])
+    if minor_filters['isMajor']:
+        valid_revision_filters.extend([0, 1, 2, 3])
+    if len(valid_revision_filters) < 8:
+        s = s.where(rt.c.revision_filter_mask.in_(valid_revision_filters))
+
+
     revision_list = []
+    Session = db.get_oidb_session()
+    with Session() as session:
+        with session.begin():
+            for row in session.execute(s):
+                rev_id = row
+                revision_list.append({
+                    'rev_id': rev_id,
+                })
 
-
-    s = select(func.count('*')).select_from(rt)
+    #s = select(func.count('*')).select_from(rt)
 
     return {'revisions': revision_list}
 
