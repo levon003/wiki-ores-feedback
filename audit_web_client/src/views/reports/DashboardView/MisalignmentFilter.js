@@ -204,7 +204,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
       height="120mm"
       version="1.1"
       viewBox="0 0 297 210"
-    aspectRatio="1.0"
+    aspectratio="1.0"
     >
       <g>
         <g
