@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -10,8 +10,6 @@ import {
   makeStyles,
   IconButton,
 } from '@material-ui/core';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 import RevisionFilterControls from './RevisionFilterControls';
 import PageFilterControls from './PageFilterControls';
@@ -19,18 +17,15 @@ import UserFilterControls from './UserFilterControls';
 
 import HelpIcon from '@material-ui/icons/Help'
 
-const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
-
-const userTypeOptions = [
-  { key: 'all', desc: 'All users', },
-  { key: 'unregistered', desc: 'Unregistered users', },
-  { key: 'registered', desc: 'Registered users', },
-  { key: 'newcomers', desc: 'Newcomers', },
-  { key: 'learners', desc: 'Learners', },
-  { key: 'experienced', desc: "Experienced users", },
-  { key: 'bots', desc: 'Bots', },
-];
+// const userTypeOptions = [
+//   { key: 'all', desc: 'All users', },
+//   { key: 'unregistered', desc: 'Unregistered users', },
+//   { key: 'registered', desc: 'Registered users', },
+//   { key: 'newcomers', desc: 'Newcomers', },
+//   { key: 'learners', desc: 'Learners', },
+//   { key: 'experienced', desc: "Experienced users", },
+//   { key: 'bots', desc: 'Bots', },
+// ];
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -57,8 +52,6 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespa
 };
 
 const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, revisionAnchorEl, setRevisionAnchorEl, ...rest}) => {
-
-  const classes = useStyles(); //remove?
   
   const revisionFilterPrettyNames = {
     largeAdditions: "large additions",

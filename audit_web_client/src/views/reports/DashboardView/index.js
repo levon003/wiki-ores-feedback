@@ -141,17 +141,12 @@ const Dashboard = () => {
     // i.e. number of revisions that are Very Likely Bad
     //fetch().then({
     //    setRevisions(...data from backend...)
-    //})
-    // const filter_conditions_changed = false;
-    // const should_get_new_revisions = false;
-    // if (filter_conditions_changed) {
+    //})  
     fetch('/api/revision_counts', {method: 'GET'})
       .then(res => res.json())
       .then(data => {
         setData(data.counts);
     });
-    // }
-    // if (should_get_new_revisions) {
 
     fetch('/api/sample/', {
       method: 'POST',
@@ -171,7 +166,11 @@ const Dashboard = () => {
     })
       .then(res => res.json())
       .then(data => {
-        setRevisions(data.revisions);
+        console.log("data: ", data)
+        // setRevisions(data.revisions);
+    })
+    .catch(err => {
+      console.log(err)
     });
     // }
     fetch('/api/activity_log', {method: 'GET'})
