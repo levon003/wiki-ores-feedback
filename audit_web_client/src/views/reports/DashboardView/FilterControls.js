@@ -228,8 +228,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
               setMinorFilter({
                 isMinor: true,
                 isMajor: true
-              })
-              setRevisionAnchorEl(true)  
+              }) 
             }
             }
             >
@@ -251,7 +250,6 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
                 experienced: true,
                 bots: false,
             });
-            setUserTypeAnchorEl(true)
           }
           }
           >
@@ -266,7 +264,6 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         <Button
           onClick={ () => {
           setNameSpaceSelected([{namespace: "Main/Article - 0"}]); 
-          setPageAnchorEl(true)
           }
           }
           >
