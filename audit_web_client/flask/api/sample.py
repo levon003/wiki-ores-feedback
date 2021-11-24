@@ -100,6 +100,11 @@ def get_sample_revisions():
     namespace_selected = filters['namespace_selected']
 
     revision_filters = filters['revision_filters']
+    large_additions = revision_filters['largeAdditions']
+    large_removals = revision_filters['largeRemovals']
+    neutral = revision_filters['neutral']
+    small_additions = revision_filters['smallAdditions']
+    small_removals = revision_filters['smallRemovals']
 
     rt = db.get_revision_table()
     s = select(rt.c.rev_id)  # TODO add the other columns here that are expected by the frontend
@@ -125,20 +130,35 @@ def get_sample_revisions():
     if len(valid_revision_filters) < 8:
         s = s.where(rt.c.revision_filter_mask.in_(valid_revision_filters))
 
+    valid_delta_bytes_filters = []
+    if large_additions:
+        valid_delta_bytes_filters.append(2)
+    if small_additions:
+        valid_delta_bytes_filters.append(1)
+    if neutral:
+        valid_delta_bytes_filters.append(0)
+    if small_removals:
+        valid_delta_bytes_filters.append(-1)
+    if large_removals:
+        valid_delta_bytes_filters.append(-2)
+    if len(valid_delta_bytes_filters) < 5:
+        s = s.where(rt.c.delta_bytes_filter.in_(valid_delta_bytes_filters))
+
 
     revision_list = []
     Session = db.get_oidb_session()
     with Session() as session:
         with session.begin():
-            for row in session.execute(s):
-                rev_id = row
+            for row in session.execute(s): #something wrong is happening at this line... request doesn't ever even happen
+                rev_id = row    
                 revision_list.append({
                     'rev_id': rev_id,
                 })
 
-    #s = select(func.count('*')).select_from(rt)
+    # s = select(func.count('*')).select_from(rt)
 
     return {'revisions': revision_list}
 
-    # used this for testing purposes - wanted to see that state was correctly being sent to the backend
+    # if i comment out everything from line 152-156 and uncomment line 164, the request is sent successfully? 
+    # millions of revisions are probably returned from default filters, is this a problem...
     # return request.get_json()

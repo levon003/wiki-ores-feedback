@@ -109,7 +109,7 @@ const Dashboard = () => {
       }
     });
     // get a new sample of revisions from the backend with the revised misalignment filter
-    fetch('/api/sample', {
+    fetch('/api/sample/', {
       method: 'POST', 
       headers: {
         'Accept': 'application/json',
@@ -142,11 +142,13 @@ const Dashboard = () => {
     //fetch().then({
     //    setRevisions(...data from backend...)
     //})  
-    fetch('/api/revision_counts', {method: 'GET'})
-      .then(res => res.json())
-      .then(data => {
-        setData(data.counts);
-    });
+    // fetch('/api/revision_counts', {method: 'GET'})
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     setData(data.counts);
+    // });
+    console.log("in handlestateupdate")
+
 
     fetch('/api/sample/', {
       method: 'POST',
@@ -173,11 +175,11 @@ const Dashboard = () => {
       console.log(err)
     });
     // }
-    fetch('/api/activity_log', {method: 'GET'})
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-    });
+    // fetch('/api/activity_log', {method: 'GET'})
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     console.log(data);
+    // });
   };
 
   useEffect(() => {
