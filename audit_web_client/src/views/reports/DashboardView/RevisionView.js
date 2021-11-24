@@ -251,6 +251,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
+        setNote(data.note)
     });
   }, [revision]);
 
