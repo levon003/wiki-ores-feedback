@@ -147,8 +147,6 @@ const Dashboard = () => {
     //   .then(data => {
     //     setData(data.counts);
     // });
-    console.log("in handlestateupdate")
-
 
     fetch('/api/sample/', {
       method: 'POST',
@@ -169,7 +167,7 @@ const Dashboard = () => {
       .then(res => res.json())
       .then(data => {
         console.log("data: ", data)
-        // setRevisions(data.revisions);
+        setRevisions(data.revisions);
     })
     .catch(err => {
       console.log(err)

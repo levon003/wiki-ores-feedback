@@ -107,7 +107,7 @@ def get_sample_revisions():
     small_removals = revision_filters['smallRemovals']
 
     rt = db.get_revision_table()
-    s = select(rt.c.rev_id)  # TODO add the other columns here that are expected by the frontend
+    s = select(rt.c.rev_id, rt.c.page_id, rt.c.rev_timestamp)  # TODO add the other columns here that are expected by the frontend
 
     valid_user_types = []
     if include_unregistered:
@@ -120,7 +120,8 @@ def get_sample_revisions():
         valid_user_types.append(3)
     if include_experienced:
         valid_user_types.append(4)
-    s = s.where(rt.c.user_type.in_(valid_user_types))
+    if len(valid_user_types) < 5:
+        s = s.where(rt.c.user_type.in_(valid_user_types))
     
     valid_revision_filters = []
     if minor_filters['isMinor']:
@@ -143,22 +144,21 @@ def get_sample_revisions():
         valid_delta_bytes_filters.append(-2)
     if len(valid_delta_bytes_filters) < 5:
         s = s.where(rt.c.delta_bytes_filter.in_(valid_delta_bytes_filters))
-
+    logger.info(s)
 
     revision_list = []
     Session = db.get_oidb_session()
     with Session() as session:
         with session.begin():
-            for row in session.execute(s): #something wrong is happening at this line... request doesn't ever even happen
+            for row in session.execute(s):
+                logger.info(row)
                 rev_id = row    
                 revision_list.append({
                     'rev_id': rev_id,
                 })
 
+    first_five = revision_list[:5]
+
     # s = select(func.count('*')).select_from(rt)
 
-    return {'revisions': revision_list}
-
-    # if i comment out everything from line 152-156 and uncomment line 164, the request is sent successfully? 
-    # millions of revisions are probably returned from default filters, is this a problem...
-    # return request.get_json()
+    return {'revisions': first_five}
