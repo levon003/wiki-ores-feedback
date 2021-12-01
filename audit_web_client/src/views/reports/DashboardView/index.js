@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes = useStyles();
   // Temporary data here: 
-  const [data, setData] =  useState({
+  const [data, /*setData*/] =  useState({
     vlhp_r : 1000,
     vlhp_nr : 200,
     confrevs_r : 200,
@@ -34,7 +34,7 @@ const Dashboard = () => {
     rev_id: 1001836878, 
     prev_rev_id: 1001836865,
     rev_timestamp: 0,
-    has_edit_summary: false,
+    // has_edit_summary: false,
     user_text: "Suriname0",
     user_id: 50,
     page_title: "Armadillidium vulgare",
@@ -83,7 +83,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     handleStateUpdate()
-  }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues])
+  })
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");

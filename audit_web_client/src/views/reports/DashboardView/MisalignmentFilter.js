@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import "../DashboardView/styles.css";
@@ -13,25 +13,25 @@ import {
   Tooltip,
   makeStyles
 } from '@material-ui/core';
-function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
-  return {
-    width,
-    height
-  };
-}
+// function getWindowDimensions() {
+//   const { innerWidth: width, innerHeight: height } = window;
+//   return {
+//     width,
+//     height
+//   };
+// }
 
-function useWindowDimensions() {
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
-  useEffect(() => {
-    function handleResize() {
-      setWindowDimensions(getWindowDimensions());
-    }
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  return windowDimensions;
-}
+// function useWindowDimensions() {
+//   const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+//   useEffect(() => {
+//     function handleResize() {
+//       setWindowDimensions(getWindowDimensions());
+//     }
+//     window.addEventListener('resize', handleResize);
+//     return () => window.removeEventListener('resize', handleResize);
+//   }, []);
+//   return windowDimensions;
+// }
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -344,7 +344,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="25%" fontFamily="Georgia" fontSize="6" fill="black"> {total_nr} revisions ({Math.round(total_nr / total * 10000) / 100} %)</text>
         <rect
           fill={strokecolor.itm_box}
-          onClick={handleClick}
+          // onClick={handleClick}
           x="3.326%"
           y="45%"
           className = {clsx(classes.root,  classes.bigbox)}
@@ -380,7 +380,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect
           fill={strokecolor.lg_r_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="57"
           height="9%"
           x="38.8%"
@@ -398,7 +398,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect 
           fill={strokecolor.vlhp_r_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="20"
           height="6%"
           x="38.8%"
@@ -415,7 +415,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect 
           fill={strokecolor.itm_nr_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="20"
           height="6%"
           x="38.8%"
@@ -431,7 +431,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect data-name="haha"
           fill={strokecolor.itm_r_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="20"
           height="6%"
           x="38.8%"
@@ -447,7 +447,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect data-name="haha"
           fill={strokecolor.lg_nr_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="20"
           height="6%"
           x="38.8%"
@@ -509,12 +509,12 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
       </Grid>
     </Grid>
   }
-  const { height, width } = useWindowDimensions();
-  const originalWidth = 519;
-  const originalHeight = 260;
-  const aspectRatio = originalWidth / originalHeight;
-  const windowWidth = width;
-  const windowHeight = height;
+  // const { height, width } = useWindowDimensions();
+  // const originalWidth = 519;
+  // const originalHeight = 260;
+  // const aspectRatio = originalWidth / originalHeight;
+  // const windowWidth = width;
+  // const windowHeight = height;
   const HtmlTooltip = withStyles((theme) => ({
     tooltip: {
       backgroundColor: '#f5f5f9',

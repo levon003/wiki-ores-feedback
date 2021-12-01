@@ -22,11 +22,11 @@ const RevisionViewer = ({ className, revisions, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
   
   const classes = useStyles();
-  const [displayLimit, setDisplayLimit] = useState(20);  // TODO Probably want to remember this as a user setting
+  const [displayLimit, /*setDisplayLimit*/] = useState(20);  // TODO Probably want to remember this as a user setting
   const [statusDescription, setStatusDescription] = useState(defaultPreloadMessage);
 
   // Want state to track total available at multiple levels. Probably want to store it one state dictionary, since each should change only "one at a time"...
-  const [prefilteredTotal, setPrefilteredTotal] = useState(0);
+  const [prefilteredTotal, /*setPrefilteredTotal*/] = useState(0);
     
   useEffect(() => {
     // TODO Actually retrieve a set of revisions here by querying the backend

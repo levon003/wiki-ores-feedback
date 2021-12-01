@@ -45,7 +45,6 @@ const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter
 };
 
 const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, ...rest }) => {
-  const classes = useStyles();
 
   return <PageFilterControls pageValues={pageValues} setPageValues={setPageValues} namespaceSelected={namespaceSelected} setNameSpaceSelected={setNameSpaceSelected} linkedToValues={linkedToValues} setLinkedToValues={setLinkedToValues} linkedFromValues={linkedFromValues} setLinkedFromValues={setLinkedFromValues} pageAnchorEl={pageAnchorEl} setPageAnchorEl={setPageAnchorEl} />
 
@@ -88,18 +87,18 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   const getRevisionFilterSummary = () => {
     const total_checked = revisionFilter.largeAdditions + revisionFilter.smallAdditions + revisionFilter.neutral + revisionFilter.smallRemovals + revisionFilter.largeRemovals
     let summaryString = "Revision Filters"
-    if (total_checked == 0) {
+    if (total_checked === 0) {
       summaryString = "No revisions selected"
-    } else if (total_checked == 1 || total_checked == 2 || total_checked == 3) {
-      if (revisionFilter.largeAdditions && revisionFilter.largeRemovals && total_checked == 2) {
+    } else if (total_checked === 1 || total_checked === 2 || total_checked === 3) {
+      if (revisionFilter.largeAdditions && revisionFilter.largeRemovals && total_checked === 2) {
         summaryString = "Only large changes"
-      } else if (revisionFilter.smallAdditions && revisionFilter.smallRemovals && total_checked == 2) {
+      } else if (revisionFilter.smallAdditions && revisionFilter.smallRemovals && total_checked === 2) {
         summaryString = "Only small changes"
-      } else if (revisionFilter.smallAdditions && revisionFilter.largeAdditions && total_checked == 2) {
+      } else if (revisionFilter.smallAdditions && revisionFilter.largeAdditions && total_checked === 2) {
         summaryString = "Only additions"
-      } else if (revisionFilter.largeRemovals && revisionFilter.smallRemovals && total_checked == 2) {
+      } else if (revisionFilter.largeRemovals && revisionFilter.smallRemovals && total_checked === 2) {
         summaryString = "Only removals"
-      } else if (total_checked == 1 || total_checked == 2) {
+      } else if (total_checked === 1 || total_checked === 2) {
         summaryString = "Only "
         let count = 0;
         for (let k in revisionFilter) {
@@ -112,7 +111,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
             count++
           }
         }
-      } else if (total_checked == 3) {
+      } else if (total_checked === 3) {
         summaryString = "Everything except "
         let count = 0;
         for (let k in revisionFilter) {
@@ -126,7 +125,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
           }
         }
       }
-    } else if (total_checked == 4) {
+    } else if (total_checked === 4) {
       if (!revisionFilter.largeAdditions) {
         summaryString = "Everything except large additions"
       } else if (!revisionFilter.smallAdditions) {
@@ -139,14 +138,14 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
         summaryString = "Everything except large removals"
       }
     }
-    if (minorFilter.isMinor && !minorFilter.isMajor && summaryString != "Revision Filters") {
-      if (total_checked == 1 || total_checked == 2) {
+    if (minorFilter.isMinor && !minorFilter.isMajor && summaryString !== "Revision Filters") {
+      if (total_checked === 1 || total_checked === 2) {
         summaryString = summaryString.slice(0, 5) + "minor " + summaryString.slice(5)
       } else {
         summaryString = summaryString.slice(0, 18) + "minor " + summaryString.slice(17)
       }
-    } else if (!minorFilter.isMinor && minorFilter.isMajor && summaryString != "Revision Filters") {
-      if (total_checked == 1 || total_checked == 2) {
+    } else if (!minorFilter.isMinor && minorFilter.isMajor && summaryString !== "Revision Filters") {
+      if (total_checked === 1 || total_checked === 2) {
         summaryString = summaryString.slice(0, 5) + "major " + summaryString.slice(5)
       } else {
         summaryString = summaryString.slice(0, 18) + "major " + summaryString.slice(17)
@@ -178,7 +177,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
           vertical: 'top',
           horizontal: 'center',
         }}>
-          <p style={{margin: 5, fontSize: 12}}><a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank">Minor Edit Definition</a></p>
+          <p style={{margin: 5, fontSize: 12}}><a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank" rel="noopener noreferrer">Minor Edit Definition</a></p>
           {/* TODO: add something here */}
       </Popover>
       <Popover

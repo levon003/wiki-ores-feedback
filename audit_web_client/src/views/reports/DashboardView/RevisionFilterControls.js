@@ -25,7 +25,7 @@ import {
 const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, className, onChange, ...rest }) => {
 
   const handleRevisionToggle = (value) => () => {  
-    var newState = { ... revisionFilter, [value]: !revisionFilter[value]};
+    var newState = { ...revisionFilter, [value]: !revisionFilter[value]};
     setRevisionFilter(newState);
   };
 
