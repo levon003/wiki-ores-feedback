@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -9,10 +9,10 @@ import {
   Toolbar,
   makeStyles
 } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
-import InputIcon from '@material-ui/icons/Input';
-import Logo from 'src/components/Logo';
+// import MenuIcon from '@material-ui/icons/Menu';
+// import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
+// import InputIcon from '@material-ui/icons/Input';
+// import Logo from 'src/components/Logo';
 import { LoadingContext } from 'src/App';
 import { Oval } from 'react-loading-icons'
 
@@ -34,7 +34,6 @@ const TopBar = ({
   ...rest
 }) => {
   const classes = useStyles();
-  const [notifications] = useState([]);
   const loadingContext = useContext(LoadingContext)
 
   return (

@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes = useStyles();
   // Temporary data here: 
-  const [data, setData] =  useState({
+  const [data, /*setData*/] =  useState({
     vlhp_r : 1000,
     vlhp_nr : 200,
     confrevs_r : 200,
@@ -34,7 +34,7 @@ const Dashboard = () => {
     rev_id: 1001836878, 
     prev_rev_id: 1001836865,
     rev_timestamp: 0,
-    has_edit_summary: false,
+    // has_edit_summary: false,
     user_text: "Suriname0",
     user_id: 50,
     page_title: "Armadillidium vulgare",
@@ -83,7 +83,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     handleStateUpdate()
-  }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues])
+  })
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");
@@ -109,7 +109,7 @@ const Dashboard = () => {
       }
     });
     // get a new sample of revisions from the backend with the revised misalignment filter
-    fetch('/api/sample', {
+    fetch('/api/sample/', {
       method: 'POST', 
       headers: {
         'Accept': 'application/json',
@@ -141,17 +141,12 @@ const Dashboard = () => {
     // i.e. number of revisions that are Very Likely Bad
     //fetch().then({
     //    setRevisions(...data from backend...)
-    //})
-    // const filter_conditions_changed = false;
-    // const should_get_new_revisions = false;
-    // if (filter_conditions_changed) {
-    fetch('/api/revision_counts', {method: 'GET'})
-      .then(res => res.json())
-      .then(data => {
-        setData(data.counts);
-    });
-    // }
-    // if (should_get_new_revisions) {
+    //})  
+    // fetch('/api/revision_counts', {method: 'GET'})
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     setData(data.counts);
+    // });
 
     fetch('/api/sample/', {
       method: 'POST',
@@ -171,14 +166,18 @@ const Dashboard = () => {
     })
       .then(res => res.json())
       .then(data => {
+        console.log("data: ", data)
         setRevisions(data.revisions);
+    })
+    .catch(err => {
+      console.log(err)
     });
     // }
-    fetch('/api/activity_log', {method: 'GET'})
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-    });
+    // fetch('/api/activity_log', {method: 'GET'})
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     console.log(data);
+    // });
   };
 
   useEffect(() => {

@@ -90,7 +90,6 @@ def get_sample_revisions():
     include_newcomers = user_filters['newcomers']
     include_learners = user_filters['learners']
     include_experienced = user_filters['experienced']
-    include_registered = user_filters['registered']
 
     filtered_usernames = filters['filtered_usernames']
     linked_from_values = filters['linked_from_values']
@@ -101,25 +100,65 @@ def get_sample_revisions():
     namespace_selected = filters['namespace_selected']
 
     revision_filters = filters['revision_filters']
+    large_additions = revision_filters['largeAdditions']
+    large_removals = revision_filters['largeRemovals']
+    neutral = revision_filters['neutral']
+    small_additions = revision_filters['smallAdditions']
+    small_removals = revision_filters['smallRemovals']
 
     rt = db.get_revision_table()
-    pt = db.get_page_table()
-    s = select(rt.c.rev_id, rt.c.diff_bytes)
-    s = s.join_from(rt, pt)
+    s = select(rt.c.rev_id, rt.c.page_id, rt.c.rev_timestamp)  # TODO add the other columns here that are expected by the frontend
 
-    if include_newcomers and include_experienced and include_learners and include_bot and not include_unregistered:
-        s = s.where(rt.c.is_user_registered == True)
-    else:
-        # TODO figure out how to structure this logic so that the query is constructed appropriately
-        pass
-
+    valid_user_types = []
+    if include_unregistered:
+        valid_user_types.append(0)
+    if include_bot:
+        valid_user_types.append(1)
+    if include_newcomers:
+        valid_user_types.append(2)
+    if include_learners:
+        valid_user_types.append(3)
+    if include_experienced:
+        valid_user_types.append(4)
+    if len(valid_user_types) < 5:
+        s = s.where(rt.c.user_type.in_(valid_user_types))
     
+    valid_revision_filters = []
+    if minor_filters['isMinor']:
+        valid_revision_filters.extend([4, 5, 6, 7])
+    if minor_filters['isMajor']:
+        valid_revision_filters.extend([0, 1, 2, 3])
+    if len(valid_revision_filters) < 8:
+        s = s.where(rt.c.revision_filter_mask.in_(valid_revision_filters))
+
+    valid_delta_bytes_filters = []
+    if large_additions:
+        valid_delta_bytes_filters.append(2)
+    if small_additions:
+        valid_delta_bytes_filters.append(1)
+    if neutral:
+        valid_delta_bytes_filters.append(0)
+    if small_removals:
+        valid_delta_bytes_filters.append(-1)
+    if large_removals:
+        valid_delta_bytes_filters.append(-2)
+    if len(valid_delta_bytes_filters) < 5:
+        s = s.where(rt.c.delta_bytes_filter.in_(valid_delta_bytes_filters))
+    logger.info(s)
+
     revision_list = []
+    Session = db.get_oidb_session()
+    with Session() as session:
+        with session.begin():
+            for row in session.execute(s):
+                logger.info(row)
+                rev_id = row    
+                revision_list.append({
+                    'rev_id': rev_id,
+                })
 
+    first_five = revision_list[:5]
 
-    s = select(func.count('*')).select_from(rt)
+    # s = select(func.count('*')).select_from(rt)
 
-    return {'revisions': revision_list}
-
-    # used this for testing purposes - wanted to see that state was correctly being sent to the backend
-    # return request.get_json()
+    return {'revisions': first_five}

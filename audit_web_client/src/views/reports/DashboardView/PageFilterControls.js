@@ -249,16 +249,16 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
     }
   }, [linkedFromOpen]);
 
-  const getAutocompleteOptions = (queryString) => {
-    // TODO ensure this is safe to delete
-    const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(queryString);
-    fetch(page_autocomplete_url, {method: 'GET'})
-      .then(res => res.json())
-      .then(data => {
-        console.log(data.options);
-        return data.options;
-      });
-  }
+  // const getAutocompleteOptions = (queryString) => {
+  //   // TODO ensure this is safe to delete
+  //   const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(queryString);
+  //   fetch(page_autocomplete_url, {method: 'GET'})
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       console.log(data.options);
+  //       return data.options;
+  //     });
+  // }
 
   return (
     <Box

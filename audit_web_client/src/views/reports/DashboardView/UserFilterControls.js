@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -34,13 +34,13 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
       }
       
       const total_checked = userTypeFilter.unregistered + userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced + userTypeFilter.bots;
-      if (total_checked == 0) {
+      if (total_checked === 0) {
           return "No users";
-      } else if (userTypeFilter.unregistered && total_checked == 1) {
+      } else if (userTypeFilter.unregistered && total_checked === 1) {
           return "Only unregistered users";
-      } else if (userTypeFilter.unregistered && userTypeFilter.bots && total_checked == 2) {
+      } else if (userTypeFilter.unregistered && userTypeFilter.bots && total_checked === 2) {
           return "All unregistered and bot users";
-      } else if (total_checked == 1) {
+      } else if (total_checked === 1) {
           if (userTypeFilter.newcomers) {
               return "Only newcomers";
           } else if (userTypeFilter.learners) {
@@ -80,7 +80,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
   const handleToggle = (value) => () => {
       // TODO call onChange() with the new state;
       
-      if (value == 'registered') {
+      if (value === 'registered') {
           if (userTypeFilter.registered) {
               // registered turning off, so deactivate all subs
               setUserTypeFilter({
@@ -104,14 +104,14 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
           }
       } else {
           // toggle the value
-          var newState = { ... userTypeFilter, [value]: !userTypeFilter[value]};
+          var newState = { ...userTypeFilter, [value]: !userTypeFilter[value]};
           // check for all sub-types off
           if (newState.newcomers && newState.learners && newState.experienced && newState.bots) {
               // all sub-types true, set registered == true
-              newState = { ... newState, 'registered': true};
+              newState = { ...newState, 'registered': true};
           } else {
               // at least one sub-type is false, so ensure registered == false
-              newState = { ... newState, 'registered': false};
+              newState = { ...newState, 'registered': false};
           }
           setUserTypeFilter(newState);
       }

@@ -89,14 +89,14 @@ const RevisionView = ({ revision, className, ...rest }) => {
     'note': null,
   });
   const [ note, setNote ] = useState("")
-  const [ noteSuccess, setNoteSuccess ] = useState(true)
+  const [ noteSuccess, setNoteSuccess ] = useState(null)
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
   const [errorMessage, setErrorMessage ] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
-  const { loading, setLoading } = useContext(LoadingContext)
-
-// this is for setting the typing state
+  const { /*loading,*/ setLoading } = useContext(LoadingContext)
+  
+  // this is for setting the typing state of the note field
   useEffect(() => {
     const timeout = setTimeout(() => {
       setTyping(false)
@@ -105,26 +105,24 @@ const RevisionView = ({ revision, className, ...rest }) => {
       clearTimeout(timeout)
     }
   }, [note])
+  
   useEffect(() => {
     if (!typing && firstTyped) {
       handleNoteSave()
     }
-  }, [typing])
-
-
-
+  })
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
   }
-
+  
   const handleButtonClick = (button_type) => {
     const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
     setLoading(true)
-
+    
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
       method: 'POST',
@@ -139,11 +137,11 @@ const RevisionView = ({ revision, className, ...rest }) => {
         note: note
       }),
     }).then(res => res.json())
-      .then(data => {
-        setLoading(false)
-        setErrorMessage(null)
-        // update the annotations with the new data (if it was not rejected)
-        setSuccessMessage("Successfully saved.")
+    .then(data => {
+      setLoading(false)
+      setErrorMessage(null)
+      // update the annotations with the new data (if it was not rejected)
+      setSuccessMessage("Successfully saved.")
         // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
         // that their annotation change was rejected. Should we notify the user in some way?
         setAnnotationData({
@@ -155,15 +153,15 @@ const RevisionView = ({ revision, className, ...rest }) => {
         setLoading(false)
         setErrorMessage("Didn't go through, please try again.")
       });
-  }
-
-  const handleNoteSave = () => {
-    fetch('/api/annotation/', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+    }
+    
+    const handleNoteSave = () => {
+      fetch('/api/annotation/', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
       body: JSON.stringify({
         rev_id: revision.rev_id,
         annotation_type: 'note',
@@ -178,6 +176,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
       setNoteSuccess(false)
     })
   }
+  
 
   const getUserLink = (user_text, user_id) => {
     if (user_id === 0) {
@@ -251,6 +250,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
+        setNote(data.note)
     });
   }, [revision]);
 
