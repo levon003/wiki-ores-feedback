@@ -9,6 +9,7 @@ import {
   Popover,
   makeStyles,
   IconButton,
+  Typography,
 } from '@material-ui/core';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
@@ -293,46 +294,59 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
     >
       <Box
         height="20vh"
-        display="flex"
-        flexDirection="column"
-        flexWrap="nowrap"
+        // display="flex"
+        // flexDirection="column"
+        // flexWrap="nowrap"
       >
+
         <Box
           display="flex"
-          flexDirection="row"
-          style= {{ paddingTop : 10, paddingLeft : 10}}
+          flexDirection="column"
+          style= {{ backgroundColor: "blue", display: "inline-flex"}}
         >
-          <PageFilterChip onChange={onChange} 
-              pageValues={pageValues}
-              setPageValues={setPageValues}
-              namespaceSelected={namespaceSelected}
-              setNameSpaceSelected={setNameSpaceSelected}
-              linkedToValues={linkedToValues}
-              setLinkedToValues={setLinkedToValues}
-              linkedFromValues={linkedFromValues}
-              setLinkedFromValues={setLinkedFromValues}
-              pageAnchorEl={pageAnchorEl}
-              setPageAnchorEl={setPageAnchorEl}
-          />
-          <RevisionFilterChip onChange={onChange} 
-            revisionFilter={revisionFilter} 
-            setRevisionFilter={setRevisionFilter} 
-            minorFilter={minorFilter} 
-            setMinorFilter={setMinorFilter} 
-            revisionAnchorEl={revisionAnchorEl} 
-            setRevisionAnchorEl={setRevisionAnchorEl}
-          />
+          <Typography variant="h3" className="subtitle">
+            Custom
+          </Typography>
 
-          <UserFilterChip 
-            onChange={onChange} 
-            userTypeFilter={userTypeFilter} 
-            setUserTypeFilter={setUserTypeFilter} 
-            filteredUsernames={filteredUsernames} 
-            setFilteredUsernames={setFilteredUsernames}
-            userTypeAnchorEl={userTypeAnchorEl}
-            setUserTypeAnchorEl={setUserTypeAnchorEl}
-          />
+          <Box
+            display="flex"
+            flexDirection="row"
+            style= {{ backgroundColor: "red", display: "inline-flex"}}
+          >
+            <PageFilterChip onChange={onChange} 
+                pageValues={pageValues}
+                setPageValues={setPageValues}
+                namespaceSelected={namespaceSelected}
+                setNameSpaceSelected={setNameSpaceSelected}
+                linkedToValues={linkedToValues}
+                setLinkedToValues={setLinkedToValues}
+                linkedFromValues={linkedFromValues}
+                setLinkedFromValues={setLinkedFromValues}
+                pageAnchorEl={pageAnchorEl}
+                setPageAnchorEl={setPageAnchorEl}
+            />
+            <RevisionFilterChip onChange={onChange} 
+              revisionFilter={revisionFilter} 
+              setRevisionFilter={setRevisionFilter} 
+              minorFilter={minorFilter} 
+              setMinorFilter={setMinorFilter} 
+              revisionAnchorEl={revisionAnchorEl} 
+              setRevisionAnchorEl={setRevisionAnchorEl}
+            />
+
+            <UserFilterChip 
+              onChange={onChange} 
+              userTypeFilter={userTypeFilter} 
+              setUserTypeFilter={setUserTypeFilter} 
+              filteredUsernames={filteredUsernames} 
+              setFilteredUsernames={setFilteredUsernames}
+              userTypeAnchorEl={userTypeAnchorEl}
+              setUserTypeAnchorEl={setUserTypeAnchorEl}
+            />
+          </Box>
         </Box>
+
+        {/* probably need to fix warning message */}
         <WarningMessage />
       </Box>
     </Card>
