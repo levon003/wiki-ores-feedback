@@ -16,6 +16,7 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import HelpIcon from '@material-ui/icons/Help'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import DefaultFilters from './DefaultFilters';
 
 const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, ...rest}) => {
   const classes = useStyles();
@@ -145,14 +146,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
     
   const handleUserFilterReset = (event) => {
       setFilteredUsernames([]);
-      setUserTypeFilter({
-          unregistered: true,
-          registered: false,
-          newcomers: true,
-          learners: true,
-          experienced: true,
-          bots: false,
-      });
+      setUserTypeFilter(DefaultFilters.defaultUserFilters);
   };
     
   const open = Boolean(userTypeAnchorEl);

@@ -17,6 +17,7 @@ import RevisionFilterControls from './RevisionFilterControls';
 import PageFilterControls from './PageFilterControls';
 import UserFilterControls from './UserFilterControls';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import DefaultFilters from './DefaultFilters';
 
 import HelpIcon from '@material-ui/icons/Help'
 
@@ -238,18 +239,8 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         Warning: Current revision filter selection will not yield any results.
           <Button
             onClick={ () => {
-              setRevisionFilter ({
-                largeAdditions: true,
-                smallAdditions: true,
-                neutral: true,
-                smallRemovals: true,
-                largeRemovals: true,
-              }  
-              )  
-              setMinorFilter({
-                isMinor: true,
-                isMajor: true
-              }) 
+              setRevisionFilter (DefaultFilters.defaultRevisionFilters)  
+              setMinorFilter(DefaultFilters.defaultMinorFilters) 
             }
             }
             >
@@ -263,14 +254,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         <Button
           onClick={ () => {
             setFilteredUsernames([]);
-            setUserTypeFilter({
-                unregistered: true,
-                registered: false,
-                newcomers: true,
-                learners: true,
-                experienced: true,
-                bots: false,
-            });
+            setUserTypeFilter(DefaultFilters.defaultUserFilters);
           }
           }
           >

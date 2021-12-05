@@ -10,6 +10,7 @@ import {
   Paper,
   // makeStyles
 } from '@material-ui/core';
+import DefaultFilters from './DefaultFilters';
 
 // const useStyles = makeStyles((theme) => ({
 //   root: {},
@@ -133,18 +134,8 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
       </List>
       <Button
         onClick={ () => {
-          setRevisionFilter ({
-            largeAdditions: true,
-            smallAdditions: true,
-            neutral: true,
-            smallRemovals: true,
-            largeRemovals: true,
-          }  
-          )  
-          setMinorFilter({
-            isMinor: true,
-            isMajor: true
-          })
+          setRevisionFilter (DefaultFilters.defaultRevisionFilters)  
+          setMinorFilter(DefaultFilters.defaultMinorFilters)
         }
         }
       >
