@@ -10,11 +10,13 @@ import {
   makeStyles,
   IconButton,
   Typography,
+  useTheme
 } from '@material-ui/core';
 
 import RevisionFilterControls from './RevisionFilterControls';
 import PageFilterControls from './PageFilterControls';
 import UserFilterControls from './UserFilterControls';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 import HelpIcon from '@material-ui/icons/Help'
 
@@ -161,7 +163,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Chip clickable onClick={handleRevisionChipClick} label={getRevisionFilterSummary()} />
+      <Button variant="outlined" onClick={handleRevisionChipClick}> Revision Filters <KeyboardArrowDownIcon/></Button> 
       <IconButton color="primary" size="small" onClick={handleIconClick}>
       <HelpIcon/>
       </IconButton>
@@ -202,10 +204,29 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   );
 };
 
+const PreDefinedFilterButton = ({buttonText, style, number, setPreDefinedSelected}) => {
+  const onClick = () => {
+    setPreDefinedSelected(parseInt(number))
+    if (parseInt(number) === 1) {
+
+    }
+  }
+  return (
+    <Button variant="outlined" onClick={onClick} style={style}>{buttonText}</Button>
+  )
+}
+
 const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
-  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, ...rest }) => {
+  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues,  preDefinedState, setPreDefinedState, preDefinedSelected, setPreDefinedSelected, ...rest}) => {
+    
+  const theme = useTheme()
 
   const classes = useStyles();
+
+  const simpleButton1Style = preDefinedSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  const simpleButton2Style = preDefinedSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  const simpleButton3Style = preDefinedSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+
 
   const [revisionAnchorEl, setRevisionAnchorEl] = useState();
   const [userTypeAnchorEl, setUserTypeAnchorEl] = useState();
@@ -288,10 +309,30 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         // flexWrap="nowrap"
       >
 
+<Box
+          display="flex"
+          flexDirection="column"
+          style= {{ backgroundColor: "grey", display: "inline-flex"}}
+        >
+          <Typography variant="h3" className="subtitle">
+            Pre-Defined
+          </Typography>
+
+          <Box
+            display="flex"
+            flexDirection="row"
+            style= {{ display: "inline-flex"}}
+          >
+            <PreDefinedFilterButton buttonText="SIMPLE ONE" style={simpleButton1Style} number="1" setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} ></PreDefinedFilterButton>
+            <PreDefinedFilterButton buttonText="SIMPLE TWO" style={simpleButton2Style} number="2" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
+            <PreDefinedFilterButton buttonText="SIMPLE THREE" style={simpleButton3Style} number="3" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
+          </Box>
+        </Box>
+
         <Box
           display="flex"
           flexDirection="column"
-          style= {{ backgroundColor: "blue", display: "inline-flex"}}
+          style= {{ backgroundColor: "grey", display: "inline-flex"}}
         >
           <Typography variant="h3" className="subtitle">
             Custom
@@ -300,7 +341,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
           <Box
             display="flex"
             flexDirection="row"
-            style= {{ backgroundColor: "red", display: "inline-flex"}}
+            style= {{ display: "inline-flex"}}
           >
             <PageFilterChip onChange={onChange} 
                 pageValues={pageValues}

@@ -19,6 +19,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import HelpIcon from '@material-ui/icons/Help'
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -265,7 +266,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
       display="flex"
       flexDirection="row"
       flexWrap="nowrap">
-      <Chip clickable label="Page Filters" onClick={handlePageChipClick}/>
+      <Button variant="outlined" onClick={handlePageChipClick}>Page Filters<KeyboardArrowDownIcon/></Button>
       <IconButton color="primary" size="small" onClick={handleIconClick}>
         <HelpIcon/>
       </IconButton>

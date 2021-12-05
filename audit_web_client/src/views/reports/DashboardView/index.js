@@ -46,6 +46,9 @@ const Dashboard = () => {
   }]); // TODO should be empty, but has one entry for testing
   
   // All of this state has been lifted up from the RevisionFilterChip, UserfilterChip, and PageFilterChip components.
+
+  const [ preDefinedState, setPreDefinedState ] = useState(true)
+  const [ preDefinedSelected, setPreDefinedSelected ] = useState(1)
   
   // Revision filter state
   const [revisionFilter, setRevisionFilter] = useState({
@@ -217,6 +220,10 @@ const Dashboard = () => {
                 setLinkedToValues={setLinkedToValues}
                 linkedFromValues={linkedFromValues}
                 setLinkedFromValues={setLinkedFromValues}
+                preDefinedState={preDefinedState}
+                setPreDefinedState={setPreDefinedState}
+                preDefinedSelected={preDefinedSelected}
+                setPreDefinedSelected={setPreDefinedSelected}
             />
           </Grid>
           <Grid

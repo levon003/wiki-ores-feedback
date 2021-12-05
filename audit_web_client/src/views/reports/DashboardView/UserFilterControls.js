@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import HelpIcon from '@material-ui/icons/Help'
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, ...rest}) => {
   const classes = useStyles();
@@ -163,7 +164,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Chip clickable onClick={handleClick} label={getUserFilterSummary()} />
+      <Button variant="outlined" onClick={handleClick}> User Filters <KeyboardArrowDownIcon /></Button>
       <IconButton color="primary" size="small" onClick={handleIconClick}>
         <HelpIcon/>
       </IconButton>

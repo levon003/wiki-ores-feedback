@@ -151,7 +151,6 @@ def get_sample_revisions():
     with Session() as session:
         with session.begin():
             for row in session.execute(s):
-                logger.info(row)
                 rev_id = row    
                 revision_list.append({
                     'rev_id': rev_id,
