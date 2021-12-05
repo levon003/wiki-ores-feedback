@@ -8,6 +8,7 @@ import Page from 'src/components/Page';
 import RevisionViewer from './RevisionViewer';
 import MisalignmentFilter from './MisalignmentFilter';
 import FilterControls from './FilterControls';
+import DefaultFilters from './DefaultFilters';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,40 +46,24 @@ const Dashboard = () => {
     damaging_pred: 0.11111111,
   }]); // TODO should be empty, but has one entry for testing
   
-  // All of this state has been lifted up from the RevisionFilterChip, UserfilterChip, and PageFilterChip components.
+  // All of this state has been lifted up from the RevisionFilterChip, UserFilterChip, and PageFilterChip components.
 
   const [ preDefinedState, setPreDefinedState ] = useState(true)
   const [ preDefinedSelected, setPreDefinedSelected ] = useState(1)
   
   // Revision filter state
-  const [revisionFilter, setRevisionFilter] = useState({
-    largeAdditions: true,
-    smallAdditions: true,
-    neutral: true,
-    smallRemovals: true,
-    largeRemovals: true
-  })
-  const [minorFilter, setMinorFilter] = useState({
-    isMinor: true,
-    isMajor: true
-  })
+  const [revisionFilter, setRevisionFilter] = useState(DefaultFilters.defaultRevisionFilters)
+  const [minorFilter, setMinorFilter] = useState(DefaultFilters.defaultMinorFilters)
   
   // user filter state
-  const [userTypeFilter, setUserTypeFilter] = useState({
-    unregistered: true,
-    registered: false,
-    newcomers: true,
-    learners: true,
-    experienced: true,
-    bots: false
-  })
+  const [userTypeFilter, setUserTypeFilter] = useState(DefaultFilters.defaultUserFilters)
   const [filteredUsernames, setFilteredUsernames] = useState([]);
   
   // page filter state
   
   const [pageValues, setPageValues] = useState([]);
   
-  const [namespaceSelected, setNameSpaceSelected] = useState([{namespace: "Main/Article - 0"}])
+  const [namespaceSelected, setNameSpaceSelected] = useState(DefaultFilters.defaultNamespaceSelected)
   
   const [linkedToValues, setLinkedToValues] = useState([])
   

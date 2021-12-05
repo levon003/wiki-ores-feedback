@@ -20,8 +20,11 @@ const defaultMinorFilters = {
   isMajor: true
 }
 
+const defaultNamespaceSelected = [{namespace: "Main/Article - 0"}]
+
 export default {
   defaultUserFilters,
   defaultRevisionFilters,
-  defaultMinorFilters
+  defaultMinorFilters,
+  defaultNamespaceSelected
 }

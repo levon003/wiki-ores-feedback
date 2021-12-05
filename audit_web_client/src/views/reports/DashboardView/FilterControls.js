@@ -205,11 +205,18 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   );
 };
 
-const PreDefinedFilterButton = ({buttonText, style, number, setPreDefinedSelected}) => {
+const PreDefinedFilterButton = ({buttonText, style, number, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
     setPreDefinedSelected(parseInt(number))
     if (parseInt(number) === 1) {
-
+      setFilteredUsernames([])
+      setUserTypeFilter(DefaultFilters.defaultUserFilters)
+      setRevisionFilter(DefaultFilters.defaultRevisionFilters)
+      setMinorFilter(DefaultFilters.defaultMinorFilters)
+      setPageValues([])
+      setLinkedFromValues([])
+      setLinkedToValues([])
+      setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
     }
   }
   return (
@@ -307,7 +314,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
             flexDirection="row"
             style= {{ display: "inline-flex"}}
           >
-            <PreDefinedFilterButton buttonText="SIMPLE ONE" style={simpleButton1Style} number="1" setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} ></PreDefinedFilterButton>
+            <PreDefinedFilterButton buttonText="SIMPLE ONE" style={simpleButton1Style} number="1" setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton>
             <PreDefinedFilterButton buttonText="SIMPLE TWO" style={simpleButton2Style} number="2" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
             <PreDefinedFilterButton buttonText="SIMPLE THREE" style={simpleButton3Style} number="3" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
           </Box>

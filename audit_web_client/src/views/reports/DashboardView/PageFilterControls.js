@@ -20,6 +20,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import HelpIcon from '@material-ui/icons/Help'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import DefaultFilters from './DefaultFilters';
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -93,9 +94,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
   }
 
   const handlePageFilterReset = (event) => {
-    setNameSpaceSelected ( //appears in bar
-      namespaces.filter(namespace => namespace.namespace === "Main/Article - 0"),
-    ); 
+    setNameSpaceSelected (DefaultFilters.defaultNamespaceSelected); 
     setPageValues([])
     setLinkedToValues([])
     setLinkedFromValues([])
