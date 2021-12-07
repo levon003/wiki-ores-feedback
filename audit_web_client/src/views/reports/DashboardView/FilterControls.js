@@ -10,7 +10,7 @@ import {
   makeStyles,
   IconButton,
   Typography,
-  useTheme
+  useTheme,
 } from '@material-ui/core';
 
 import RevisionFilterControls from './RevisionFilterControls';
@@ -55,6 +55,10 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespa
 };
 
 const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, revisionAnchorEl, setRevisionAnchorEl, ...rest}) => {
+
+  const theme = useTheme()
+
+  const revisionButtonStyle = revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
   
   const revisionFilterPrettyNames = {
     largeAdditions: "large additions",
@@ -164,8 +168,8 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Button variant="outlined" onClick={handleRevisionChipClick}> Revision Filters <KeyboardArrowDownIcon/></Button> 
-      <IconButton color="primary" size="small" onClick={handleIconClick}>
+      <Button variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Revision Filters <KeyboardArrowDownIcon/></Button> 
+      <IconButton color="primary" size="small" className="tooltip-margin" onClick={handleIconClick}>
       <HelpIcon/>
       </IconButton>
       <Popover
@@ -231,8 +235,8 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
 
   const classes = useStyles();
 
-  const simpleButton1Style = preDefinedSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-  const simpleButton2Style = preDefinedSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  const simpleButton1Style = preDefinedSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '20px'} : {marginRight: '20px'}
+  const simpleButton2Style = preDefinedSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '20px'} : {marginRight: '20px'}
   const simpleButton3Style = preDefinedSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
 
 
@@ -295,15 +299,18 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
     >
       <Box
         height="20vh"
+        style={{backgroundColor: "red"}}
         // display="flex"
         // flexDirection="column"
         // flexWrap="nowrap"
       >
+      <Box style={{backgroundColor: "blue"}}>
 
-<Box
+      <Box
           display="flex"
           flexDirection="column"
           style= {{ backgroundColor: "grey", display: "inline-flex"}}
+          className='left-box'
         >
           <Typography variant="h3" className="subtitle">
             Pre-Defined
@@ -323,7 +330,8 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         <Box
           display="flex"
           flexDirection="column"
-          style= {{ backgroundColor: "grey", display: "inline-flex"}}
+          style= {{ backgroundColor: "grey", display: "inline-flex", float: "right"}}
+          className='right-box'
         >
           <Typography variant="h3" className="subtitle">
             Custom
@@ -365,6 +373,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
               setUserTypeAnchorEl={setUserTypeAnchorEl}
             />
           </Box>
+        </Box>
         </Box>
 
         {/* probably need to fix warning message */}

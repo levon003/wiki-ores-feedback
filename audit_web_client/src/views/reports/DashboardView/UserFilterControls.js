@@ -12,6 +12,7 @@ import {
   Popover,
   TextField,
   IconButton,
+  useTheme
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import HelpIcon from '@material-ui/icons/Help'
@@ -20,6 +21,10 @@ import DefaultFilters from './DefaultFilters';
 
 const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, ...rest}) => {
   const classes = useStyles();
+
+  const theme = useTheme()
+
+  const userButtonStyle = userTypeFilter !== DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     
   const userTypePrettyNames = {
       "newcomers": "Newcomers",
@@ -158,8 +163,8 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Button variant="outlined" onClick={handleClick}> User Filters <KeyboardArrowDownIcon /></Button>
-      <IconButton color="primary" size="small" onClick={handleIconClick}>
+      <Button variant="outlined" style={userButtonStyle} onClick={handleClick}> User Filters <KeyboardArrowDownIcon /></Button>
+      <IconButton className="tooltip-margin-last" color="primary" size="small" onClick={handleIconClick}>
         <HelpIcon/>
       </IconButton>
       <Popover

@@ -6,6 +6,7 @@ const useStyles = makeStyles(() => createStyles({
       boxSizing: 'border-box',
       margin: 0,
       padding: 0,
+      fontFamily: 'Roboto'
     },
     html: {
       '-webkit-font-smoothing': 'antialiased',
@@ -24,6 +25,26 @@ const useStyles = makeStyles(() => createStyles({
     '#root': {
       height: '100%',
       width: '100%'
+    },
+    // these two should be the same
+    '.left-box': {
+      marginLeft: '30px',
+    },
+    '.right-box': {
+      marginRight: '30px'
+    },
+    '.subtitle': {
+      marginBottom: '13px'
+    },
+    '.button-margin': {
+      marginRight: '20px'
+    },
+    '.tooltip-margin': {
+      marginRight: '10px',
+      marginLeft: '10px'
+    },
+    '.tooltip-margin-last': {
+      marginLeft: '10px'
     }
   }
 }));

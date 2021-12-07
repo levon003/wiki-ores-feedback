@@ -72,6 +72,13 @@ const Dashboard = () => {
   useEffect(() => {
     handleStateUpdate()
   })
+
+  useEffect(() => {
+    if (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter != DefaultFilters.defaultMinorFilters || userTypeFilter != DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0 || pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0) {
+      setPreDefinedSelected(null)
+      setPreDefinedState(true)
+    }
+  })
   
   const handleMisalignmentFilterChange = (new_filter) => {
     console.log("new_filter");

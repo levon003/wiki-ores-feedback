@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
   IconButton,
+  useTheme
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -25,6 +26,9 @@ const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
 
 const PageFilterControls = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, ...rest }) => {
+  const theme = useTheme()
+
+  const pageButtonStyle = pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
   const [linkedToInputValue, setLinkedToInputValue] = useState('')
   const [linkedToOptions, setLinkedToOptions] = useState([])
 
@@ -265,8 +269,8 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
       display="flex"
       flexDirection="row"
       flexWrap="nowrap">
-      <Button variant="outlined" onClick={handlePageChipClick}>Page Filters<KeyboardArrowDownIcon/></Button>
-      <IconButton color="primary" size="small" onClick={handleIconClick}>
+      <Button variant="outlined" style={pageButtonStyle} onClick={handlePageChipClick}>Page Filters<KeyboardArrowDownIcon/></Button>
+      <IconButton className="tooltip-margin" color="primary" size="small" onClick={handleIconClick}>
         <HelpIcon/>
       </IconButton>
       <Popover

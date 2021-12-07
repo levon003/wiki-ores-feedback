@@ -8,6 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  useTheme
   // makeStyles
 } from '@material-ui/core';
 import DefaultFilters from './DefaultFilters';
