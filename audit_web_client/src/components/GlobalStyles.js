@@ -26,25 +26,35 @@ const useStyles = makeStyles(() => createStyles({
       height: '100%',
       width: '100%'
     },
+    /* todo change to not be pixels? */
     // these two should be the same
-    '.left-box': {
-      marginLeft: '30px',
+    '.box': {
+      margin: '25px 30px 30px 30px',
     },
-    '.right-box': {
-      marginRight: '30px'
+    '.title': {
+      marginBottom: '10px'
     },
     '.subtitle': {
-      marginBottom: '13px'
+      marginBottom: '8px'
     },
-    '.button-margin': {
-      marginRight: '20px'
-    },
+    // x0.5 size of button margin
+    // these two have the same margin
     '.tooltip-margin': {
-      marginRight: '10px',
-      marginLeft: '10px'
+      marginRight: '6px',
+      marginLeft: '6px'
     },
     '.tooltip-margin-last': {
-      marginLeft: '10px'
+      marginLeft: '6px'
+    },
+    '.text-h2': {
+      fontWeight: '500',
+      fontSize: '20px',
+      color: 'black',
+    },
+    '.text-h3': {
+      fontWeight: '500',
+      fontSize: '14px',
+      color: 'black',
     }
   }
 }));

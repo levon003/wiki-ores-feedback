@@ -163,7 +163,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Button variant="outlined" style={userButtonStyle} onClick={handleClick}> User Filters <KeyboardArrowDownIcon /></Button>
+      <Button className="text-h3" variant="outlined" style={userButtonStyle} onClick={handleClick}> User Filters <KeyboardArrowDownIcon /></Button>
       <IconButton className="tooltip-margin-last" color="primary" size="small" onClick={handleIconClick}>
         <HelpIcon/>
       </IconButton>

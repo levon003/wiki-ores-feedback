@@ -9,6 +9,7 @@ import RevisionViewer from './RevisionViewer';
 import MisalignmentFilter from './MisalignmentFilter';
 import FilterControls from './FilterControls';
 import DefaultFilters from './DefaultFilters';
+import FocusControls from './FocusControls';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -218,16 +219,27 @@ const Dashboard = () => {
                 setPreDefinedSelected={setPreDefinedSelected}
             />
           </Grid>
+
           <Grid
             item
             xs={12}
           >
+            <FocusControls/>
 
+          </Grid>
+
+
+
+          <Grid
+            item
+            xs={12}
+          >
             <MisalignmentFilter 
               onChange={handleMisalignmentFilterChange}
               data= {data}
             />
           </Grid>
+
           <Grid
             item
             xs={12}

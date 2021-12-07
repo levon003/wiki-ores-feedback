@@ -168,7 +168,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Button variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Revision Filters <KeyboardArrowDownIcon/></Button> 
+      <Button className="text-h3" variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Revision Filters <KeyboardArrowDownIcon/></Button> 
       <IconButton color="primary" size="small" className="tooltip-margin" onClick={handleIconClick}>
       <HelpIcon/>
       </IconButton>
@@ -224,7 +224,7 @@ const PreDefinedFilterButton = ({buttonText, style, number, setPreDefinedSelecte
     }
   }
   return (
-    <Button variant="outlined" onClick={onClick} style={style}>{buttonText}</Button>
+    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>{buttonText}</Button>
   )
 }
 
@@ -235,9 +235,10 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
 
   const classes = useStyles();
 
-  const simpleButton1Style = preDefinedSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '20px'} : {marginRight: '20px'}
-  const simpleButton2Style = preDefinedSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '20px'} : {marginRight: '20px'}
-  const simpleButton3Style = preDefinedSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  // all margins should be the same
+  const predefinedButton1Style = preDefinedSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+  const predefinedButton2Style = preDefinedSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+  const predefinedButton3Style = preDefinedSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
 
 
   const [revisionAnchorEl, setRevisionAnchorEl] = useState();
@@ -297,83 +298,81 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
       className={clsx(classes.root, className)}
       {...rest}
     >
-      <Box
-        height="20vh"
-        style={{backgroundColor: "red"}}
-        // display="flex"
-        // flexDirection="column"
-        // flexWrap="nowrap"
-      >
-      <Box style={{backgroundColor: "blue"}}>
-
-      <Box
-          display="flex"
-          flexDirection="column"
-          style= {{ backgroundColor: "grey", display: "inline-flex"}}
-          className='left-box'
-        >
-          <Typography variant="h3" className="subtitle">
-            Pre-Defined
-          </Typography>
-
-          <Box
-            display="flex"
-            flexDirection="row"
-            style= {{ display: "inline-flex"}}
-          >
-            <PreDefinedFilterButton buttonText="SIMPLE ONE" style={simpleButton1Style} number="1" setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton>
-            <PreDefinedFilterButton buttonText="SIMPLE TWO" style={simpleButton2Style} number="2" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
-            <PreDefinedFilterButton buttonText="SIMPLE THREE" style={simpleButton3Style} number="3" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
+      <Box>
+        <Box className='box'>
+          <Box className="title text-h2">
+            Filter
           </Box>
-        </Box>
 
-        <Box
-          display="flex"
-          flexDirection="column"
-          style= {{ backgroundColor: "grey", display: "inline-flex", float: "right"}}
-          className='right-box'
-        >
-          <Typography variant="h3" className="subtitle">
-            Custom
-          </Typography>
+          {/* pre-defined and custom section */}
+          <Box style= {{ overflow: "auto"}}>
+            <Box
+                display="flex"
+                flexDirection="column"
+                style= {{ display: "inline-flex", float: "left"}}
+              >
+                <Box className="text-h3 subtitle">
+                  Pre-Defined
+                </Box>
 
-          <Box
-            display="flex"
-            flexDirection="row"
-            style= {{ display: "inline-flex"}}
-          >
-            <PageFilterChip onChange={onChange} 
-                pageValues={pageValues}
-                setPageValues={setPageValues}
-                namespaceSelected={namespaceSelected}
-                setNameSpaceSelected={setNameSpaceSelected}
-                linkedToValues={linkedToValues}
-                setLinkedToValues={setLinkedToValues}
-                linkedFromValues={linkedFromValues}
-                setLinkedFromValues={setLinkedFromValues}
-                pageAnchorEl={pageAnchorEl}
-                setPageAnchorEl={setPageAnchorEl}
-            />
-            <RevisionFilterChip onChange={onChange} 
-              revisionFilter={revisionFilter} 
-              setRevisionFilter={setRevisionFilter} 
-              minorFilter={minorFilter} 
-              setMinorFilter={setMinorFilter} 
-              revisionAnchorEl={revisionAnchorEl} 
-              setRevisionAnchorEl={setRevisionAnchorEl}
-            />
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  style= {{ display: "inline-flex"}}
+                >
+                  <PreDefinedFilterButton buttonText="SIMPLE ONE" style={predefinedButton1Style} number="1" setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton>
+                  <PreDefinedFilterButton buttonText="SIMPLE TWO" style={predefinedButton2Style} number="2" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
+                  <PreDefinedFilterButton buttonText="SIMPLE THREE" style={predefinedButton3Style} number="3" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
+                </Box>
+            </Box>
 
-            <UserFilterChip 
-              onChange={onChange} 
-              userTypeFilter={userTypeFilter} 
-              setUserTypeFilter={setUserTypeFilter} 
-              filteredUsernames={filteredUsernames} 
-              setFilteredUsernames={setFilteredUsernames}
-              userTypeAnchorEl={userTypeAnchorEl}
-              setUserTypeAnchorEl={setUserTypeAnchorEl}
-            />
+            <Box
+              display="flex"
+              flexDirection="column"
+              style= {{ display: "inline-flex", float: "right"}}
+            >
+              <Box className="text-h3 subtitle">
+                Custom
+              </Box>
+
+              <Box
+                display="flex"
+                flexDirection="row"
+                style= {{ display: "inline-flex"}}
+              >
+                <PageFilterChip onChange={onChange} 
+                    pageValues={pageValues}
+                    setPageValues={setPageValues}
+                    namespaceSelected={namespaceSelected}
+                    setNameSpaceSelected={setNameSpaceSelected}
+                    linkedToValues={linkedToValues}
+                    setLinkedToValues={setLinkedToValues}
+                    linkedFromValues={linkedFromValues}
+                    setLinkedFromValues={setLinkedFromValues}
+                    pageAnchorEl={pageAnchorEl}
+                    setPageAnchorEl={setPageAnchorEl}
+                />
+                <RevisionFilterChip onChange={onChange} 
+                  revisionFilter={revisionFilter} 
+                  setRevisionFilter={setRevisionFilter} 
+                  minorFilter={minorFilter} 
+                  setMinorFilter={setMinorFilter} 
+                  revisionAnchorEl={revisionAnchorEl} 
+                  setRevisionAnchorEl={setRevisionAnchorEl}
+                />
+
+                <UserFilterChip 
+                  onChange={onChange} 
+                  userTypeFilter={userTypeFilter} 
+                  setUserTypeFilter={setUserTypeFilter} 
+                  filteredUsernames={filteredUsernames} 
+                  setFilteredUsernames={setFilteredUsernames}
+                  userTypeAnchorEl={userTypeAnchorEl}
+                  setUserTypeAnchorEl={setUserTypeAnchorEl}
+                />
+              </Box>
+            </Box>
           </Box>
-        </Box>
         </Box>
 
         {/* probably need to fix warning message */}
