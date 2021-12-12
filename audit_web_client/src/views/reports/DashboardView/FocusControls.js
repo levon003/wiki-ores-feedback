@@ -31,20 +31,41 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const FocusButton = ({buttonText, style}) => {
+const FocusButton1 = ({style, setFocusSelected}) => {
     const onClick = () => {
-        // todo: add
+        //todo: add later?
+        setFocusSelected(1)
     }
     return (
-      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>{buttonText}</Button>
+      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED REVERTS</Button>
     )
 }
-// all margins should be the same
-const focusButton1Style = {marginRight: '10px'}
-const focusButton2Style = {marginRight: '10px'}
-const focusButton3Style = {}
+const FocusButton2 = ({style, setFocusSelected}) => {
+    const onClick = () => {
+        //todo: add later?
+        setFocusSelected(2)
+    }
+    return (
+      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED CONSENSUS</Button>
+    )
+}
+const FocusButton3 = ({style, setFocusSelected}) => {
+    const onClick = () => {
+        //todo: add later?
+        setFocusSelected(3)
+    }
+    return (
+      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING REVISIONS</Button>
+    )
+}
 
-const FocusControls = ({className, data, onChange, ...rest}) => {
+const FocusControls = ({className, data, onChange, focusSelected, setFocusSelected, ...rest}) => {
+    const theme = useTheme()
+
+    // all margins should be the same
+    const focusButton1Style = focusSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+    const focusButton2Style = focusSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+    const focusButton3Style = focusSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
 
     const classes = useStyles();
 
@@ -76,9 +97,9 @@ const FocusControls = ({className, data, onChange, ...rest}) => {
                         style= {{ display: "inline-flex"}}
                     >
                         {/* add tooltips here */}
-                        <FocusButton buttonText="UNEXPECTED REVERTS" style={focusButton1Style}></FocusButton>
-                        <FocusButton buttonText="UNEXPECTED CONSENSUS" style={focusButton2Style}></FocusButton>
-                        <FocusButton buttonText="CONFUSING REVISIONS" style={focusButton3Style}></FocusButton>
+                        <FocusButton1 setFocusSelected={setFocusSelected} style={focusButton1Style}></FocusButton1>
+                        <FocusButton2 setFocusSelected={setFocusSelected} style={focusButton2Style}></FocusButton2>
+                        <FocusButton3 setFocusSelected={setFocusSelected} style={focusButton3Style}></FocusButton3>
                     </Box>
                 </Box>
 

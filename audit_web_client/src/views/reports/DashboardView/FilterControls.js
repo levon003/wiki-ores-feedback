@@ -259,7 +259,7 @@ const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsern
 }
 
 const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
-  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues,  preDefinedState, setPreDefinedState, preDefinedSelected, setPreDefinedSelected, ...rest}) => {
+  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, preDefinedSelected, setPreDefinedSelected, ...rest}) => {
     
   const theme = useTheme()
 

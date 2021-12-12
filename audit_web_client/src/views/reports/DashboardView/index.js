@@ -48,9 +48,11 @@ const Dashboard = () => {
   }]); // TODO should be empty, but has one entry for testing
   
   // All of this state has been lifted up from the RevisionFilterChip, UserFilterChip, and PageFilterChip components.
-
-  const [ preDefinedState, setPreDefinedState ] = useState(true)
+  // filter
   const [ preDefinedSelected, setPreDefinedSelected ] = useState(1)
+
+  // focus
+  const [ focusSelected, setFocusSelected ] = useState()
   
   // Revision filter state
   const [revisionFilter, setRevisionFilter] = useState(DefaultFilters.defaultRevisionFilters)
@@ -77,7 +79,6 @@ const Dashboard = () => {
   useEffect(() => {
     if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
       setPreDefinedSelected(1)
-      setPreDefinedState(true)
     } else if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultNewcomerUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
       setPreDefinedSelected(2)
     } else if (revisionFilter === DefaultFilters.defaultLGBTHistoryFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
@@ -219,8 +220,6 @@ const Dashboard = () => {
                 setLinkedToValues={setLinkedToValues}
                 linkedFromValues={linkedFromValues}
                 setLinkedFromValues={setLinkedFromValues}
-                preDefinedState={preDefinedState}
-                setPreDefinedState={setPreDefinedState}
                 preDefinedSelected={preDefinedSelected}
                 setPreDefinedSelected={setPreDefinedSelected}
             />
@@ -230,7 +229,7 @@ const Dashboard = () => {
             item
             xs={12}
           >
-            <FocusControls data={data} onChange={handleMisalignmentFilterChange}/>
+            <FocusControls data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected} onChange={handleMisalignmentFilterChange}/>
 
           </Grid>
 
