@@ -19,12 +19,12 @@ import HelpIcon from '@material-ui/icons/Help'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 
-const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, ...rest}) => {
+const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, preDefinedSelected, ...rest}) => {
   const classes = useStyles();
 
   const theme = useTheme()
 
-  const userButtonStyle = userTypeFilter !== DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  const userButtonStyle = (userTypeFilter !== DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     
   const userTypePrettyNames = {
       "newcomers": "Newcomers",

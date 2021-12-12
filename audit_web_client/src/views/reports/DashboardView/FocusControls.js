@@ -13,7 +13,12 @@ import {
     IconButton,
     Typography,
     useTheme,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary
   } from '@material-ui/core';
+  import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
+  import MisalignmentFilter from "./MisalignmentFilter";
 
 const useStyles = makeStyles((theme) => ({
     root: {},
@@ -39,7 +44,7 @@ const focusButton1Style = {marginRight: '10px'}
 const focusButton2Style = {marginRight: '10px'}
 const focusButton3Style = {}
 
-const FocusControls = ({className, ...rest}) => {
+const FocusControls = ({className, data, onChange, ...rest}) => {
 
     const classes = useStyles();
 
@@ -77,8 +82,19 @@ const FocusControls = ({className, ...rest}) => {
                     </Box>
                 </Box>
 
-                {/* add graph dropdown here */}
             </Box>
+                <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                        >
+                        <Typography>Misalignment Graph</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <MisalignmentFilter data={data} onChange={onChange}/>
+                    </AccordionDetails>
+                </Accordion>
         </Box>
 
       </Box>

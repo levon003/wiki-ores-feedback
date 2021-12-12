@@ -22,9 +22,29 @@ const defaultMinorFilters = {
 
 const defaultNamespaceSelected = [{namespace: "Main/Article - 0"}]
 
+const defaultNewcomerUserFilters = {
+  unregistered: true,
+  registered: false,
+  newcomers: true,
+  learners: false,
+  experienced: false,
+  bots: false,
+}
+
+// filler for testing - TODO add actual LGBT History default filters
+const defaultLGBTHistoryFilters = {
+  largeAdditions: true,
+  smallAdditions: false,
+  neutral: false,
+  smallRemovals: false,
+  largeRemovals: false,
+} 
+
 export default {
   defaultUserFilters,
   defaultRevisionFilters,
   defaultMinorFilters,
-  defaultNamespaceSelected
+  defaultNamespaceSelected,
+  defaultNewcomerUserFilters,
+  defaultLGBTHistoryFilters
 }

@@ -25,10 +25,10 @@ import DefaultFilters from './DefaultFilters';
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
 
-const PageFilterControls = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, ...rest }) => {
+const PageFilterControls = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected, ...rest }) => {
   const theme = useTheme()
 
-  const pageButtonStyle = pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  const pageButtonStyle = (pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
   const [linkedToInputValue, setLinkedToInputValue] = useState('')
   const [linkedToOptions, setLinkedToOptions] = useState([])
 

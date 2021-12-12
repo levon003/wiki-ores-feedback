@@ -54,11 +54,11 @@ const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespa
 
 };
 
-const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, revisionAnchorEl, setRevisionAnchorEl, ...rest}) => {
+const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, revisionAnchorEl, setRevisionAnchorEl, preDefinedSelected, ...rest}) => {
 
   const theme = useTheme()
 
-  const revisionButtonStyle = revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  const revisionButtonStyle = (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters) && preDefinedSelected == null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
   
   const revisionFilterPrettyNames = {
     largeAdditions: "large additions",
@@ -209,22 +209,52 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   );
 };
 
-const PreDefinedFilterButton = ({buttonText, style, number, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
-    setPreDefinedSelected(parseInt(number))
-    if (parseInt(number) === 1) {
-      setFilteredUsernames([])
-      setUserTypeFilter(DefaultFilters.defaultUserFilters)
-      setRevisionFilter(DefaultFilters.defaultRevisionFilters)
-      setMinorFilter(DefaultFilters.defaultMinorFilters)
-      setPageValues([])
-      setLinkedFromValues([])
-      setLinkedToValues([])
-      setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
-    }
+    setPreDefinedSelected(1)
+    setFilteredUsernames([])
+    setUserTypeFilter(DefaultFilters.defaultUserFilters)
+    setRevisionFilter(DefaultFilters.defaultRevisionFilters)
+    setMinorFilter(DefaultFilters.defaultMinorFilters)
+    setPageValues([])
+    setLinkedFromValues([])
+    setLinkedToValues([])
+    setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
   }
   return (
-    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>{buttonText}</Button>
+    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>All Article Edits</Button>
+  )
+}
+const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+  const onClick = () => {
+    setPreDefinedSelected(2)
+    setFilteredUsernames([])
+    setUserTypeFilter(DefaultFilters.defaultNewcomerUserFilters)
+    setRevisionFilter(DefaultFilters.defaultRevisionFilters)
+    setMinorFilter(DefaultFilters.defaultMinorFilters)
+    setPageValues([])
+    setLinkedFromValues([])
+    setLinkedToValues([])
+    setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
+  }
+  return (
+    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>Newcomer Edits</Button>
+  )
+}
+const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+  const onClick = () => {
+    setPreDefinedSelected(3)
+    setFilteredUsernames([])
+    setUserTypeFilter(DefaultFilters.defaultUserFilters)
+    setRevisionFilter(DefaultFilters.defaultLGBTHistoryFilters)
+    setMinorFilter(DefaultFilters.defaultMinorFilters)
+    setPageValues([])
+    setLinkedFromValues([])
+    setLinkedToValues([])
+    setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
+  }
+  return (
+    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>LGBT History Edits</Button>
   )
 }
 
@@ -320,9 +350,9 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
                   flexDirection="row"
                   style= {{ display: "inline-flex"}}
                 >
-                  <PreDefinedFilterButton buttonText="SIMPLE ONE" style={predefinedButton1Style} number="1" setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton>
-                  <PreDefinedFilterButton buttonText="SIMPLE TWO" style={predefinedButton2Style} number="2" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
-                  <PreDefinedFilterButton buttonText="SIMPLE THREE" style={predefinedButton3Style} number="3" setPreDefinedSelected={setPreDefinedSelected}></PreDefinedFilterButton>
+                  <PreDefinedFilterButton1 style={predefinedButton1Style} setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton1>
+                  <PreDefinedFilterButton2 style={predefinedButton2Style} setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton2>
+                  <PreDefinedFilterButton3 style={predefinedButton3Style} setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton3>
                 </Box>
             </Box>
 
@@ -351,6 +381,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
                     setLinkedFromValues={setLinkedFromValues}
                     pageAnchorEl={pageAnchorEl}
                     setPageAnchorEl={setPageAnchorEl}
+                    preDefinedSelected={preDefinedSelected}
                 />
                 <RevisionFilterChip onChange={onChange} 
                   revisionFilter={revisionFilter} 
@@ -359,6 +390,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
                   setMinorFilter={setMinorFilter} 
                   revisionAnchorEl={revisionAnchorEl} 
                   setRevisionAnchorEl={setRevisionAnchorEl}
+                  preDefinedSelected={preDefinedSelected}
                 />
 
                 <UserFilterChip 
@@ -369,6 +401,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
                   setFilteredUsernames={setFilteredUsernames}
                   userTypeAnchorEl={userTypeAnchorEl}
                   setUserTypeAnchorEl={setUserTypeAnchorEl}
+                  preDefinedSelected={preDefinedSelected}
                 />
               </Box>
             </Box>

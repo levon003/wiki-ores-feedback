@@ -469,52 +469,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
 
 
 
-  function SelectionButtonGrid(props) {
-    const total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
-    return <Grid container justify="center">
-      <Grid item>
-        <HtmlTooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit"> Non-reverted revisions that ORES thinks are very likely to have problems (damaging/vandalism) </Typography>
-              {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
-              {props.data["vlhp_r"] + " revs (" + Math.round(props.data["vlhp_r"] / total_R * 10000) / 100 + "% of all non-reverted revs)"}
-            </React.Fragment>
-          }
-        >
-          <Button variant='outlined'>Investigate unexpected consensus</Button>
-        </HtmlTooltip>
-        <HtmlTooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit"> Reverted revisions that ORES thinks are very likely good (non-damaging) </Typography>
-              {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
-              {props.data["vlg_r"] + " revs (" + Math.round(props.data["vlg_r"] / total_R * 10000) / 100 + "% of all reverted revs)"}
-            </React.Fragment>
-          }
-        >
-          <Button variant='outlined'>Investigate unexpected reverts</Button>
-        </HtmlTooltip>
-        <HtmlTooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit"> Revisions that ORES wasn’t sure about  </Typography>
-              {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
-              {props.data["confrevs_r"] + " revs (" + Math.round(props.data["confrevs_r"] / total_R * 10000) / 100 + "% of all revs) (0.301 < ORES score < 0.944)"}
-            </React.Fragment>
-          }
-        >
-          <Button variant='outlined'>Investigate confusing revisions</Button>
-        </HtmlTooltip>
-      </Grid>
-    </Grid>
-  }
-  // const { height, width } = useWindowDimensions();
-  // const originalWidth = 519;
-  // const originalHeight = 260;
-  // const aspectRatio = originalWidth / originalHeight;
-  // const windowWidth = width;
-  // const windowHeight = height;
+  
   const HtmlTooltip = withStyles((theme) => ({
     tooltip: {
       backgroundColor: '#f5f5f9',
@@ -536,7 +491,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
     >
       <FlowchartSummarySVG data={data} />
     </Box>
-    <SelectionButtonGrid data={data} />
+    {/* <SelectionButtonGrid data={data} /> */}
   </Box>
   );
 };

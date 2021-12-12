@@ -75,9 +75,15 @@ const Dashboard = () => {
   })
 
   useEffect(() => {
-    if (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter != DefaultFilters.defaultMinorFilters || userTypeFilter != DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0 || pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0) {
-      setPreDefinedSelected(null)
+    if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
+      setPreDefinedSelected(1)
       setPreDefinedState(true)
+    } else if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultNewcomerUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
+      setPreDefinedSelected(2)
+    } else if (revisionFilter === DefaultFilters.defaultLGBTHistoryFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
+      setPreDefinedSelected(3)
+    } else {
+      setPreDefinedSelected(null)
     }
   })
   
@@ -224,20 +230,8 @@ const Dashboard = () => {
             item
             xs={12}
           >
-            <FocusControls/>
+            <FocusControls data={data} onChange={handleMisalignmentFilterChange}/>
 
-          </Grid>
-
-
-
-          <Grid
-            item
-            xs={12}
-          >
-            <MisalignmentFilter 
-              onChange={handleMisalignmentFilterChange}
-              data= {data}
-            />
           </Grid>
 
           <Grid
