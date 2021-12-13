@@ -504,14 +504,24 @@ const RevisionView = ({ revision, className, ...rest }) => {
             <Box
                 display="flex"
                 flexDirection="row"
-                style= {{ display: "inline-flex", float: "right", backgroundColor: "grey"}}
+                style= {{ display: "inline-flex", float: "right"}}
             >
-                <Box display="flex" style={{display: "inline-flex", float: "right", backgroundColor:"orange"}}>
-                    <Box>
-                      <ArrowBackIcon/>Previous
+                <Box style={{display: "inline-flex", float: "right"}}>
+                    <Box className="text-h4"
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    style={{color: "#C7C7C7"}}>
+                      <ArrowBackIcon style={{color: "#C7C7C7", marginRight: "4px"}} className="text-h4"/>Previous
                     </Box>
-                    <Box>
-                      Next<ArrowForwardIcon/>
+
+                    <Box 
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    className="text-h4" 
+                    style={{color: "#C7C7C7", marginLeft: "20px"}}>
+                      Next<ArrowForwardIcon style={{color: "#C7C7C7", marginLeft: "4px"}} className="text-h4"/>
                     </Box>
               </Box>
             </Box>
