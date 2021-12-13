@@ -164,7 +164,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
       flexWrap="nowrap"
     >
       <Button className="text-h3" variant="outlined" style={userButtonStyle} onClick={handleClick}> User Filters <KeyboardArrowDownIcon /></Button>
-      <IconButton className="tooltip-margin-last" color="primary" size="small" onClick={handleIconClick}>
+      <IconButton className="tooltip-margin-last" color="#717281" size="small" onClick={handleIconClick}>
         <HelpIcon/>
       </IconButton>
       <Popover

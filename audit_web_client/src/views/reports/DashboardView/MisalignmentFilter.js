@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   nodeText: {
     fontSize: 6,
-    fontFamily: "Georgia",
+    fontFamily: "Roboto",
     fill: 'black',
   },
   bigbox: {
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
   middleNodeText: {
     fontSize: 4.5,
-    fontFamily: "Georgia",
+    fontFamily: "Roboto",
     fill: 'black'
   },
   edge: {
@@ -330,7 +330,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
           onClick={() => handleClick("all", "r")}
         ></rect>
         <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="79%" > Reverted </text>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="83%" fontFamily="Georgia" fontSize="6" fill="black"> {total_R} revisions ({Math.round(total_R / total * 10000) / 100} %)</text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="83%" fontFamily="Roboto" fontSize="6" fill="black"> {total_R} revisions ({Math.round(total_R / total * 10000) / 100} %)</text>
 
         <rect
           className = {clsx(classes.root,  classes.bigbox)}
@@ -340,8 +340,8 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
           fill={strokecolor.nr_box}
           ref={myRef}
         ></rect>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="21%" fontFamily="Georgia" fontSize="6" fill="black"> Not Reverted </text>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="25%" fontFamily="Georgia" fontSize="6" fill="black"> {total_nr} revisions ({Math.round(total_nr / total * 10000) / 100} %)</text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="21%" fontFamily="Roboto" fontSize="6" fill="black"> Not Reverted </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="25%" fontFamily="Roboto" fontSize="6" fill="black"> {total_nr} revisions ({Math.round(total_nr / total * 10000) / 100} %)</text>
         <rect
           fill={strokecolor.itm_box}
           // onClick={handleClick}
@@ -350,8 +350,8 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
           className = {clsx(classes.root,  classes.bigbox)}
           onClick={() => handleClick("itm", "both")}
         ></rect>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="50%" fontFamily="Georgia" fontSize="6" fill="black">In the middle  </text>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="54%" fontFamily="Georgia" fontSize="6" fill="black">(0.9 - 0.05) </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="50%" fontFamily="Roboto" fontSize="6" fill="black">In the middle  </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="54%" fontFamily="Roboto" fontSize="6" fill="black">(0.9 - 0.05) </text>
         <rect
           className = {clsx(classes.root,  classes.bigbox)}
           fill={strokecolor.lg_box}
@@ -359,8 +359,8 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
           y="74%"
           onClick={() => handleClick("lg", "both")}
         ></rect>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="79%" fontFamily="Georgia" fontSize="6" fill="black"> Likely good </text>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="83%" fontFamily="Georgia" fontSize="6" fill="black">(0.9 - 0.05) </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="79%" fontFamily="Roboto" fontSize="6" fill="black"> Likely good </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="83%" fontFamily="Roboto" fontSize="6" fill="black">(0.9 - 0.05) </text>
         <rect
           fill={strokecolor.vlhp_nr_box}
           stroke="rgb(0,0,0)"

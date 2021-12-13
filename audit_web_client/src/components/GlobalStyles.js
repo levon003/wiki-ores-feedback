@@ -55,6 +55,11 @@ const useStyles = makeStyles(() => createStyles({
       fontWeight: '500',
       fontSize: '14px',
       color: 'black',
+    },
+    '.text-h4': {
+      fontWeight: '500',
+      fontSize: '12px',
+      color: 'black',
     }
   }
 }));
