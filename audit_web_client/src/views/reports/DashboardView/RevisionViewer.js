@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import {
   Box,
   Card,
-  makeStyles
+  makeStyles,
+  Divider
 } from '@material-ui/core';
 import RevisionView from './RevisionView';
 
@@ -40,46 +41,60 @@ const RevisionViewer = ({ className, revisions, ...rest }) => {
       className={clsx(classes.root, className)}
       {...rest}
     >
-      <Box
-        height="90vh"
-        display="flex"
-        flexDirection="column"
-        flexWrap="nowrap"
-      >
-      <Box 
-        minWidth="30vw" 
-        maxWidth="100vw"
-        minHeight="30vw"
-        flexGrow={1}
-        style={{'overflowY': 'scroll'}}
-      >
-        <Box
-          display="flex"
-          flexDirection="column"
-          flexWrap="nowrap"
-          alignItems="center"
-        >
-        {revisions.map((revision) => (
-              <Box p={1} width='100%' key={revision.rev_id}>
-                <RevisionView 
-                  key={revision.rev_id} 
-                  revision={revision} 
-                />
-              </Box>
-            ))}
-        
-        <Box className={clsx(classes.margin, classes.statusDescription)}>
-           <p>{statusDescription}</p>
+
+      <Box>
+        <Box className='box'>
+            <Box className="title text-h2">
+                Inspect
+            </Box>
+
+            {/* top text section */}
+            <Box style= {{ overflow: "auto"}}>
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    style= {{ display: "inline-flex", float: "left"}}
+                  >
+                    <Box className="text-h3 subtitle">
+                      {/* todo: add correct updating text line */}
+                      [Inspecting 6.7 million revisions in namespace 0]
+                    </Box>
+                </Box>
+
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  style= {{ display: "inline-flex", float: "right"}}
+                >
+                    <Box className="text-h3 subtitle" style = {{ color: "#C7C7C7"}}>
+                      [0 out of 10 damaging (00.00%)]
+                    </Box>
+                </Box>
+            </Box>
+
+
+            <Divider style={{marginTop: "14px", marginBottom: "22px"}}></Divider>
+
+
+            {/* revisions section */}
+            <Box
+              display="flex"
+              flexDirection="column"
+              flexWrap="nowrap"
+              alignItems="center"
+            >
+                {revisions.map((revision) => (
+                    <Box key={revision.rev_id}>
+                      <RevisionView 
+                        key={revision.rev_id} 
+                        revision={revision} 
+                      />
+                    </Box>
+                ))}
+            </Box>
+
         </Box>
-        </Box>
-      </Box>
-      <Box
-        display="flex"
-        justifyContent="flex-start"
-        p={2}
-      >
-        <div>{prefilteredTotal} revisions available (display limit {displayLimit})</div>
-      </Box>
+
       </Box>
     </Card>
   );

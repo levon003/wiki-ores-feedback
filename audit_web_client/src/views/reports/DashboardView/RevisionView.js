@@ -5,7 +5,7 @@ import {
   Box,
   Button,
   Link,
-  Paper,
+  Card,
   Typography,
   TextField,
   useTheme
@@ -61,10 +61,10 @@ const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
 // gonna keep this here for now, maybe move it later
 // Box can inherit global styles, easier to change styles
 const ErrorNotification = ({ errorMessage }) => {
-  return <Box style={{color: 'red', paddingTop: 10, textAlign: 'center'}}>{errorMessage}</Box>
+  return <Box style={{color: 'red', textAlign: 'center'}}>{errorMessage}</Box>
 }
 const SuccessNotification = ({ successMessage }) => {
-  return <Box style={{color: 'green', paddingTop: 10, textAlign: 'center'}}>{successMessage}</Box>
+  return <Box style={{color: 'green', textAlign: 'center'}}>{successMessage}</Box>
 }
 
 const RevisionView = ({ revision, className, ...rest }) => {
@@ -358,8 +358,6 @@ const RevisionView = ({ revision, className, ...rest }) => {
   const RevisionSummary = () => {
     return (
       <Box>
-        <Typography variant="h3">v0.0.1a</Typography>
-        <br></br>
         <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
@@ -415,42 +413,63 @@ const RevisionView = ({ revision, className, ...rest }) => {
   const AnnotationButtons = () => {
     const theme = useTheme()
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginLeft: 5, marginRight: 5} : {marginLeft: 5, marginRight: 5}
+    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12p"} : {marginRight: "12px"}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12p"} : {marginRight: "12px"}
     // add icons to buttons
     return (
-      <Box>
-        <Button 
-          style={correctButtonStyle}
-          variant="outlined"
-          onClick={(event) => handleButtonClick('correct')}
-        >
-          <CheckIcon 
-            style={{paddingRight: 5}}
+      <Box display="flex"
+      flexDirection="column"
+      style={{marginBottom: "10px"}}>
+          <Box>
+            <Button 
+              style={correctButtonStyle}
+              variant="outlined"
+              onClick={(event) => handleButtonClick('correct')}
+            >
+              <CheckIcon 
+                style={{paddingRight: 5}}
+              />
+              Confirm damaging
+            </Button>
+            <Button 
+              style={misclassButtonStyle}
+              variant="outlined"
+              onClick={(event) => handleButtonClick('misclassification')}
+            >
+              <CloseIcon 
+                style={{paddingRight: 5}}
+              />
+              Not damaging
+            </Button>
+            <Button 
+              style={flagButtonStyle}
+              variant="outlined"
+              onClick={(event) => handleButtonClick('flag')}
+            >
+              <FlagIcon 
+                style={{paddingRight: 5}}
+              />
+              Flag
+            </Button>
+            <br></br>
+          </Box>
+
+          <Box style={{paddingTop: "8px"}}>
+            {/* Notes */}
+            <TextField
+            multiline
+            label="Notes" 
+            value={note} 
+            onChange={(event) => {
+              setNote(event.target.value)
+              setTyping(true)
+              setFirstTyped(true)
+            }} 
+            style={{width: "40vw"}}
           />
-          Confirm damaging
-        </Button>
-        <Button 
-          style={misclassButtonStyle}
-          variant="outlined"
-          onClick={(event) => handleButtonClick('misclassification')}
-        >
-          <CloseIcon 
-            style={{paddingRight: 5}}
-          />
-          Not damaging
-        </Button>
-        <Button 
-          style={flagButtonStyle}
-          variant="outlined"
-          onClick={(event) => handleButtonClick('flag')}
-        >
-          <FlagIcon 
-            style={{paddingRight: 5}}
-          />
-          Flag
-        </Button>
-        <br></br>
+
+              <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
+          </Box>
       </Box>
     );
   }
@@ -469,51 +488,59 @@ const RevisionView = ({ revision, className, ...rest }) => {
   }
 
   return (
-    <Paper
+  <Card
       className={clsx(classes.root, className)}
-      variant="outlined"
-      m={1}
-      p={1}
       {...rest}
-    >
-      <Box p={1}>
+  >
+    <Box>
         <RevisionSummary/>
         <ErrorNotification errorMessage={errorMessage}/>
         <SuccessNotification successMessage={successMessage}/>
-        <RevisionAnnotationControls />
-        {/* Notes */}
-        <TextField
-          multiline
-          label="Notes" 
-          value={note} 
-          onChange={(event) => {
-            setNote(event.target.value)
-            setTyping(true)
-            setFirstTyped(true)
-          }} 
-          style={{marginLeft: 125, marginBottom: 20, width: 470}}
-        />
-        <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
-        <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
-        {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box
+        <Box 
             display="flex"
-            flexDirection="column"
-          >
-          <DiffTable />
-          <Button
-            onClick={handleAccordionExpansionToggle}
-          >
-            <ExpandLessIcon /> Collapse difference between revisions <ExpandLessIcon />
-          </Button>
-          </Box>
-        </AccordionDetails>
+            flexDirection="row"
+            style={{paddingTop: "25px"}}
+        >
+            <Box style={{paddingRight: "12px"}}>
+                <RevisionAnnotationControls/>
+            </Box>
+        </Box>
+
+        
+        
+ 
+        <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
+            {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
+            </AccordionSummary>
+        
+            <Box
+                // todo: change height to size where we can still see buttons
+                  height="35vh"
+                  display="flex"
+                  flexDirection="column"
+                  flexWrap="nowrap"
+            >
+                <Box style={{'overflowY': 'scroll'}}>
+                    <AccordionDetails>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                        >
+                            <DiffTable />
+                            {/* <Button
+                              onClick={handleAccordionExpansionToggle}
+                            >
+                                <ExpandLessIcon /> Collapse difference between revisions <ExpandLessIcon />
+                            </Button> */}
+                        </Box>
+                    </AccordionDetails>
+                </Box>
+            </Box>
         </Accordion>
+                
     </Box>
-  </Paper>
+  </Card>
 
   );
 };

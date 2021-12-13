@@ -104,7 +104,7 @@ const FocusControls = ({className, data, onChange, focusSelected, setFocusSelect
                 </Box>
 
             </Box>
-                <Accordion>
+                <Accordion style={{marginTop: "10px"}}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
