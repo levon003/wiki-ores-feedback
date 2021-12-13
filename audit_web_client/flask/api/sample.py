@@ -83,68 +83,68 @@ def get_sample_revisions():
     logger = logging.getLogger('sample.get_sample')
     start = datetime.now()
     
-    filters = request.get_json()['filters']
-    user_filters = filters['user_type_filter']
-    include_bot = user_filters['bots']
-    include_unregistered = user_filters['unregistered']
-    include_newcomers = user_filters['newcomers']
-    include_learners = user_filters['learners']
-    include_experienced = user_filters['experienced']
+    # filters = request.get_json()['filters']
+    # user_filters = filters['user_type_filter']
+    # include_bot = user_filters['bots']
+    # include_unregistered = user_filters['unregistered']
+    # include_newcomers = user_filters['newcomers']
+    # include_learners = user_filters['learners']
+    # include_experienced = user_filters['experienced']
 
-    filtered_usernames = filters['filtered_usernames']
-    linked_from_values = filters['linked_from_values']
-    linked_to_values = filters['linked_to_values']
-    page_values = filters['page_values']
+    # filtered_usernames = filters['filtered_usernames']
+    # linked_from_values = filters['linked_from_values']
+    # linked_to_values = filters['linked_to_values']
+    # page_values = filters['page_values']
 
-    minor_filters = filters['minor_filters']
-    namespace_selected = filters['namespace_selected']
+    # minor_filters = filters['minor_filters']
+    # namespace_selected = filters['namespace_selected']
 
-    revision_filters = filters['revision_filters']
-    large_additions = revision_filters['largeAdditions']
-    large_removals = revision_filters['largeRemovals']
-    neutral = revision_filters['neutral']
-    small_additions = revision_filters['smallAdditions']
-    small_removals = revision_filters['smallRemovals']
+    # revision_filters = filters['revision_filters']
+    # large_additions = revision_filters['largeAdditions']
+    # large_removals = revision_filters['largeRemovals']
+    # neutral = revision_filters['neutral']
+    # small_additions = revision_filters['smallAdditions']
+    # small_removals = revision_filters['smallRemovals']
 
     rt = db.get_revision_table()
     s = select(rt.c.rev_id, rt.c.page_id, rt.c.rev_timestamp)  # TODO add the other columns here that are expected by the frontend
 
-    valid_user_types = []
-    if include_unregistered:
-        valid_user_types.append(0)
-    if include_bot:
-        valid_user_types.append(1)
-    if include_newcomers:
-        valid_user_types.append(2)
-    if include_learners:
-        valid_user_types.append(3)
-    if include_experienced:
-        valid_user_types.append(4)
-    if len(valid_user_types) < 5:
-        s = s.where(rt.c.user_type.in_(valid_user_types))
+    # valid_user_types = []
+    # if include_unregistered:
+    #     valid_user_types.append(0)
+    # if include_bot:
+    #     valid_user_types.append(1)
+    # if include_newcomers:
+    #     valid_user_types.append(2)
+    # if include_learners:
+    #     valid_user_types.append(3)
+    # if include_experienced:
+    #     valid_user_types.append(4)
+    # if len(valid_user_types) < 5:
+    #     s = s.where(rt.c.user_type.in_(valid_user_types))
     
-    valid_revision_filters = []
-    if minor_filters['isMinor']:
-        valid_revision_filters.extend([4, 5, 6, 7])
-    if minor_filters['isMajor']:
-        valid_revision_filters.extend([0, 1, 2, 3])
-    if len(valid_revision_filters) < 8:
-        s = s.where(rt.c.revision_filter_mask.in_(valid_revision_filters))
+    # valid_revision_filters = []
+    # if minor_filters['isMinor']:
+    #     valid_revision_filters.extend([4, 5, 6, 7])
+    # if minor_filters['isMajor']:
+    #     valid_revision_filters.extend([0, 1, 2, 3])
+    # if len(valid_revision_filters) < 8:
+    #     s = s.where(rt.c.revision_filter_mask.in_(valid_revision_filters))
 
-    valid_delta_bytes_filters = []
-    if large_additions:
-        valid_delta_bytes_filters.append(2)
-    if small_additions:
-        valid_delta_bytes_filters.append(1)
-    if neutral:
-        valid_delta_bytes_filters.append(0)
-    if small_removals:
-        valid_delta_bytes_filters.append(-1)
-    if large_removals:
-        valid_delta_bytes_filters.append(-2)
-    if len(valid_delta_bytes_filters) < 5:
-        s = s.where(rt.c.delta_bytes_filter.in_(valid_delta_bytes_filters))
-    logger.info(s)
+    # valid_delta_bytes_filters = []
+    # if large_additions:
+    #     valid_delta_bytes_filters.append(2)
+    # if small_additions:
+    #     valid_delta_bytes_filters.append(1)
+    # if neutral:
+    #     valid_delta_bytes_filters.append(0)
+    # if small_removals:
+    #     valid_delta_bytes_filters.append(-1)
+    # if large_removals:
+    #     valid_delta_bytes_filters.append(-2)
+    # if len(valid_delta_bytes_filters) < 5:
+    #     s = s.where(rt.c.delta_bytes_filter.in_(valid_delta_bytes_filters))
+    # logger.info(s)
 
     revision_list = []
     Session = db.get_oidb_session()
