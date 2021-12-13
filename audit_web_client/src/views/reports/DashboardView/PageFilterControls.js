@@ -270,7 +270,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
       flexDirection="row"
       flexWrap="nowrap">
       <Button className="text-h3" variant="outlined" style={pageButtonStyle} onClick={handlePageChipClick}>Page Filters<KeyboardArrowDownIcon/></Button>
-      <IconButton className="tooltip-margin" color="primary" size="small" onClick={handleIconClick}>
+      <IconButton className="tooltip-margin" color="#717281" size="small" onClick={handleIconClick}>
         <HelpIcon/>
       </IconButton>
       <Popover

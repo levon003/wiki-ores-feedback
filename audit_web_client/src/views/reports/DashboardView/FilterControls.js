@@ -169,7 +169,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
       flexWrap="nowrap"
     >
       <Button className="text-h3" variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Revision Filters <KeyboardArrowDownIcon/></Button> 
-      <IconButton color="primary" size="small" className="tooltip-margin" onClick={handleIconClick}>
+      <IconButton color="#717281" size="small" className="tooltip-margin" onClick={handleIconClick}>
       <HelpIcon/>
       </IconButton>
       <Popover
