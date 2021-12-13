@@ -15,6 +15,8 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
@@ -415,9 +417,9 @@ const RevisionView = ({ revision, className, ...rest }) => {
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12p"} : {marginRight: "12px"}
     const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12p"} : {marginRight: "12px"}
-    // add icons to buttons
     return (
-      <Box display="flex"
+      <Box 
+      display="flex"
       flexDirection="column"
       style={{marginBottom: "10px"}}>
           <Box>
@@ -454,37 +456,67 @@ const RevisionView = ({ revision, className, ...rest }) => {
             <br></br>
           </Box>
 
-          <Box style={{paddingTop: "8px"}}>
-            {/* Notes */}
-            <TextField
-            multiline
-            label="Notes" 
-            value={note} 
-            onChange={(event) => {
-              setNote(event.target.value)
-              setTyping(true)
-              setFirstTyped(true)
-            }} 
-            style={{width: "40vw"}}
-          />
-
-              <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
-          </Box>
       </Box>
     );
   }
 
   const RevisionAnnotationControls = () => {
     return (
-      <Box
-        display="flex"
-        flexDirection="row"
-      >
-        <PredictionDisplay />
-        <AnnotationButtons />
-      </Box>
+        <Box
+          display="flex"
+          flexDirection="row"
+        >
+          <PredictionDisplay />
+          <AnnotationButtons />
+        </Box>  
     );
+  }
 
+  const NotesAndNextButtons = () => {
+    return (
+        <Box 
+            style={{overflow: "auto", marginBottom: "10px"}}
+        >
+
+            {/* Notes */}
+            <Box
+                display="flex"
+                flexDirection="row"
+                style= {{ display: "inline-flex", float: "left"}}
+            >
+                <Box display="flex" style={{paddingTop: "8px"}}>
+                    <TextField
+                    multiline
+                    label="Notes" 
+                    value={note} 
+                    onChange={(event) => {
+                      setNote(event.target.value)
+                      setTyping(true)
+                      setFirstTyped(true)
+                    }} 
+                    style={{width: "50vw"}}
+                    />
+                      <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
+                </Box>
+            </Box>
+
+            {/* Previous/next */}
+            <Box
+                display="flex"
+                flexDirection="row"
+                style= {{ display: "inline-flex", float: "right", backgroundColor: "grey"}}
+            >
+                <Box display="flex" style={{display: "inline-flex", float: "right", backgroundColor:"orange"}}>
+                    <Box>
+                      <ArrowBackIcon/>Previous
+                    </Box>
+                    <Box>
+                      Next<ArrowForwardIcon/>
+                    </Box>
+              </Box>
+            </Box>
+        </Box>
+    );
   }
 
   return (
@@ -506,9 +538,8 @@ const RevisionView = ({ revision, className, ...rest }) => {
             </Box>
         </Box>
 
-        
-        
- 
+        <NotesAndNextButtons/>
+
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
             {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
