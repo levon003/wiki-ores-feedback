@@ -113,7 +113,9 @@ const FocusControls = ({className, data, onChange, focusSelected, setFocusSelect
                         <Typography>Misalignment Graph</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
+                        <Box margin="0 auto">
                         <MisalignmentFilter data={data} onChange={onChange}/>
+                        </Box>
                     </AccordionDetails>
                 </Accordion>
         </Box>
