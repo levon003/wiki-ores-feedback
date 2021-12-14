@@ -33,13 +33,13 @@ const Dashboard = () => {
   });
 
   const [revisions, setRevisions] = useState([{
-    rev_id: 1001836878, 
+    rev_id: 1057473596, 
     prev_rev_id: 1001836865,
     rev_timestamp: 0,
     // has_edit_summary: false,
     user_text: "Suriname0",
     user_id: 50,
-    page_title: "Armadillidium vulgare",
+    page_title: "Test",
     curr_bytes: 2289,
     delta_bytes: 1550,
     is_minor: true,
@@ -85,11 +85,10 @@ const Dashboard = () => {
   const [linkedToValues, setLinkedToValues] = useState([])
   
   const [linkedFromValues, setLinkedFromValues] = useState([])
-  console.log(linkedFromValues)
 
   useEffect(() => {
     handleStateUpdate()
-  })
+  }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected])
 
   useEffect(() => {
     if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {

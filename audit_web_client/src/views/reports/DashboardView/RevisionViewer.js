@@ -83,14 +83,11 @@ const RevisionViewer = ({ className, revisions, ...rest }) => {
               flexWrap="nowrap"
               alignItems="center"
             >
-                {revisions.map((revision) => (
-                    <Box key={revision.rev_id}>
-                      <RevisionView 
-                        key={revision.rev_id} 
-                        revision={revision} 
-                      />
-                    </Box>
-                ))}
+              <Box>
+                <RevisionView 
+                  revisions={revisions}
+                />
+              </Box>
             </Box>
 
         </Box>

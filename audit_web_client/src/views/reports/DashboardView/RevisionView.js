@@ -69,7 +69,9 @@ const SuccessNotification = ({ successMessage }) => {
   return <Box style={{color: 'green', textAlign: 'center'}}>{successMessage}</Box>
 }
 
-const RevisionView = ({ revision, className, ...rest }) => {
+const RevisionView = ({ revisions, className, ...rest }) => {
+  const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
+  const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
@@ -471,7 +473,6 @@ const RevisionView = ({ revision, className, ...rest }) => {
         </Box>  
     );
   }
-
   const NotesAndNextButtons = () => {
     return (
         <Box 
@@ -511,8 +512,13 @@ const RevisionView = ({ revision, className, ...rest }) => {
                     display="flex"
                     alignItems= "center"
                     justifyContent= "center"
-                    style={{color: "#C7C7C7"}}>
-                      <ArrowBackIcon style={{color: "#C7C7C7", marginRight: "4px"}} className="text-h4"/>Previous
+                    style={{color: "#C7C7C7", cursor: 'pointer'}}
+                    >
+                      <Button onClick={() => {
+                      if (currRevisionIdx > 0) {
+                        setCurrRevisionIdx(currRevisionIdx - 1)
+                      }
+                      }}><ArrowBackIcon style={{color: "#C7C7C7", marginRight: "4px"}} className="text-h4"/>Previous</Button>
                     </Box>
 
                     <Box 
@@ -520,9 +526,15 @@ const RevisionView = ({ revision, className, ...rest }) => {
                     alignItems= "center"
                     justifyContent= "center"
                     className="text-h4" 
-                    style={{color: "#C7C7C7", marginLeft: "20px"}}>
-                      Next<ArrowForwardIcon style={{color: "#C7C7C7", marginLeft: "4px"}} className="text-h4"/>
+                    style={{color: "#C7C7C7", marginLeft: "20px", cursor: 'pointer'}}>
+                      <Button onClick={() => {
+                        if (currRevisionIdx < revisions.length - 1) {
+                          setCurrRevisionIdx(currRevisionIdx + 1)
+                        }
+                      }
+                    }>Next<ArrowForwardIcon style={{color: "#C7C7C7", marginLeft: "4px"}} className="text-h4"/></Button>
                     </Box>
+                    <Box>{currRevisionIdx + 1}/{revisions.length}</Box>
               </Box>
             </Box>
         </Box>
