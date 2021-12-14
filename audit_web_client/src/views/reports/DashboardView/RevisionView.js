@@ -564,9 +564,13 @@ const RevisionView = ({ revisions, className, ...rest }) => {
 
         <NotesAndNextButtons/>
 
-        <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
-            {'Difference between revisions'}
+        <Accordion style={{marginTop: "10px"}}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+                >
+                <Typography>Difference Between Revisions</Typography>
             </AccordionSummary>
         
             <Box
