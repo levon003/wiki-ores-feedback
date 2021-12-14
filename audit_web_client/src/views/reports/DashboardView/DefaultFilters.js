@@ -31,14 +31,11 @@ const defaultNewcomerUserFilters = {
   bots: false,
 }
 
-// filler for testing - TODO add actual LGBT History default filters
-const defaultLGBTHistoryFilters = {
-  largeAdditions: true,
-  smallAdditions: false,
-  neutral: false,
-  smallRemovals: false,
-  largeRemovals: false,
-} 
+const defaultLGBTHistoryFilters = [{
+  page_id: 1421393,
+  primary_text: "LGBT history",
+  secondary_text: "73 edits"
+}] 
 
 export default {
   defaultUserFilters,

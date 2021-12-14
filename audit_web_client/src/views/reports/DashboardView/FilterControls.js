@@ -211,7 +211,6 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 
 const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
-    setPreDefinedSelected(1)
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultUserFilters)
     setRevisionFilter(DefaultFilters.defaultRevisionFilters)
@@ -227,7 +226,6 @@ const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsern
 }
 const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
-    setPreDefinedSelected(2)
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultNewcomerUserFilters)
     setRevisionFilter(DefaultFilters.defaultRevisionFilters)
@@ -243,13 +241,12 @@ const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsern
 }
 const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
-    setPreDefinedSelected(3)
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultUserFilters)
-    setRevisionFilter(DefaultFilters.defaultLGBTHistoryFilters)
+    setRevisionFilter(DefaultFilters.defaultRevisionFilters)
     setMinorFilter(DefaultFilters.defaultMinorFilters)
     setPageValues([])
-    setLinkedFromValues([])
+    setLinkedFromValues(DefaultFilters.defaultLGBTHistoryFilters)
     setLinkedToValues([])
     setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
   }
@@ -260,6 +257,7 @@ const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsern
 
 const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
   setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, preDefinedSelected, setPreDefinedSelected, ...rest}) => {
+    console.log(preDefinedSelected)
     
   const theme = useTheme()
 
