@@ -542,7 +542,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   }
 
   return (
-  <Card
+  <Box
       className={clsx(classes.root, className)}
       {...rest}
   >
@@ -566,7 +566,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
 
         <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
-            {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
+            {'Difference between revisions'}
             </AccordionSummary>
         
             <Box
@@ -595,7 +595,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
         </Accordion>
                 
     </Box>
-  </Card>
+  </Box>
 
   );
 };
