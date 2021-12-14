@@ -209,6 +209,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   );
 };
 
+// all article edits
 const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
     setFilteredUsernames([])
@@ -224,6 +225,8 @@ const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsern
     <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>All Article Edits</Button>
   )
 }
+
+// newcomer edits
 const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
     setFilteredUsernames([])
@@ -239,6 +242,8 @@ const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsern
     <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>Newcomer Edits</Button>
   )
 }
+
+// LGBT History edits
 const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
     setFilteredUsernames([])
