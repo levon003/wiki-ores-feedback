@@ -279,9 +279,9 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
 
   const WarningMessage = () => {
     if (((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) || ((!minorFilter.isMinor) && (!minorFilter.isMajor))) {
-      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
-        Warning: Current revision filter selection will not yield any results.
-          <Button
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+        Current revision filter selection will not yield any results
+          <Button className="text-h3" style={{fontWeight: "normal"}}
             onClick={ () => {
               setRevisionFilter (DefaultFilters.defaultRevisionFilters)  
               setMinorFilter(DefaultFilters.defaultMinorFilters) 
@@ -293,9 +293,9 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         </Box>
     }
     else if ((!userTypeFilter.unregistered) && (!userTypeFilter.registered) && (!userTypeFilter.newcomers) && (!userTypeFilter.learners) && (!userTypeFilter.experienced) && (!userTypeFilter.bots)) {
-      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
-      Warning: No User Filters Selected
-        <Button
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+      Current user filter selection will not yield any results
+        <Button className="text-h3" style={{fontWeight: "normal"}}
           onClick={ () => {
             setFilteredUsernames([]);
             setUserTypeFilter(DefaultFilters.defaultUserFilters);
@@ -308,9 +308,9 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
       
     }
     else if (namespaceSelected.length === 0) {
-      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
-      Warning: No Page Filters Selected
-        <Button
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+      Current page filter selection will not yield any results
+        <Button className="text-h3" style={{fontWeight: "normal"}}
           onClick={ () => {
           setNameSpaceSelected([{namespace: "Main/Article - 0"}]); 
           }
@@ -406,12 +406,11 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
                   preDefinedSelected={preDefinedSelected}
                 />
               </Box>
+              <WarningMessage />
             </Box>
           </Box>
         </Box>
 
-        {/* probably need to fix warning message */}
-        <WarningMessage />
       </Box>
     </Card>
   );
