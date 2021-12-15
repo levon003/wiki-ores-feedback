@@ -63,10 +63,10 @@ const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
 // gonna keep this here for now, maybe move it later
 // Box can inherit global styles, easier to change styles
 const ErrorNotification = ({ errorMessage }) => {
-  return <Box style={{color: 'red', textAlign: 'center'}}>{errorMessage}</Box>
+  return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>{errorMessage}</Box>
 }
 const SuccessNotification = ({ successMessage }) => {
-  return <Box style={{color: 'green', textAlign: 'center'}}>{successMessage}</Box>
+  return <Box className="text-h3" style={{color: 'green', fontWeight: "normal"}}>{successMessage}</Box>
 }
 
 const RevisionView = ({ revisions, className, ...rest }) => {
@@ -514,7 +514,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     justifyContent= "center"
                     style={{color: "#C7C7C7", cursor: 'pointer'}}
                     >
-                      <Button onClick={() => {
+                      <Button className="text-h4" style={{color: "#C7C7C7"}} onClick={() => {
                       if (currRevisionIdx > 0) {
                         setCurrRevisionIdx(currRevisionIdx - 1)
                       }
@@ -527,7 +527,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     justifyContent= "center"
                     className="text-h4" 
                     style={{color: "#C7C7C7", marginLeft: "20px", cursor: 'pointer'}}>
-                      <Button onClick={() => {
+                      <Button className="text-h4" style={{color: "#C7C7C7"}} onClick={() => {
                         if (currRevisionIdx < revisions.length - 1) {
                           setCurrRevisionIdx(currRevisionIdx + 1)
                         }
@@ -542,14 +542,13 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   }
 
   return (
-  <Card
+  <Box
       className={clsx(classes.root, className)}
       {...rest}
   >
     <Box>
         <RevisionSummary/>
-        <ErrorNotification errorMessage={errorMessage}/>
-        <SuccessNotification successMessage={successMessage}/>
+        
         <Box 
             display="flex"
             flexDirection="row"
@@ -558,13 +557,20 @@ const RevisionView = ({ revisions, className, ...rest }) => {
             <Box style={{paddingRight: "12px"}}>
                 <RevisionAnnotationControls/>
             </Box>
+            <ErrorNotification errorMessage={errorMessage}/>
+            <SuccessNotification successMessage={successMessage}/>
+            
         </Box>
 
         <NotesAndNextButtons/>
 
-        <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
-            {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
+        <Accordion style={{marginTop: "10px"}}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+                >
+                <Typography>Difference Between Revisions</Typography>
             </AccordionSummary>
         
             <Box
@@ -593,7 +599,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
         </Accordion>
                 
     </Box>
-  </Card>
+  </Box>
 
   );
 };
