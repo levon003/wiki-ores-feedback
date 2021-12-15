@@ -66,7 +66,7 @@ const Dashboard = () => {
   const [ preDefinedSelected, setPreDefinedSelected ] = useState(1)
 
   // focus
-  const [ focusSelected, setFocusSelected ] = useState()
+  const [ focusSelected, setFocusSelected ] = useState(1)
   
   // Revision filter state
   const [revisionFilter, setRevisionFilter] = useState(DefaultFilters.defaultRevisionFilters)
