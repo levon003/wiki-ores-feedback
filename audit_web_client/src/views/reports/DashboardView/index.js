@@ -256,6 +256,14 @@ const Dashboard = () => {
           >
             <RevisionViewer 
               revisions={revisions}
+              revisionFilter={revisionFilter}
+              minorFilter={minorFilter}
+              preDefinedSelected={preDefinedSelected}
+              filteredUsernames={filteredUsernames}
+              userTypeFilter={userTypeFilter}
+              pageValues={pageValues}
+              linkedFromValues={linkedFromValues}
+              linkedToValues={linkedToValues}
             />
           </Grid>
         </Grid>

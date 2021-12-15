@@ -59,15 +59,6 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   const theme = useTheme()
 
   const revisionButtonStyle = (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters) && preDefinedSelected == null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-  
-  const revisionFilterPrettyNames = {
-    largeAdditions: "large additions",
-    smallAdditions: "small additions",
-    neutral: "near zero changes",
-    smallRemovals: "small removals",
-    largeRemovals: "large removals"
-  }
-
   const open = Boolean(revisionAnchorEl);
   const id = open ? 'simple-popover' : undefined;
 
@@ -91,77 +82,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   const handleIconClickClose = () => {
     setPageHelpPopup(null)
   }
-
-  const getRevisionFilterSummary = () => {
-    const total_checked = revisionFilter.largeAdditions + revisionFilter.smallAdditions + revisionFilter.neutral + revisionFilter.smallRemovals + revisionFilter.largeRemovals
-    let summaryString = "Revision Filters"
-    if (total_checked === 0) {
-      summaryString = "No revisions selected"
-    } else if (total_checked === 1 || total_checked === 2 || total_checked === 3) {
-      if (revisionFilter.largeAdditions && revisionFilter.largeRemovals && total_checked === 2) {
-        summaryString = "Only large changes"
-      } else if (revisionFilter.smallAdditions && revisionFilter.smallRemovals && total_checked === 2) {
-        summaryString = "Only small changes"
-      } else if (revisionFilter.smallAdditions && revisionFilter.largeAdditions && total_checked === 2) {
-        summaryString = "Only additions"
-      } else if (revisionFilter.largeRemovals && revisionFilter.smallRemovals && total_checked === 2) {
-        summaryString = "Only removals"
-      } else if (total_checked === 1 || total_checked === 2) {
-        summaryString = "Only "
-        let count = 0;
-        for (let k in revisionFilter) {
-          if (revisionFilter[k]) {
-            if (count > 0) {
-              summaryString += "and " + revisionFilterPrettyNames[k] + " "
-            } else {
-              summaryString += revisionFilterPrettyNames[k] + " "
-            }
-            count++
-          }
-        }
-      } else if (total_checked === 3) {
-        summaryString = "Everything except "
-        let count = 0;
-        for (let k in revisionFilter) {
-          if (!revisionFilter[k]) {
-            if (count > 0) {
-              summaryString += "and " + revisionFilterPrettyNames[k] + " "
-            } else {
-              summaryString += revisionFilterPrettyNames[k] + " "
-            }
-            count++
-          }
-        }
-      }
-    } else if (total_checked === 4) {
-      if (!revisionFilter.largeAdditions) {
-        summaryString = "Everything except large additions"
-      } else if (!revisionFilter.smallAdditions) {
-        summaryString = "Everything except small additions"
-      } else if (!revisionFilter.neutral) {
-        summaryString = "Everything except near zero changes"
-      } else if (!revisionFilter.smallRemovals) {
-        summaryString = "Everything except small removals"
-      } else if (!revisionFilter.largeRemovals) {
-        summaryString = "Everything except large removals"
-      }
-    }
-    if (minorFilter.isMinor && !minorFilter.isMajor && summaryString !== "Revision Filters") {
-      if (total_checked === 1 || total_checked === 2) {
-        summaryString = summaryString.slice(0, 5) + "minor " + summaryString.slice(5)
-      } else {
-        summaryString = summaryString.slice(0, 18) + "minor " + summaryString.slice(17)
-      }
-    } else if (!minorFilter.isMinor && minorFilter.isMajor && summaryString !== "Revision Filters") {
-      if (total_checked === 1 || total_checked === 2) {
-        summaryString = summaryString.slice(0, 5) + "major " + summaryString.slice(5)
-      } else {
-        summaryString = summaryString.slice(0, 18) + "major " + summaryString.slice(17)
-      }
-    }
-    return summaryString
-  }
-
+  
   return (
     <Box
       display="flex"
