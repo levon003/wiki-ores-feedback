@@ -89,7 +89,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Button className="text-h3" variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Revision Filters <KeyboardArrowDownIcon/></Button> 
+      <Button className="text-h3" variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Edit Filters <KeyboardArrowDownIcon/></Button> 
       <IconButton color="#717281" size="small" className="tooltip-margin" onClick={handleIconClick}>
       <HelpIcon/>
       </IconButton>
@@ -201,10 +201,10 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
   const WarningMessage = () => {
     if (((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) || ((!minorFilter.isMinor) && (!minorFilter.isMajor))) {
       return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
-        Current revision filter selection will not yield any results
+        Current edit filter selection will not yield any results
           <Button className="text-h3" style={{fontWeight: "normal"}}
             onClick={ () => {
-              setRevisionFilter (DefaultFilters.defaultRevisionFilters)  
+              setRevisionFilter(DefaultFilters.defaultRevisionFilters)  
               setMinorFilter(DefaultFilters.defaultMinorFilters) 
             }
             }

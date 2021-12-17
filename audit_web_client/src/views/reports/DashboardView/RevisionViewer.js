@@ -87,9 +87,9 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
   
   const getRevisionFilterSummary = () => {
     const total_checked = revisionFilter.largeAdditions + revisionFilter.smallAdditions + revisionFilter.neutral + revisionFilter.smallRemovals + revisionFilter.largeRemovals
-    let summaryString = "all revision sizes"
+    let summaryString = "all edit sizes"
     if (total_checked === 0) {
-      summaryString = "no revision sizes selected"
+      summaryString = "no edit sizes selected"
     } else if (total_checked === 1 || total_checked === 2 || total_checked === 3) {
       if (revisionFilter.largeAdditions && revisionFilter.largeRemovals && total_checked === 2) {
         summaryString = "only large changes"
@@ -139,13 +139,13 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
         summaryString = "everything except large removals"
       }
     }
-    if (minorFilter.isMinor && !minorFilter.isMajor && summaryString !== "all revision sizes") {
+    if (minorFilter.isMinor && !minorFilter.isMajor && summaryString !== "all edit sizes") {
       if (total_checked === 1 || total_checked === 2) {
         summaryString = summaryString.slice(0, 5) + "minor " + summaryString.slice(5)
       } else {
         summaryString = summaryString.slice(0, 18) + "minor " + summaryString.slice(17)
       }
-    } else if (!minorFilter.isMinor && minorFilter.isMajor && summaryString !== "all revision sizes") {
+    } else if (!minorFilter.isMinor && minorFilter.isMajor && summaryString !== "all edit sizes") {
       if (total_checked === 1 || total_checked === 2) {
         summaryString = summaryString.slice(0, 5) + "major " + summaryString.slice(5)
       } else {
@@ -158,16 +158,16 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
   const getSummary = () => {
     let result = "";
     if (preDefinedSelected === 1) {
-      result = "non-bot article revisions"
+      result = "non-bot article edits"
     }
     else if (preDefinedSelected === 2) {
-      result = "newcomer revisions"
+      result = "newcomer edits"
     }
     else if (preDefinedSelected === 3) {
-      result = "LGBT History revisions"
+      result = "LGBT History edits"
     }
     else {
-      result = "revisions in [page filters], " + getRevisionFilterSummary() + ", " + getUserFilterSummary()
+      result = "edits in [page filters], " + getRevisionFilterSummary() + ", " + getUserFilterSummary()
     }
 
     return result

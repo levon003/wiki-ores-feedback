@@ -55,7 +55,7 @@ const FocusButton3 = ({style, setFocusSelected}) => {
         setFocusSelected(3)
     }
     return (
-      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING REVISIONS</Button>
+      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>
     )
 }
 
