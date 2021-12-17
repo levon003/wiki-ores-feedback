@@ -473,8 +473,30 @@ const RevisionView = ({ revisions, className, ...rest }) => {
         </Box>  
     );
   }
-  const NotesAndNextButtons = () => {
-    return (
+
+  return (
+  <Box
+      className={clsx(classes.root, className)}
+      {...rest}
+  >
+    <Box>
+        <RevisionSummary/>
+        
+        <Box 
+            display="flex"
+            flexDirection="row"
+            style={{paddingTop: "25px"}}
+        >
+            <Box style={{paddingRight: "12px"}}>
+                <RevisionAnnotationControls/>
+            </Box>
+            <ErrorNotification errorMessage={errorMessage}/>
+            <SuccessNotification successMessage={successMessage}/>
+            
+        </Box>
+
+        {/* Notes And Next Buttons/> */}
+
         <Box 
             style={{overflow: "auto", marginBottom: "10px"}}
         >
@@ -538,31 +560,8 @@ const RevisionView = ({ revisions, className, ...rest }) => {
               </Box>
             </Box>
         </Box>
-    );
-  }
 
-  return (
-  <Box
-      className={clsx(classes.root, className)}
-      {...rest}
-  >
-    <Box>
-        <RevisionSummary/>
-        
-        <Box 
-            display="flex"
-            flexDirection="row"
-            style={{paddingTop: "25px"}}
-        >
-            <Box style={{paddingRight: "12px"}}>
-                <RevisionAnnotationControls/>
-            </Box>
-            <ErrorNotification errorMessage={errorMessage}/>
-            <SuccessNotification successMessage={successMessage}/>
-            
-        </Box>
-
-        <NotesAndNextButtons/>
+        {/* Difference between revision accordion */}
 
         <Accordion style={{marginTop: "10px"}}>
             <AccordionSummary
