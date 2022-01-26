@@ -43,8 +43,17 @@ def get_rev_ids_for_filters(filters):
     5. Paginate the retrieved revisions based on the query (is it requesting a page offset? How many?)
     6. Get full data for the page of revisions.
     7. Return revision data.
+
+    rev_cache is a table with columns:
+        filter_hash TEXT
+        rev_id INT
     """
     filter_hash = get_filter_hash(filters)
+
+    # check to see if this filter_hash is already in the rev_cache table
+    # SELECT rev_id FROM rev_cache WHERE filter_hash = (our filter hash);
+    rev_ids = []
+    return rev_ids
 
 
 def sort_page_list_by_edit_count(ns, page_list):
@@ -84,79 +93,125 @@ def get_sample_revisions():
     start = datetime.now()
     
     filters = request.get_json()['filters']
-    user_filters = filters['user_type_filter']
-    include_bot = user_filters['bots']
-    include_unregistered = user_filters['unregistered']
-    include_newcomers = user_filters['newcomers']
-    include_learners = user_filters['learners']
-    include_experienced = user_filters['experienced']
 
-    filtered_usernames = filters['filtered_usernames']
-    linked_from_values = filters['linked_from_values']
-    linked_to_values = filters['linked_to_values']
-    page_values = filters['page_values']
+    cached_rev_ids = get_rev_ids_for_filters(filters)
+    if len(cached_rev_ids) > 0:
+        # TODO query the revision table for these specific rev_ids
+        # SELECT * FROM revision WHERE rev_id IN (cached_rev_ids);
+        pass
+    else:
+        # need to query the revision table for matching revisions
 
-    minor_filters = filters['minor_filters']
-    namespace_selected = filters['namespace_selected']
 
-    revision_filters = filters['revision_filters']
-    large_additions = revision_filters['largeAdditions']
-    large_removals = revision_filters['largeRemovals']
-    neutral = revision_filters['neutral']
-    small_additions = revision_filters['smallAdditions']
-    small_removals = revision_filters['smallRemovals']
 
-    rt = db.get_revision_table()
-    s = select(rt.c.rev_id, rt.c.page_id, rt.c.rev_timestamp)  # TODO add the other columns here that are expected by the frontend
+        user_filters = filters['user_type_filter']
+        include_bot = user_filters['bots']
+        include_unregistered = user_filters['unregistered']
+        include_newcomers = user_filters['newcomers']
+        include_learners = user_filters['learners']
+        include_experienced = user_filters['experienced']
 
-    valid_user_types = []
-    if include_unregistered:
-        valid_user_types.append(0)
-    if include_bot:
-        valid_user_types.append(1)
-    if include_newcomers:
-        valid_user_types.append(2)
-    if include_learners:
-        valid_user_types.append(3)
-    if include_experienced:
-        valid_user_types.append(4)
-    if len(valid_user_types) < 5:
-        s = s.where(rt.c.user_type.in_(valid_user_types))
-    
-    valid_revision_filters = []
-    if minor_filters['isMinor']:
-        valid_revision_filters.extend([4, 5, 6, 7])
-    if minor_filters['isMajor']:
-        valid_revision_filters.extend([0, 1, 2, 3])
-    if len(valid_revision_filters) < 8:
-        s = s.where(rt.c.revision_filter_mask.in_(valid_revision_filters))
+        filtered_usernames = filters['filtered_usernames']
+        linked_from_values = filters['linked_from_values']
+        linked_to_values = filters['linked_to_values']
+        page_values = filters['page_values']
 
-    valid_delta_bytes_filters = []
-    if large_additions:
-        valid_delta_bytes_filters.append(2)
-    if small_additions:
-        valid_delta_bytes_filters.append(1)
-    if neutral:
-        valid_delta_bytes_filters.append(0)
-    if small_removals:
-        valid_delta_bytes_filters.append(-1)
-    if large_removals:
-        valid_delta_bytes_filters.append(-2)
-    if len(valid_delta_bytes_filters) < 5:
-        s = s.where(rt.c.delta_bytes_filter.in_(valid_delta_bytes_filters))
-    logger.info(s)
+        minor_filters = filters['minor_filters']
+        namespace_selected = filters['namespace_selected']
 
-    revision_list = []
-    Session = db.get_oidb_session()
-    with Session() as session:
-        with session.begin():
-            for row in session.execute(s):
-                rev_id = row    
-                revision_list.append({
-                    'rev_id': rev_id,
-                })
+        revision_filters = filters['revision_filters']
+        large_additions = revision_filters['largeAdditions']
+        large_removals = revision_filters['largeRemovals']
+        neutral = revision_filters['neutral']
+        small_additions = revision_filters['smallAdditions']
+        small_removals = revision_filters['smallRemovals']
 
-    first_five = revision_list[:5]
+        rt = db.get_revision_table()
+        s = select(rt.c.rev_id, rt.c.page_id, rt.c.rev_timestamp)  # TODO add the other columns here that are expected by the frontend
+
+        valid_user_types = []
+        if include_unregistered:
+            valid_user_types.append(0)
+        if include_bot:
+            valid_user_types.append(1)
+        if include_newcomers:
+            valid_user_types.append(2)
+        if include_learners:
+            valid_user_types.append(3)
+        if include_experienced:
+            valid_user_types.append(4)
+        if len(valid_user_types) < 5:
+            s = s.where(rt.c.user_type.in_(valid_user_types))
+        
+        valid_revision_filters = []
+        if minor_filters['isMinor']:
+            valid_revision_filters.extend([4, 5, 6, 7])
+        if minor_filters['isMajor']:
+            valid_revision_filters.extend([0, 1, 2, 3])
+        if len(valid_revision_filters) < 8:
+            s = s.where(rt.c.revision_filter_mask.in_(valid_revision_filters))
+
+        valid_delta_bytes_filters = []
+        if large_additions:
+            valid_delta_bytes_filters.append(2)
+        user_filters = filters['user_type_filter']
+        include_bot = user_filters['bots']
+        include_unregistered = user_filters['unregistered']
+        include_newcomers = user_filters['newcomers']
+        include_learners = user_filters['learners']
+        include_experienced = user_filters['experienced']
+
+        filtered_usernames = filters['filtered_usernames']
+        linked_from_values = filters['linked_from_values']
+        linked_to_values = filters['linked_to_values']
+        page_values = filters['page_values']
+
+        minor_filters = filters['minor_filters']
+        namespace_selected = filters['namespace_selected']
+
+        revision_filters = filters['revision_filters']
+        large_additions = revision_filters['largeAdditions']
+        large_removals = revision_filters['largeRemovals']
+        neutral = revision_filters['neutral']
+        small_additions = revision_filters['smallAdditions']
+        small_removals = revision_filters['smallRemovals']
+
+        rt = db.get_revision_table()
+        s = select(rt.c.rev_id, rt.c.page_id, rt.c.rev_timestamp)  # TODO add the other columns here that are expected by the frontend
+
+        valid_user_types = []
+        if include_unregistered:
+            valid_user_types.append(0)
+        if include_bot:
+            valid_user_types.append(1)
+        if include_newcomers:
+            valid_user_types.append(2)
+        if small_additions:
+            valid_delta_bytes_filters.append(1)
+        if neutral:
+            valid_delta_bytes_filters.append(0)
+        if small_removals:
+            valid_delta_bytes_filters.append(-1)
+        if large_removals:
+            valid_delta_bytes_filters.append(-2)
+        if len(valid_delta_bytes_filters) < 5:
+            s = s.where(rt.c.delta_bytes_filter.in_(valid_delta_bytes_filters))
+        logger.info(s)
+
+        revision_list = []
+        Session = db.get_oidb_session()
+        with Session() as session:
+            with session.begin():
+                for row in session.execute(s):
+                    rev_id = row    
+                    revision_list.append({
+                        'rev_id': rev_id,
+                    })
+        # TODO add the revisions to the rev_cache
+        rev_ids_to_cache = [rev['rev_id'] for rev in revision_list]
+
+
+        first_five = revision_list[:5]
 
     # s = select(func.count('*')).select_from(rt)
 
