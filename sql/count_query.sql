@@ -11,6 +11,20 @@ t.index_length/1024/1024/1024 AS index_size_in_gb,
 (t.data_length + t.index_length)/1024/1024/1024 AS total_size_in_gb FROM
 (SELECT * FROM information_schema.tables WHERE table_schema = DATABASE()) AS t;
 
+###################
+
+SELECT COUNT(*) FROM revision;
+
+SELECT * FROM revision LIMIT 10;
+
+SELECT * FROM revision ORDER BY rev_id LIMIT 40000,10;
+
+SELECT * FROM revision WHERE page_id = 38901460 LIMIT 10;
+
+
+
+SELECT * FROM revision WHERE rev_id = 876227298;
+
 
 ###################
 SELECT rev_id, page_id, rev_timestamp, seconds_to_prev, is_minor, user_text, is_user_registered
@@ -128,6 +142,7 @@ SELECT * FROM revision WHERE page_namespace = 0 AND user_type IN (0, 2, 3, 4) AN
 AND reverted_filter_mask = 15 AND damaging_pred_filter = 1;
 
 
+# this is the default query
 SELECT *
 FROM revision
 WHERE damaging_pred_filter = 0 AND
@@ -136,6 +151,21 @@ WHERE damaging_pred_filter = 0 AND
         reverted_after_filter IS NULL AND
         page_namespace = 0 AND
         user_type IN (0, 2, 3, 4) AND
+        rev_count_gt_filter IN (0, 1, 2, 3, 4, 5) AND
+        rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND
+        revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND
+        delta_bytes_filter IN (-2, -1, 0, 1, 2)
+ORDER BY random
+LIMIT 0, 20;
+
+SELECT *
+FROM revision
+WHERE damaging_pred_filter = 0 AND
+        reverted_filter_mask = 0 AND  # not reverted
+        reverted_within_filter IS NULL AND
+        reverted_after_filter IS NULL AND
+        page_namespace = 0 AND
+        user_type = 0 AND
         rev_count_gt_filter IN (2, 3, 4, 5) AND
         rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND
         revision_filter_mask = 7 AND
