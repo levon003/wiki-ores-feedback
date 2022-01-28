@@ -42,15 +42,15 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl,...rest }) => {
+const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, preDefinedSelected, ...rest }) => {
 
-  return <UserFilterControls userTypeFilter={userTypeFilter} setUserTypeFilter={setUserTypeFilter} filteredUsernames={filteredUsernames} setFilteredUsernames={setFilteredUsernames} userTypeAnchorEl={userTypeAnchorEl} setUserTypeAnchorEl={setUserTypeAnchorEl} useStyles={useStyles} />
+  return <UserFilterControls userTypeFilter={userTypeFilter} setUserTypeFilter={setUserTypeFilter} filteredUsernames={filteredUsernames} setFilteredUsernames={setFilteredUsernames} userTypeAnchorEl={userTypeAnchorEl} setUserTypeAnchorEl={setUserTypeAnchorEl} useStyles={useStyles} preDefinedSelected={preDefinedSelected} />
 
 };
 
-const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, ...rest }) => {
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected, ...rest }) => {
 
-  return <PageFilterControls pageValues={pageValues} setPageValues={setPageValues} namespaceSelected={namespaceSelected} setNameSpaceSelected={setNameSpaceSelected} linkedToValues={linkedToValues} setLinkedToValues={setLinkedToValues} linkedFromValues={linkedFromValues} setLinkedFromValues={setLinkedFromValues} pageAnchorEl={pageAnchorEl} setPageAnchorEl={setPageAnchorEl} />
+  return <PageFilterControls pageValues={pageValues} setPageValues={setPageValues} namespaceSelected={namespaceSelected} setNameSpaceSelected={setNameSpaceSelected} linkedToValues={linkedToValues} setLinkedToValues={setLinkedToValues} linkedFromValues={linkedFromValues} setLinkedFromValues={setLinkedFromValues} pageAnchorEl={pageAnchorEl} setPageAnchorEl={setPageAnchorEl} preDefinedSelected={preDefinedSelected}/>
 
 };
 
