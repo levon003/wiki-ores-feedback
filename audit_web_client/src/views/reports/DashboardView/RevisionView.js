@@ -65,9 +65,6 @@ const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
 const ErrorNotification = ({ errorMessage }) => {
   return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>{errorMessage}</Box>
 }
-const SuccessNotification = ({ successMessage }) => {
-  return <Box className="text-h3" style={{color: 'green', fontWeight: "normal"}}>{successMessage}</Box>
-}
 
 const RevisionView = ({ revisions, className, ...rest }) => {
   const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
@@ -97,7 +94,6 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
   const [errorMessage, setErrorMessage ] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
   const { /*loading,*/ setLoading } = useContext(LoadingContext)
   
   // this is for setting the typing state of the note field
@@ -145,7 +141,6 @@ const RevisionView = ({ revisions, className, ...rest }) => {
       setLoading(false)
       setErrorMessage(null)
       // update the annotations with the new data (if it was not rejected)
-      setSuccessMessage("Successfully saved.")
         // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
         // that their annotation change was rejected. Should we notify the user in some way?
         setAnnotationData({
@@ -491,8 +486,6 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                 <RevisionAnnotationControls/>
             </Box>
             <ErrorNotification errorMessage={errorMessage}/>
-            <SuccessNotification successMessage={successMessage}/>
-            
         </Box>
 
         {/* Notes And Next Buttons/> */}
