@@ -19,7 +19,7 @@ import UserFilterControls from './UserFilterControls';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 
-import HelpIcon from '@material-ui/icons/Help'
+import HelpIcon from '@material-ui/icons/Help';
 
 // const userTypeOptions = [
 //   { key: 'all', desc: 'All users', },
@@ -58,7 +58,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 
   const theme = useTheme()
 
-  const revisionButtonStyle = (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters) && preDefinedSelected == null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  const revisionButtonStyle = (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters) && preDefinedSelected == null ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
   const open = Boolean(revisionAnchorEl);
   const id = open ? 'simple-popover' : undefined;
 
@@ -90,25 +90,6 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
       flexWrap="nowrap"
     >
       <Button className="text-h3" variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Edit Filters <KeyboardArrowDownIcon/></Button> 
-      <IconButton color="#717281" size="small" className="tooltip-margin" onClick={handleIconClick}>
-      <HelpIcon/>
-      </IconButton>
-      <Popover
-        id={helpID}
-        open={pageHelpOpen}
-        anchorEl={pageHelpPopup}
-          onClose={handleIconClickClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}>
-          <p style={{margin: 5, fontSize: 12}}><a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank" rel="noopener noreferrer">Minor Edit Definition</a></p>
-          {/* TODO: add something here */}
-      </Popover>
       <Popover
         id={id}
         open={open}
@@ -246,6 +227,19 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
     }
   }
 
+  const [filterControlsPopup, setFilterControlsPopup] = useState();
+
+  const filterControlsOpen = Boolean(filterControlsPopup);
+  const filterID = filterControlsOpen ? 'simple-popover' : undefined;
+
+  const handleIconClick = (event) => {
+    setFilterControlsPopup(event.currentTarget)
+  }
+
+  const handleIconClickClose = () => {
+    setFilterControlsPopup(null)
+  }
+
   return (
     <Card
       className={clsx(classes.root, className)}
@@ -255,6 +249,27 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         <Box className='box'>
           <Box className="title text-h2">
             Filter
+            <IconButton className="tooltip-margin" color="#717281" style={{height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
+              <HelpIcon style={{height:"20px"}}/>
+            </IconButton>
+            <Popover
+              id={filterID}
+              open={filterControlsOpen}
+              anchorEl={filterControlsPopup}
+              onClose={handleIconClickClose}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <p style={{margin: 5, fontSize: 12}}>
+                Filter Popover Placeholder Text
+              </p>
+            </Popover>
           </Box>
 
           {/* pre-defined and custom section */}

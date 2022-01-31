@@ -4,10 +4,14 @@ import PropTypes from 'prop-types';
 import {
   Box,
   Card,
+  Popover,
+  IconButton,
   makeStyles,
   Divider
 } from '@material-ui/core';
 import RevisionView from './RevisionView';
+
+import HelpIcon from '@material-ui/icons/Help';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -186,6 +190,19 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
     // Perhaps the expected behavior is to move loading status into the index, and just include a rev count in this component.
     setStatusDescription('Loaded revisions; change filters or use page controls to see more.')
   }, []);
+
+  const [investigateControlsPopup, setInvestigateControlsPopup] = useState();
+
+  const investigateControlsOpen = Boolean(investigateControlsPopup);
+  const investigateID = investigateControlsOpen ? 'simple-popover' : undefined;
+
+  const handleIconClick = (event) => {
+    setInvestigateControlsPopup(event.currentTarget)
+  }
+
+  const handleIconClickClose = () => {
+    setInvestigateControlsPopup(null)
+  }
     
   return (
     <Card
@@ -197,6 +214,27 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
         <Box className='box'>
             <Box className="title text-h2">
                 Inspect
+                <IconButton className="tooltip-margin" color="#717281" style={{height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
+                    <HelpIcon style={{height:"20px"}}/>
+                </IconButton>
+                <Popover
+                    id={investigateID}
+                    open={investigateControlsOpen}
+                    anchorEl={investigateControlsPopup}
+                    onClose={handleIconClickClose}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    >
+                    <p style={{margin: 5, fontSize: 12}}>
+                        Investigate Popover Placeholder Text
+                    </p>
+                </Popover>
             </Box>
 
             {/* top text section */}
