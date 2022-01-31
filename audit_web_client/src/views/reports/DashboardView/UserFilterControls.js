@@ -113,25 +113,6 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
       flexWrap="nowrap"
     >
       <Button className="text-h3" variant="outlined" style={userButtonStyle} onClick={handleClick}> User Filters <KeyboardArrowDownIcon /></Button>
-      <IconButton className="tooltip-margin-last" color="#717281" size="small" onClick={handleIconClick}>
-        <HelpIcon/>
-      </IconButton>
-      <Popover
-      id={helpID}
-      open={pageHelpOpen}
-      anchorEl={pageHelpPopup}
-        onClose={handleIconClickClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}>
-        <p style={{margin: 5, fontSize: 12}}>User Filters Popup Placeholder</p>
-        {/* TODO: add something here */}
-    </Popover>
       <Popover
         id={id}
         open={open}

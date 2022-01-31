@@ -28,7 +28,7 @@ const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
 const PageFilterControls = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected, ...rest }) => {
   const theme = useTheme()
 
-  const pageButtonStyle = (pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+  const pageButtonStyle = (pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
   const [linkedToInputValue, setLinkedToInputValue] = useState('')
   const [linkedToOptions, setLinkedToOptions] = useState([])
 
@@ -84,17 +84,6 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
 
   const handlePagePopoverClose = () => {
     setPageAnchorEl(null)
-  }
-
-  const pageHelpOpen = Boolean(pageHelpPopup);
-  const helpID = pageHelpOpen ? 'simple-popover' : undefined;
-
-  const handleIconClick = (event) => {
-    setPageHelpPopup(event.currentTarget)
-  }
-
-  const handleIconClickClose = () => {
-    setPageHelpPopup(null)
   }
 
   const handlePageFilterReset = (event) => {
@@ -270,28 +259,6 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
       flexDirection="row"
       flexWrap="nowrap">
       <Button className="text-h3" variant="outlined" style={pageButtonStyle} onClick={handlePageChipClick}>Page Filters<KeyboardArrowDownIcon/></Button>
-      <IconButton className="tooltip-margin" color="#717281" size="small" onClick={handleIconClick}>
-        <HelpIcon/>
-      </IconButton>
-      <Popover
-        id={helpID}
-        open={pageHelpOpen}
-        anchorEl={pageHelpPopup}
-        onClose={handleIconClickClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        <p style={{margin: 5, fontSize: 12}}>
-          Page Filters Popup Placeholder
-          {/* TODO: add something here */}
-        </p>
-      </Popover>
       <Popover
         id={id}
         open={pageFilterOpen}

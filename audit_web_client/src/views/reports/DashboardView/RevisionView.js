@@ -486,72 +486,87 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                 <RevisionAnnotationControls/>
             </Box>
             <ErrorNotification errorMessage={errorMessage}/>
-        </Box>
 
-        {/* Notes And Next Buttons/> */}
+        </Box>
 
         <Box 
             style={{overflow: "auto", marginBottom: "10px"}}
         >
-
-            {/* Notes */}
-            <Box
+          {/* Notes */}
+          <Box
                 display="flex"
                 flexDirection="row"
                 style= {{ display: "inline-flex", float: "left"}}
             >
-                <Box display="flex" style={{paddingTop: "8px"}}>
-                    <TextField
-                    multiline
-                    label="Notes" 
-                    value={note} 
-                    onChange={(event) => {
-                      setNote(event.target.value)
-                      setTyping(true)
-                      setFirstTyped(true)
-                    }} 
-                    style={{width: "50vw"}}
-                    />
-                      <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
-                </Box>
-            </Box>
+              <Box display="flex" style={{paddingTop: "8px"}}>
+                  <TextField
+                  multiline
+                  label="Notes" 
+                  value={note} 
+                  onChange={(event) => {
+                    setNote(event.target.value)
+                    setTyping(true)
+                    setFirstTyped(true)
+                  }} 
+                  style={{width: "50vw"}}
+                  />
+                    <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
+              </Box>
+          </Box>
 
-            {/* Previous/next */}
-            <Box
+          
+          <Box
                 display="flex"
                 flexDirection="row"
-                style= {{ display: "inline-flex", float: "right"}}
+                style= {{ display: "inline-flex", float: "right", marginTop: "1.9em"}}
             >
-                <Box style={{display: "inline-flex", float: "right"}}>
+                  <Box style={{display: "inline-flex", float: "left"}}>
+                    {/* _ of _ */}
+                    <Box
+                      display="flex"
+                      alignItems= "center"
+                      justifyContent = "center"
+                      className="text-h4" 
+                      style={{marginRight: "1vw"}}
+                    >
+                      ARTICLE: {currRevisionIdx + 1} OF {revisions.length}
+                    </Box>
+                  </Box>
+
+                  {/* Previous/next */}
+                  <Box style={{display: "inline-flex", float: "right"}}>
+                    {/* Previous */}
                     <Box className="text-h4"
                     display="flex"
                     alignItems= "center"
                     justifyContent= "center"
-                    style={{color: "#C7C7C7", cursor: 'pointer'}}
+                    style={{cursor: 'pointer'}}
                     >
-                      <Button className="text-h4" style={{color: "#C7C7C7"}} onClick={() => {
+                      <Button className="text-h4" onClick={() => {
                       if (currRevisionIdx > 0) {
                         setCurrRevisionIdx(currRevisionIdx - 1)
                       }
-                      }}><ArrowBackIcon style={{color: "#C7C7C7", marginRight: "4px"}} className="text-h4"/>Previous</Button>
+                      }}><ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous</Button>
                     </Box>
 
+                    {/* Next */}
                     <Box 
                     display="flex"
                     alignItems= "center"
                     justifyContent= "center"
                     className="text-h4" 
-                    style={{color: "#C7C7C7", marginLeft: "20px", cursor: 'pointer'}}>
-                      <Button className="text-h4" style={{color: "#C7C7C7"}} onClick={() => {
+                    style={{marginLeft: "5px", cursor: 'pointer'}}>
+                      <Button className="text-h4" onClick={() => {
                         if (currRevisionIdx < revisions.length - 1) {
                           setCurrRevisionIdx(currRevisionIdx + 1)
                         }
                       }
-                    }>Next<ArrowForwardIcon style={{color: "#C7C7C7", marginLeft: "4px"}} className="text-h4"/></Button>
+                    }>Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/></Button>
                     </Box>
-                    <Box>{currRevisionIdx + 1}/{revisions.length}</Box>
-              </Box>
+                  </Box>
+
             </Box>
+
         </Box>
 
         {/* Difference between revision accordion */}
