@@ -9,6 +9,7 @@ import routes from 'src/routes';
 
 export const LoadingContext = createContext({
   loading: false,
+  success: null,
   setLoading: () => {}
 })
 
