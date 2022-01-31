@@ -469,6 +469,29 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     );
   }
 
+  const handlePreviousClick = () => {
+    if (currRevisionIdx > 0) {
+      setCurrRevisionIdx(currRevisionIdx - 1)
+    }
+  }
+
+  const handleNextClick = () => {
+    if (currRevisionIdx < revisions.length - 1) {
+      setCurrRevisionIdx(currRevisionIdx + 1)
+    }
+  }
+
+  useEffect(() => {
+    document.onkeydown = (e) => {
+      if (e.keyCode == 37) {
+        handlePreviousClick()
+      }
+      else if (e.keyCode == 39) {
+        handleNextClick()
+      }
+    }
+  })
+
   return (
   <Box
       className={clsx(classes.root, className)}
@@ -534,7 +557,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                   </Box>
 
                   {/* Previous/next */}
-                  <Box style={{display: "inline-flex", float: "right"}}>
+                  <Box title="Shortcut: <left arrow>" style={{display: "inline-flex", float: "right"}}>
                     {/* Previous */}
                     <Box className="text-h4"
                     display="flex"
@@ -542,26 +565,18 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     justifyContent= "center"
                     style={{cursor: 'pointer'}}
                     >
-                      <Button className="text-h4" onClick={() => {
-                      if (currRevisionIdx > 0) {
-                        setCurrRevisionIdx(currRevisionIdx - 1)
-                      }
-                      }}><ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous</Button>
+                      <Button className="text-h4" onClick={handlePreviousClick}><ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous</Button>
                     </Box>
 
                     {/* Next */}
                     <Box 
+                    title="Shortcut: <right arrow>"
                     display="flex"
                     alignItems= "center"
                     justifyContent= "center"
                     className="text-h4" 
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button className="text-h4" onClick={() => {
-                        if (currRevisionIdx < revisions.length - 1) {
-                          setCurrRevisionIdx(currRevisionIdx + 1)
-                        }
-                      }
-                    }>Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/></Button>
+                      <Button className="text-h4" onClick={handleNextClick}>Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/></Button>
                     </Box>
                   </Box>
 
