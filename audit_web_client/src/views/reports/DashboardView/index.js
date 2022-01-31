@@ -261,6 +261,7 @@ const Dashboard = () => {
               preDefinedSelected={preDefinedSelected}
               filteredUsernames={filteredUsernames}
               userTypeFilter={userTypeFilter}
+              namespaceSelected={namespaceSelected}
               pageValues={pageValues}
               linkedFromValues={linkedFromValues}
               linkedToValues={linkedToValues}
