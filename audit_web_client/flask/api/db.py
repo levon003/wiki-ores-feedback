@@ -6,6 +6,7 @@ import sqlalchemy as sa
 from sqlalchemy import create_engine, Table, Column, Integer, SmallInteger, String, MetaData, ForeignKey, Text, Boolean, Float, Index, bindparam
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.dialects.mysql import TINYINT
+from sqlalchemy.types import VARCHAR
 
 import os
 import json
@@ -131,7 +132,7 @@ def get_metadata():
     )
     Table('rev_cache', g.oidb_metadata,
         Column('_id', Integer, primary_key=True, autoincrement=True),
-        Column('filter_hash', Text, nullable=False),
+        Column('filter_hash', VARCHAR(length=32), nullable=False),
         Column('rev_id', None, ForeignKey('revision.rev_id'), nullable=False),
         Index('rev_cache_filter_hash_index', 'filter_hash'),
     )
@@ -149,6 +150,10 @@ def get_page_table():
 
 def get_revision_table():
     return get_table('revision')
+
+
+def get_rev_cache_table():
+    return get_table('rev_cache')
 
 
 def create_tables(engine):

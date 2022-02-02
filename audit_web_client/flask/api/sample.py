@@ -23,7 +23,8 @@ PAGE_SIZE = 10
 def get_filter_hash(filter_dict):
     """
 
-    Given a dictionary for a fixed set of filter values, generates a filter hash
+    Given a dictionary for a fixed set of filter values, generates a filter hash.
+    The hash has length 32.
 
     see also: https://www.doc.ic.ac.uk/~nuric/coding/how-to-hash-a-dictionary-in-python.html
 
@@ -53,6 +54,13 @@ def get_rev_ids_for_filters(filters):
     # check to see if this filter_hash is already in the rev_cache table
     # SELECT rev_id FROM rev_cache WHERE filter_hash = (our filter hash);
     rev_ids = []
+    Session = db.get_oidb_session()
+    with Session() as session:
+        with session.begin():
+            rct = db.get_rev_cache_table()
+            s = select(rct.c.rev_id).where(rct.c.filter_hash == filter_hash)
+            for rev_id in session.execute(s):
+                rev_ids.append(rev_id)
     return rev_ids
 
 
