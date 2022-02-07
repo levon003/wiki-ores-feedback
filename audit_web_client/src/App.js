@@ -1,5 +1,5 @@
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import React, { useState, useEffect, createContext, useMemo } from 'react';
+import React, { useState, createContext, useMemo } from 'react';
 import { useRoutes } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/core';
 import GlobalStyles from 'src/components/GlobalStyles';
@@ -9,6 +9,7 @@ import routes from 'src/routes';
 
 export const LoadingContext = createContext({
   loading: false,
+  success: null,
   setLoading: () => {}
 })
 

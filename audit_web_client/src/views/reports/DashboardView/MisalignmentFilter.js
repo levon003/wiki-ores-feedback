@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import "../DashboardView/styles.css";
@@ -13,25 +13,25 @@ import {
   Tooltip,
   makeStyles
 } from '@material-ui/core';
-function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
-  return {
-    width,
-    height
-  };
-}
+// function getWindowDimensions() {
+//   const { innerWidth: width, innerHeight: height } = window;
+//   return {
+//     width,
+//     height
+//   };
+// }
 
-function useWindowDimensions() {
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
-  useEffect(() => {
-    function handleResize() {
-      setWindowDimensions(getWindowDimensions());
-    }
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  return windowDimensions;
-}
+// function useWindowDimensions() {
+//   const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+//   useEffect(() => {
+//     function handleResize() {
+//       setWindowDimensions(getWindowDimensions());
+//     }
+//     window.addEventListener('resize', handleResize);
+//     return () => window.removeEventListener('resize', handleResize);
+//   }, []);
+//   return windowDimensions;
+// }
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   nodeText: {
     fontSize: 6,
-    fontFamily: "Georgia",
+    fontFamily: "Roboto",
     fill: 'black',
   },
   bigbox: {
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
   middleNodeText: {
     fontSize: 4.5,
-    fontFamily: "Georgia",
+    fontFamily: "Roboto",
     fill: 'black'
   },
   edge: {
@@ -204,7 +204,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
       height="120mm"
       version="1.1"
       viewBox="0 0 297 210"
-    aspectRatio="1.0"
+    aspectratio="1.0"
     >
       <g>
         <g
@@ -330,7 +330,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
           onClick={() => handleClick("all", "r")}
         ></rect>
         <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="79%" > Reverted </text>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="83%" fontFamily="Georgia" fontSize="6" fill="black"> {total_R} revisions ({Math.round(total_R / total * 10000) / 100} %)</text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="83%" fontFamily="Roboto" fontSize="6" fill="black"> {total_R} revisions ({Math.round(total_R / total * 10000) / 100} %)</text>
 
         <rect
           className = {clsx(classes.root,  classes.bigbox)}
@@ -340,18 +340,18 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
           fill={strokecolor.nr_box}
           ref={myRef}
         ></rect>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="21%" fontFamily="Georgia" fontSize="6" fill="black"> Not Reverted </text>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="25%" fontFamily="Georgia" fontSize="6" fill="black"> {total_nr} revisions ({Math.round(total_nr / total * 10000) / 100} %)</text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="21%" fontFamily="Roboto" fontSize="6" fill="black"> Not Reverted </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="72.8%" y="25%" fontFamily="Roboto" fontSize="6" fill="black"> {total_nr} revisions ({Math.round(total_nr / total * 10000) / 100} %)</text>
         <rect
           fill={strokecolor.itm_box}
-          onClick={handleClick}
+          // onClick={handleClick}
           x="3.326%"
           y="45%"
           className = {clsx(classes.root,  classes.bigbox)}
           onClick={() => handleClick("itm", "both")}
         ></rect>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="50%" fontFamily="Georgia" fontSize="6" fill="black">In the middle  </text>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="54%" fontFamily="Georgia" fontSize="6" fill="black">(0.9 - 0.05) </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="50%" fontFamily="Roboto" fontSize="6" fill="black">In the middle  </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="54%" fontFamily="Roboto" fontSize="6" fill="black">(0.9 - 0.05) </text>
         <rect
           className = {clsx(classes.root,  classes.bigbox)}
           fill={strokecolor.lg_box}
@@ -359,8 +359,8 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
           y="74%"
           onClick={() => handleClick("lg", "both")}
         ></rect>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="79%" fontFamily="Georgia" fontSize="6" fill="black"> Likely good </text>
-        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="83%" fontFamily="Georgia" fontSize="6" fill="black">(0.9 - 0.05) </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="79%" fontFamily="Roboto" fontSize="6" fill="black"> Likely good </text>
+        <text className={clsx(classes.root, "svgText", classes.nodeText)} x="5.5%" y="83%" fontFamily="Roboto" fontSize="6" fill="black">(0.9 - 0.05) </text>
         <rect
           fill={strokecolor.vlhp_nr_box}
           stroke="rgb(0,0,0)"
@@ -380,7 +380,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect
           fill={strokecolor.lg_r_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="57"
           height="9%"
           x="38.8%"
@@ -398,7 +398,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect 
           fill={strokecolor.vlhp_r_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="20"
           height="6%"
           x="38.8%"
@@ -415,7 +415,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect 
           fill={strokecolor.itm_nr_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="20"
           height="6%"
           x="38.8%"
@@ -431,7 +431,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect data-name="haha"
           fill={strokecolor.itm_r_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="20"
           height="6%"
           x="38.8%"
@@ -447,7 +447,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         <rect data-name="haha"
           fill={strokecolor.lg_nr_box}
           stroke="rgb(0,0,0)"
-          onClick={handleClick}
+          // onClick={handleClick}
           width="20"
           height="6%"
           x="38.8%"
@@ -469,52 +469,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
 
 
 
-  function SelectionButtonGrid(props) {
-    const total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
-    return <Grid container justify="center">
-      <Grid item>
-        <HtmlTooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit"> Non-reverted revisions that ORES thinks are very likely to have problems (damaging/vandalism) </Typography>
-              {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
-              {props.data["vlhp_r"] + " revs (" + Math.round(props.data["vlhp_r"] / total_R * 10000) / 100 + "% of all non-reverted revs)"}
-            </React.Fragment>
-          }
-        >
-          <Button variant='outlined'>Investigate unexpected consensus</Button>
-        </HtmlTooltip>
-        <HtmlTooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit"> Reverted revisions that ORES thinks are very likely good (non-damaging) </Typography>
-              {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
-              {props.data["vlg_r"] + " revs (" + Math.round(props.data["vlg_r"] / total_R * 10000) / 100 + "% of all reverted revs)"}
-            </React.Fragment>
-          }
-        >
-          <Button variant='outlined'>Investigate unexpected reverts</Button>
-        </HtmlTooltip>
-        <HtmlTooltip
-          title={
-            <React.Fragment>
-              <Typography color="inherit"> Revisions that ORES wasn’t sure about  </Typography>
-              {/* <em>{}</em> <b>{'some'}</b> <u>{props.data["vlg_r"]  +" revs (" + Math.round(props.data["vlg_r"]/total_R * 10000) / 100  }</u>.{' '} */}
-              {props.data["confrevs_r"] + " revs (" + Math.round(props.data["confrevs_r"] / total_R * 10000) / 100 + "% of all revs) (0.301 < ORES score < 0.944)"}
-            </React.Fragment>
-          }
-        >
-          <Button variant='outlined'>Investigate confusing revisions</Button>
-        </HtmlTooltip>
-      </Grid>
-    </Grid>
-  }
-  const { height, width } = useWindowDimensions();
-  const originalWidth = 519;
-  const originalHeight = 260;
-  const aspectRatio = originalWidth / originalHeight;
-  const windowWidth = width;
-  const windowHeight = height;
+  
   const HtmlTooltip = withStyles((theme) => ({
     tooltip: {
       backgroundColor: '#f5f5f9',
@@ -536,7 +491,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
     >
       <FlowchartSummarySVG data={data} />
     </Box>
-    <SelectionButtonGrid data={data} />
+    {/* <SelectionButtonGrid data={data} /> */}
   </Box>
   );
 };

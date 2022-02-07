@@ -5,7 +5,7 @@ import {
   Box,
   Button,
   Link,
-  Paper,
+  Card,
   Typography,
   TextField,
   useTheme
@@ -15,6 +15,8 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
@@ -61,13 +63,12 @@ const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
 // gonna keep this here for now, maybe move it later
 // Box can inherit global styles, easier to change styles
 const ErrorNotification = ({ errorMessage }) => {
-  return <div className='error'>{errorMessage}</div>
-}
-const SuccessNotification = ({ successMessage }) => {
-  return <div className='success'>{successMessage}</div>
+  return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>{errorMessage}</Box>
 }
 
-const RevisionView = ({ revision, className, ...rest }) => {
+const RevisionView = ({ revisions, className, ...rest }) => {
+  const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
+  const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
@@ -89,14 +90,13 @@ const RevisionView = ({ revision, className, ...rest }) => {
     'note': null,
   });
   const [ note, setNote ] = useState("")
-  const [ noteSuccess, setNoteSuccess ] = useState(true)
+  const [ noteSuccess, setNoteSuccess ] = useState(null)
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
   const [errorMessage, setErrorMessage ] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
-  const { loading, setLoading } = useContext(LoadingContext)
-
-// this is for setting the typing state
+  const { /*loading,*/ setLoading } = useContext(LoadingContext)
+  
+  // this is for setting the typing state of the note field
   useEffect(() => {
     const timeout = setTimeout(() => {
       setTyping(false)
@@ -105,26 +105,24 @@ const RevisionView = ({ revision, className, ...rest }) => {
       clearTimeout(timeout)
     }
   }, [note])
+  
   useEffect(() => {
     if (!typing && firstTyped) {
       handleNoteSave()
     }
-  }, [typing])
-
-
-
+  })
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
   }
-
+  
   const handleButtonClick = (button_type) => {
     const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
-    setLoading(true)
-
+    setLoading(true, null)
+    
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
       method: 'POST',
@@ -139,11 +137,10 @@ const RevisionView = ({ revision, className, ...rest }) => {
         note: note
       }),
     }).then(res => res.json())
-      .then(data => {
-        setLoading(false)
-        setErrorMessage(null)
-        // update the annotations with the new data (if it was not rejected)
-        setSuccessMessage("Successfully saved.")
+    .then(data => {
+      setLoading(false, true)
+      setErrorMessage(null)
+      // update the annotations with the new data (if it was not rejected)
         // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
         // that their annotation change was rejected. Should we notify the user in some way?
         setAnnotationData({
@@ -152,18 +149,18 @@ const RevisionView = ({ revision, className, ...rest }) => {
         })
         setNote(data.note)
       }).catch(data => {
-        setLoading(false)
+        setLoading(false, false)
         setErrorMessage("Didn't go through, please try again.")
       });
-  }
-
-  const handleNoteSave = () => {
-    fetch('/api/annotation/', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+    }
+    
+    const handleNoteSave = () => {
+      fetch('/api/annotation/', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
       body: JSON.stringify({
         rev_id: revision.rev_id,
         annotation_type: 'note',
@@ -178,6 +175,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
       setNoteSuccess(false)
     })
   }
+  
 
   const getUserLink = (user_text, user_id) => {
     if (user_id === 0) {
@@ -251,6 +249,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
+        setNote(data.note)
     });
   }, [revision]);
 
@@ -358,8 +357,6 @@ const RevisionView = ({ revision, className, ...rest }) => {
   const RevisionSummary = () => {
     return (
       <Box>
-        <Typography variant="h3">v0.0.1a</Typography>
-        <br></br>
         <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
@@ -415,105 +412,216 @@ const RevisionView = ({ revision, className, ...rest }) => {
   const AnnotationButtons = () => {
     const theme = useTheme()
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginLeft: 5, marginRight: 5} : {marginLeft: 5, marginRight: 5}
-    // add icons to buttons
+    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12p"} : {marginRight: "12px"}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12p"} : {marginRight: "12px"}
     return (
-      <Box>
-        <Button 
-          style={correctButtonStyle}
-          variant="outlined"
-          onClick={(event) => handleButtonClick('correct')}
-        >
-          <CheckIcon 
-            style={{paddingRight: 5}}
-          />
-          Confirm damaging
-        </Button>
-        <Button 
-          style={misclassButtonStyle}
-          variant="outlined"
-          onClick={(event) => handleButtonClick('misclassification')}
-        >
-          <CloseIcon 
-            style={{paddingRight: 5}}
-          />
-          Not damaging
-        </Button>
-        <Button 
-          style={flagButtonStyle}
-          variant="outlined"
-          onClick={(event) => handleButtonClick('flag')}
-        >
-          <FlagIcon 
-            style={{paddingRight: 5}}
-          />
-          Flag
-        </Button>
-        <br></br>
+      <Box 
+      display="flex"
+      flexDirection="column"
+      style={{marginBottom: "10px"}}>
+          <Box>
+            <Button 
+              style={correctButtonStyle}
+              variant="outlined"
+              onClick={(event) => handleButtonClick('correct')}
+            >
+              <CheckIcon 
+                style={{paddingRight: 5}}
+              />
+              Confirm damaging
+            </Button>
+            <Button 
+              style={misclassButtonStyle}
+              variant="outlined"
+              onClick={(event) => handleButtonClick('misclassification')}
+            >
+              <CloseIcon 
+                style={{paddingRight: 5}}
+              />
+              Not damaging
+            </Button>
+            <Button 
+              style={flagButtonStyle}
+              variant="outlined"
+              onClick={(event) => handleButtonClick('flag')}
+            >
+              <FlagIcon 
+                style={{paddingRight: 5}}
+              />
+              Flag
+            </Button>
+            <br></br>
+          </Box>
+
       </Box>
     );
   }
 
   const RevisionAnnotationControls = () => {
     return (
-      <Box
-        display="flex"
-        flexDirection="row"
-      >
-        <PredictionDisplay />
-        <AnnotationButtons />
-      </Box>
+        <Box
+          display="flex"
+          flexDirection="row"
+        >
+          <PredictionDisplay />
+          <AnnotationButtons />
+        </Box>  
     );
-
   }
 
+  const handlePreviousClick = () => {
+    if (currRevisionIdx > 0) {
+      setCurrRevisionIdx(currRevisionIdx - 1)
+    }
+  }
+
+  const handleNextClick = () => {
+    if (currRevisionIdx < revisions.length - 1) {
+      setCurrRevisionIdx(currRevisionIdx + 1)
+    }
+  }
+
+  useEffect(() => {
+    document.onkeydown = (e) => {
+      if (e.keyCode == 37) {
+        handlePreviousClick()
+      }
+      else if (e.keyCode == 39) {
+        handleNextClick()
+      }
+    }
+  })
+
   return (
-    <Paper
+  <Box
       className={clsx(classes.root, className)}
-      variant="outlined"
-      m={1}
-      p={1}
       {...rest}
-    >
-      <Box p={1}>
+  >
+    <Box>
         <RevisionSummary/>
-        <ErrorNotification errorMessage={errorMessage}/>
-        <SuccessNotification successMessage={successMessage}/>
-        <RevisionAnnotationControls />
-        {/* Notes */}
-        <TextField
-          multiline
-          label="Notes" 
-          value={note} 
-          onChange={(event) => {
-            setNote(event.target.value)
-            setTyping(true)
-            setFirstTyped(true)
-          }} 
-          style={{marginLeft: 125, marginBottom: 20, width: 470}}
-        />
-        <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
-        <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
-        {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box
+        
+        <Box 
             display="flex"
-            flexDirection="column"
-          >
-          <DiffTable />
-          <Button
-            onClick={handleAccordionExpansionToggle}
-          >
-            <ExpandLessIcon /> Collapse difference between revisions <ExpandLessIcon />
-          </Button>
+            flexDirection="row"
+            style={{paddingTop: "25px"}}
+        >
+            <Box style={{paddingRight: "12px"}}>
+                <RevisionAnnotationControls/>
+            </Box>
+            <ErrorNotification errorMessage={errorMessage}/>
+
+        </Box>
+
+        <Box 
+            style={{overflow: "auto", marginBottom: "10px"}}
+        >
+          {/* Notes */}
+          <Box
+                display="flex"
+                flexDirection="row"
+                style= {{ display: "inline-flex", float: "left"}}
+            >
+              <Box display="flex" style={{paddingTop: "8px"}}>
+                  <TextField
+                  multiline
+                  label="Notes" 
+                  value={note} 
+                  onChange={(event) => {
+                    setNote(event.target.value)
+                    setTyping(true)
+                    setFirstTyped(true)
+                  }} 
+                  style={{width: "50vw"}}
+                  />
+                    <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
+              </Box>
           </Box>
-        </AccordionDetails>
+
+          
+          <Box
+                display="flex"
+                flexDirection="row"
+                style= {{ display: "inline-flex", float: "right", marginTop: "1.9em"}}
+            >
+                  <Box style={{display: "inline-flex", float: "left"}}>
+                    {/* _ of _ */}
+                    <Box
+                      display="flex"
+                      alignItems= "center"
+                      justifyContent = "center"
+                      className="text-h4" 
+                      style={{marginRight: "1vw"}}
+                    >
+                      ARTICLE: {currRevisionIdx + 1} OF {revisions.length}
+                    </Box>
+                  </Box>
+
+                  {/* Previous/next */}
+                  <Box title="Shortcut: <left arrow>" style={{display: "inline-flex", float: "right"}}>
+                    {/* Previous */}
+                    <Box className="text-h4"
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    style={{cursor: 'pointer'}}
+                    >
+                      <Button className="text-h4" onClick={handlePreviousClick}><ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous</Button>
+                    </Box>
+
+                    {/* Next */}
+                    <Box 
+                    title="Shortcut: <right arrow>"
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    className="text-h4" 
+                    style={{marginLeft: "5px", cursor: 'pointer'}}>
+                      <Button className="text-h4" onClick={handleNextClick}>Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/></Button>
+                    </Box>
+                  </Box>
+
+            </Box>
+
+        </Box>
+
+        {/* Difference between revision accordion */}
+
+        <Accordion style={{marginTop: "10px"}}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+                >
+                <Typography>Difference Between Revisions</Typography>
+            </AccordionSummary>
+        
+            <Box
+                // todo: change height to size where we can still see buttons
+                  height="35vh"
+                  display="flex"
+                  flexDirection="column"
+                  flexWrap="nowrap"
+            >
+                <Box style={{'overflowY': 'scroll'}}>
+                    <AccordionDetails>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                        >
+                            <DiffTable />
+                            {/* <Button
+                              onClick={handleAccordionExpansionToggle}
+                            >
+                                <ExpandLessIcon /> Collapse difference between revisions <ExpandLessIcon />
+                            </Button> */}
+                        </Box>
+                    </AccordionDetails>
+                </Box>
+            </Box>
         </Accordion>
+                
     </Box>
-  </Paper>
+  </Box>
 
   );
 };

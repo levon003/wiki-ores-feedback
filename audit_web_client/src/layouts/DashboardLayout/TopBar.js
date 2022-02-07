@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -9,12 +9,13 @@ import {
   Toolbar,
   makeStyles
 } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
-import InputIcon from '@material-ui/icons/Input';
-import Logo from 'src/components/Logo';
+// import MenuIcon from '@material-ui/icons/Menu';
+// import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
+// import InputIcon from '@material-ui/icons/Input';
+// import Logo from 'src/components/Logo';
 import { LoadingContext } from 'src/App';
 import { Oval } from 'react-loading-icons'
+import CheckIcon from '@material-ui/icons/Check';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -24,8 +25,8 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const Loading = ({ loading }) => {
-  return loading ? <Oval/> : null
+const Loading = ({ loading, success }) => {
+  return loading ? <Oval/> : success ? <CheckIcon /> : null
 }
 
 const TopBar = ({
@@ -34,7 +35,6 @@ const TopBar = ({
   ...rest
 }) => {
   const classes = useStyles();
-  const [notifications] = useState([]);
   const loadingContext = useContext(LoadingContext)
 
   return (
@@ -52,7 +52,7 @@ const TopBar = ({
         {/* Make this smaller, or move to bottom, or remove */}
         {/* change to more standard loading format */}
         {/* think about flickering loading icon, too distracting? */}
-        <Loading loading={loadingContext.loading} />
+        <Loading loading={loadingContext.loading} success={loadingContext.success} />
       </Toolbar>
     </AppBar>
   );

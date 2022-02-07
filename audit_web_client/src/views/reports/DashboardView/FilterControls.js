@@ -1,49 +1,35 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
-import Grid from '@material-ui/core/Grid';
-
-import CircularProgress from '@material-ui/core/CircularProgress';
-import parse from 'autosuggest-highlight/parse';
-import match from 'autosuggest-highlight/match';
-import throttle from 'lodash/throttle';
 import PropTypes from 'prop-types';
 import {
   Box,
   Button,
   Card,
-  Checkbox,
   Chip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListSubheader,
-  Paper,
   Popover,
-  TextField,
-  Tooltip,
+  makeStyles,
+  IconButton,
   Typography,
-  makeStyles
+  useTheme,
 } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 import RevisionFilterControls from './RevisionFilterControls';
+import PageFilterControls from './PageFilterControls';
+import UserFilterControls from './UserFilterControls';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import DefaultFilters from './DefaultFilters';
 
-const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
+import HelpIcon from '@material-ui/icons/Help';
 
-const userTypeOptions = [
-  { key: 'all', desc: 'All users', },
-  { key: 'unregistered', desc: 'Unregistered users', },
-  { key: 'registered', desc: 'Registered users', },
-  { key: 'newcomers', desc: 'Newcomers', },
-  { key: 'learners', desc: 'Learners', },
-  { key: 'experienced', desc: "Experienced users", },
-  { key: 'bots', desc: 'Bots', },
-];
+// const userTypeOptions = [
+//   { key: 'all', desc: 'All users', },
+//   { key: 'unregistered', desc: 'Unregistered users', },
+//   { key: 'registered', desc: 'Registered users', },
+//   { key: 'newcomers', desc: 'Newcomers', },
+//   { key: 'learners', desc: 'Learners', },
+//   { key: 'experienced', desc: "Experienced users", },
+//   { key: 'bots', desc: 'Bots', },
+// ];
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -56,406 +42,23 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UserFilterChip = ({ className, onChange, ...rest }) => {
+const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, preDefinedSelected, ...rest }) => {
 
-  const classes = useStyles();
-    
-  const [userTypeAnchorEl, setUserTypeAnchorEl] = useState();
-    
-  const userTypePrettyNames = {
-      "newcomers": "Newcomers",
-      "learners": "Learners",
-      "experienced": "Experienced users",
-      "bots": "Bots",
-  }
-  const [userTypeFilter, setUserTypeFilter] = useState({
-      unregistered: true,
-      registered: false,
-      newcomers: true,
-      learners: true,
-      experienced: true,
-      bots: false
-  });
-  const [filteredUsernames, setFilteredUsernames] = useState([]);
-  
-  const getUserFilterSummary = () => {
-      if (filteredUsernames.length > 0) {
-          // For now, explicit username filters overrule everything
-          // i.e. show all revisions from specified usernames, even if they wouldn't meet the filter criteria
-          return "Only these users: " + filteredUsernames.join(', ');
-      }
-      
-      const total_checked = userTypeFilter.unregistered + userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced + userTypeFilter.bots;
-      if (total_checked == 0) {
-          return "No users";
-      } else if (userTypeFilter.unregistered && total_checked == 1) {
-          return "Only unregistered users";
-      } else if (userTypeFilter.unregistered && userTypeFilter.bots && total_checked == 2) {
-          return "All unregistered and bot users";
-      } else if (total_checked == 1) {
-          if (userTypeFilter.newcomers) {
-              return "Only newcomers";
-          } else if (userTypeFilter.learners) {
-              return "Only learners";
-          } else if (userTypeFilter.experienced) {
-              return "Only experienced users";
-          } else if (userTypeFilter.bots) {
-              return "Only bots";
-          }
-      } else {
-          var bot_string = userTypeFilter.bots ? "" : "non-bot ";
-          var registered_string = userTypeFilter.unregistered ? "" : "registered "
-          
-          var registered_count = userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced;
-          var exception_string = "";
-          if (registered_count > 0 && registered_count < 3) {
-              exception_string = " except";
-              var first_exception = true;
-              if (!userTypeFilter.newcomers) {
-                  exception_string += " newcomers";
-                  first_exception = false;
-              }
-              if (!userTypeFilter.learners) {
-                  exception_string += first_exception ? " learners" : " and learners";
-                  first_exception = false;
-              }
-              if (!userTypeFilter.experienced) {
-                  exception_string += first_exception ? " experienced users" : " and experienced users";
-              }
-          }
-          
-          const summary_string = "All " + bot_string + registered_string + "users" + exception_string;
-          return summary_string;
-      }
-  };
-    
-  const handleToggle = (value) => () => {
-      // TODO call onChange() with the new state;
-      
-      if (value == 'registered') {
-          if (userTypeFilter.registered) {
-              // registered turning off, so deactivate all subs
-              setUserTypeFilter({
-                  unregistered: userTypeFilter.unregistered,
-                  registered: false,
-                  newcomers: false,
-                  learners: false,
-                  experienced: false,
-                  bots: false
-              });
-          } else {
-              //registered turning on, so activate all subs
-              setUserTypeFilter({
-                  unregistered: userTypeFilter.unregistered,
-                  registered: true,
-                  newcomers: true,
-                  learners: true,
-                  experienced: true,
-                  bots: true
-              });
-          }
-      } else {
-          // toggle the value
-          var newState = { ... userTypeFilter, [value]: !userTypeFilter[value]};
-          // check for all sub-types off
-          if (newState.newcomers && newState.learners && newState.experienced && newState.bots) {
-              // all sub-types true, set registered == true
-              newState = { ... newState, 'registered': true};
-          } else {
-              // at least one sub-type is false, so ensure registered == false
-              newState = { ... newState, 'registered': false};
-          }
-          setUserTypeFilter(newState);
-      }
-  };
-    
-  const handleClick = (event) => {
-    setUserTypeAnchorEl(event.currentTarget);
-  };
-    
-  const handleClose = (event) => {
-    setUserTypeAnchorEl(null);
-  };
-    
-  const handleUsernameFilterChange = (event, value, reason) => {
-      setFilteredUsernames(value);
-  };
-    
-  const handleUserFilterReset = (event) => {
-      setFilteredUsernames([]);
-      setUserTypeFilter({
-          unregistered: true,
-          registered: false,
-          newcomers: true,
-          learners: true,
-          experienced: true,
-          bots: false,
-      });
-  };
-    
-  const open = Boolean(userTypeAnchorEl);
-  const id = open ? 'simple-popover' : undefined;
-    
-  return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      flexWrap="nowrap"
-    >
-      <Chip clickable onClick={handleClick} label={getUserFilterSummary()} />
-      <Tooltip title="Help tooltip for the user filter controls goes here.">
-        <HelpOutlineIcon aria-label="User filter controls help" />
-      </Tooltip>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={userTypeAnchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        <Paper variant='elevation'>
-          <List
-            component="nav"
-            aria-labelledby="user-type-list-subheader"
-            subheader={
-              <ListSubheader component="div" id="user-type-list-subheader">
-                Filter users by type
-              </ListSubheader>
-            }
-            className={classes.root}
-          >
-            <ListItem key="unregistered" role={undefined} dense button onClick={handleToggle("unregistered")}>
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={userTypeFilter.unregistered}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': 'user-type-unregistered-desc' }}
-                />
-              </ListItemIcon>
-              <ListItemText id="user-type-unregistered-desc" primary="Unregistered" />
-            </ListItem>
-            <ListItem key="registered" role={undefined} dense button onClick={handleToggle("registered")}>
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={userTypeFilter.registered}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': 'user-type-registered-desc' }}
-                />
-              </ListItemIcon>
-              <ListItemText id="user-type-registered-desc" primary="Registered" />
-            </ListItem>
-            <List component="div" disablePadding>
-              {['newcomers', 'learners', 'experienced', 'bots'].map((value) => {
-                  
-                return (
-                  <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)} className={classes.nestedList}>
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={userTypeFilter[value]}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': "user-type-" + value + "-desc" }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText id={"user-type-" + value + "-desc"} primary={userTypePrettyNames[value]} />
-                  </ListItem>
-                );
-              })}
-              
-            </List>
-          </List>
-          <Autocomplete
-            multiple
-            freeSolo
-            id="username-filter-autocomplete"
-            onChange={handleUsernameFilterChange}
-            options={filteredUsernames}
-            value={filteredUsernames}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                label="Filter to specific users"
-              />
-            )}
-          />
-          <Button
-            onClick={handleUserFilterReset}
-          >
-          Reset to defaults
-          </Button>
-        </Paper>
-      </Popover>
-    </Box>
-  );
+  return <UserFilterControls userTypeFilter={userTypeFilter} setUserTypeFilter={setUserTypeFilter} filteredUsernames={filteredUsernames} setFilteredUsernames={setFilteredUsernames} userTypeAnchorEl={userTypeAnchorEl} setUserTypeAnchorEl={setUserTypeAnchorEl} useStyles={useStyles} preDefinedSelected={preDefinedSelected} />
+
 };
 
-const PageFilterChip = ({className, onChange, ...rest }) => {
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected, ...rest }) => {
 
-  const classes = useStyles();
+  return <PageFilterControls pageValues={pageValues} setPageValues={setPageValues} namespaceSelected={namespaceSelected} setNameSpaceSelected={setNameSpaceSelected} linkedToValues={linkedToValues} setLinkedToValues={setLinkedToValues} linkedFromValues={linkedFromValues} setLinkedFromValues={setLinkedFromValues} pageAnchorEl={pageAnchorEl} setPageAnchorEl={setPageAnchorEl} preDefinedSelected={preDefinedSelected}/>
 
-  const [values, setValues] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState([]);
-
-  const [open, setOpen] = useState(false);
-  const [isActiveQuery, setActiveQuery] = useState(false);
-  const loading = open && isActiveQuery;
-
-  const throttledAutocompleteFetch = useMemo(
-    () =>
-      throttle((request, callback) => {
-        setActiveQuery(true);
-        const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(request.input);
-        fetch(page_autocomplete_url, {method: 'GET'})
-          .then(res => res.json())
-          .then(data => data.options)
-          .then(callback);
-      }, 200),
-    [],
-  );
-
-  useEffect(() => {
-    let active = true;
-
-    if (inputValue === '') {
-      setOptions(values.length > 0 ? values : []);
-      return undefined;
-    }
-
-    throttledAutocompleteFetch({ input: inputValue }, (results) => {
-      if (active) {
-        let newOptions = [];
-
-        if (values.length > 0) {
-          newOptions = values;
-        }
-
-        if (results) {
-          newOptions = [...newOptions, ...results];
-        }
-
-        setOptions(newOptions);
-        setActiveQuery(false);
-      }
-    });
-
-    return () => {
-      active = false;
-      setActiveQuery(false);
-    };
-  }, [values, inputValue, throttledAutocompleteFetch]);
-
-  useEffect(() => {
-    if (!open) {
-      setOptions([]);
-    }
-  }, [open]);
-
-  const getAutocompleteOptions = (queryString) => {
-    // TODO ensure this is safe to delete
-    const page_autocomplete_url = '/api/autocomplete/page_title?query=' + encodeURI(queryString);
-    fetch(page_autocomplete_url, {method: 'GET'})
-      .then(res => res.json())
-      .then(data => {
-        console.log(data.options);
-        return data.options;
-      });
-  }
-
-  return (
-    <Autocomplete
-      multiple
-      id="specific-site-filter"
-      style={{ width: 300 }}
-      open={open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      onClose={() => {
-        setOpen(false);
-      }}
-      getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
-      filterOptions={(x) => x}
-      options={options}
-      autoComplete
-      includeInputInList
-      filterSelectedOptions
-      value={values}
-      onChange={(event, newValues) => {
-        setOptions(newValues ? [...newValues, ...options] : options);
-        setValues(newValues);
-        // TODO call onChange with new set of filter criteria
-      }}
-      onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
-      }}
-      renderInput={(params) => (
-        <TextField {...params} 
-          label="Specific page titles" 
-          variant="outlined" 
-          fullWidth 
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <React.Fragment>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </React.Fragment>
-            ),
-          }}
-          />
-      )}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
-      }
-      renderOption={(option) => {
-        const matches = match(option.primary_text, inputValue);
-        const parts = parse(
-          option.primary_text,
-          matches
-        );
-
-        return (
-          <Grid container alignItems="center">
-            <Grid item xs>
-              {parts.map((part, index) => (
-                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                  {part.text}
-                </span>
-              ))}
-
-              <Typography variant="body2" color="textSecondary">
-                {option.secondary_text}
-              </Typography>
-            </Grid>
-          </Grid>
-        );
-      }}
-    />
-  );
 };
 
-const RevisionFilterChip = ({className, onChange, ...rest }) => {
+const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, revisionAnchorEl, setRevisionAnchorEl, preDefinedSelected, ...rest}) => {
 
-  const classes = useStyles();
+  const theme = useTheme()
 
-  const [revisionAnchorEl, setRevisionAnchorEl] = useState();
-
+  const revisionButtonStyle = (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters) && preDefinedSelected == null ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
   const open = Boolean(revisionAnchorEl);
   const id = open ? 'simple-popover' : undefined;
 
@@ -467,16 +70,26 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
     setRevisionAnchorEl(null);
   };
 
+  const [pageHelpPopup, setPageHelpPopup] = useState();
+
+  const pageHelpOpen = Boolean(pageHelpPopup);
+  const helpID = pageHelpOpen ? 'simple-popover' : undefined;
+
+  const handleIconClick = (event) => {
+    setPageHelpPopup(event.currentTarget)
+  }
+
+  const handleIconClickClose = () => {
+    setPageHelpPopup(null)
+  }
+  
   return (
     <Box
       display="flex"
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Chip clickable onClick={handleRevisionChipClick} label="Revision Filters" />
-      <Tooltip title="Help tooltip for the revision filter controls goes here.">
-        <HelpOutlineIcon aria-label="User filter controls help" />
-      </Tooltip>
+      <Button className="text-h3" variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Edit Filters <KeyboardArrowDownIcon/></Button> 
       <Popover
         id={id}
         open={open}
@@ -491,50 +104,249 @@ const RevisionFilterChip = ({className, onChange, ...rest }) => {
           horizontal: 'center',
         }}
       >
-        <label>
-        <input type="checkbox" />
-        &nbsp;Large
-        </label>
-        <br></br>
-        <label>
-        <input type="checkbox" />
-        &nbsp;Minor
-        </label>
-        <br></br>
-        <label>
-        <input type="checkbox" />
-        &nbsp;0 Byte
-        </label>
 
-        <RevisionFilterControls onChange={onChange} />
+        <RevisionFilterControls onChange={onChange} revisionFilter={revisionFilter} setRevisionFilter={setRevisionFilter} minorFilter={minorFilter} setMinorFilter={setMinorFilter}/>
       </Popover>
     </Box>
   );
 };
 
-const FilterControls = ({ className, onChange, ...rest }) => {
+// all article edits
+const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+  const onClick = () => {
+    setFilteredUsernames([])
+    setUserTypeFilter(DefaultFilters.defaultUserFilters)
+    setRevisionFilter(DefaultFilters.defaultRevisionFilters)
+    setMinorFilter(DefaultFilters.defaultMinorFilters)
+    setPageValues([])
+    setLinkedFromValues([])
+    setLinkedToValues([])
+    setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
+  }
+  return (
+    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>All Article Edits</Button>
+  )
+}
+
+// newcomer edits
+const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+  const onClick = () => {
+    setFilteredUsernames([])
+    setUserTypeFilter(DefaultFilters.defaultNewcomerUserFilters)
+    setRevisionFilter(DefaultFilters.defaultRevisionFilters)
+    setMinorFilter(DefaultFilters.defaultMinorFilters)
+    setPageValues([])
+    setLinkedFromValues([])
+    setLinkedToValues([])
+    setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
+  }
+  return (
+    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>Newcomer Edits</Button>
+  )
+}
+
+// LGBT History edits
+const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+  const onClick = () => {
+    setFilteredUsernames([])
+    setUserTypeFilter(DefaultFilters.defaultUserFilters)
+    setRevisionFilter(DefaultFilters.defaultRevisionFilters)
+    setMinorFilter(DefaultFilters.defaultMinorFilters)
+    setPageValues([])
+    setLinkedFromValues(DefaultFilters.defaultLGBTHistoryFilters)
+    setLinkedToValues([])
+    setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
+  }
+  return (
+    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>LGBT History Edits</Button>
+  )
+}
+
+const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter, minorFilter, 
+  setMinorFilter, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, preDefinedSelected, setPreDefinedSelected, ...rest}) => {
+    
+  const theme = useTheme()
 
   const classes = useStyles();
+
+  // all margins should be the same
+  const predefinedButton1Style = preDefinedSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+  const predefinedButton2Style = preDefinedSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+  const predefinedButton3Style = preDefinedSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+
+
+  const [revisionAnchorEl, setRevisionAnchorEl] = useState();
+  const [userTypeAnchorEl, setUserTypeAnchorEl] = useState();
+  const [pageAnchorEl, setPageAnchorEl] = useState();
+
+  const WarningMessage = () => {
+    if (((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) || ((!minorFilter.isMinor) && (!minorFilter.isMajor))) {
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+        Current edit filter selection will not yield any results
+          <Button className="text-h3" style={{fontWeight: "normal"}}
+            onClick={ () => {
+              setRevisionFilter(DefaultFilters.defaultRevisionFilters)  
+              setMinorFilter(DefaultFilters.defaultMinorFilters) 
+            }
+            }
+            >
+            Reset to default
+          </Button>
+        </Box>
+    }
+    else if ((!userTypeFilter.unregistered) && (!userTypeFilter.registered) && (!userTypeFilter.newcomers) && (!userTypeFilter.learners) && (!userTypeFilter.experienced) && (!userTypeFilter.bots)) {
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+      Current user filter selection will not yield any results
+        <Button className="text-h3" style={{fontWeight: "normal"}}
+          onClick={ () => {
+            setFilteredUsernames([]);
+            setUserTypeFilter(DefaultFilters.defaultUserFilters);
+          }
+          }
+          >
+          Reset to default
+        </Button>
+      </Box>
+      
+    }
+    else if (namespaceSelected.length === 0) {
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+      Current page filter selection will not yield any results
+        <Button className="text-h3" style={{fontWeight: "normal"}}
+          onClick={ () => {
+          setNameSpaceSelected([{namespace: "Main/Article - 0"}]); 
+          }
+          }
+          >
+          Reset to default
+        </Button>
+      </Box>  
+    }
+    else {
+      return null
+    }
+  }
+
+  const [filterControlsPopup, setFilterControlsPopup] = useState();
+
+  const filterControlsOpen = Boolean(filterControlsPopup);
+  const filterID = filterControlsOpen ? 'simple-popover' : undefined;
+
+  const handleIconClick = (event) => {
+    setFilterControlsPopup(event.currentTarget)
+  }
+
+  const handleIconClickClose = () => {
+    setFilterControlsPopup(null)
+  }
 
   return (
     <Card
       className={clsx(classes.root, className)}
       {...rest}
     >
-      <Box
-        height="20vh"
-        display="flex"
-        flexDirection="column"
-        flexWrap="nowrap"
-      >
-        <Box
-          display="flex"
-          flexDirection="row"
-        >
-          <PageFilterChip onChange={onChange} />
-          <RevisionFilterChip onChange={onChange} />
-          <UserFilterChip onChange={onChange} />
+      <Box>
+        <Box className='box'>
+          <Box className="title text-h2">
+            Filter
+            <IconButton className="tooltip-margin" color="#717281" style={{height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
+              <HelpIcon style={{height:"20px"}}/>
+            </IconButton>
+            <Popover
+              id={filterID}
+              open={filterControlsOpen}
+              anchorEl={filterControlsPopup}
+              onClose={handleIconClickClose}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <p style={{margin: 5, fontSize: 12}}>
+                Filter Popover Placeholder Text
+              </p>
+            </Popover>
+          </Box>
+
+          {/* pre-defined and custom section */}
+          <Box style= {{ overflow: "auto"}}>
+            <Box
+                display="flex"
+                flexDirection="column"
+                style= {{ display: "inline-flex", float: "left"}}
+              >
+                <Box className="text-h3 subtitle">
+                  Pre-Defined
+                </Box>
+
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  style= {{ display: "inline-flex"}}
+                >
+                  <PreDefinedFilterButton1 style={predefinedButton1Style} setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton1>
+                  <PreDefinedFilterButton2 style={predefinedButton2Style} setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton2>
+                  <PreDefinedFilterButton3 style={predefinedButton3Style} setPreDefinedSelected={setPreDefinedSelected} setFilteredUsernames={setFilteredUsernames} setPageValues={setPageValues} setNameSpaceSelected={setNameSpaceSelected} setLinkedFromValues={setLinkedFromValues} setLinkedToValues={setLinkedToValues} setRevisionFilter={setRevisionFilter} setMinorFilter={setMinorFilter} setUserTypeFilter={setUserTypeFilter}></PreDefinedFilterButton3>
+                </Box>
+            </Box>
+
+            <Box
+              display="flex"
+              flexDirection="column"
+              style= {{ display: "inline-flex", float: "right"}}
+            >
+              <Box className="text-h3 subtitle">
+                Custom
+              </Box>
+
+              <Box
+                display="flex"
+                flexDirection="row"
+                style= {{ display: "inline-flex"}}
+              >
+                <PageFilterChip onChange={onChange} 
+                    pageValues={pageValues}
+                    setPageValues={setPageValues}
+                    namespaceSelected={namespaceSelected}
+                    setNameSpaceSelected={setNameSpaceSelected}
+                    linkedToValues={linkedToValues}
+                    setLinkedToValues={setLinkedToValues}
+                    linkedFromValues={linkedFromValues}
+                    setLinkedFromValues={setLinkedFromValues}
+                    pageAnchorEl={pageAnchorEl}
+                    setPageAnchorEl={setPageAnchorEl}
+                    preDefinedSelected={preDefinedSelected}
+                />
+                <RevisionFilterChip onChange={onChange} 
+                  revisionFilter={revisionFilter} 
+                  setRevisionFilter={setRevisionFilter} 
+                  minorFilter={minorFilter} 
+                  setMinorFilter={setMinorFilter} 
+                  revisionAnchorEl={revisionAnchorEl} 
+                  setRevisionAnchorEl={setRevisionAnchorEl}
+                  preDefinedSelected={preDefinedSelected}
+                />
+
+                <UserFilterChip 
+                  onChange={onChange} 
+                  userTypeFilter={userTypeFilter} 
+                  setUserTypeFilter={setUserTypeFilter} 
+                  filteredUsernames={filteredUsernames} 
+                  setFilteredUsernames={setFilteredUsernames}
+                  userTypeAnchorEl={userTypeAnchorEl}
+                  setUserTypeAnchorEl={setUserTypeAnchorEl}
+                  preDefinedSelected={preDefinedSelected}
+                />
+              </Box>
+              <WarningMessage />
+            </Box>
+          </Box>
         </Box>
+
       </Box>
     </Card>
   );
