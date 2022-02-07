@@ -24,7 +24,9 @@ import { LoadingContext } from 'src/App';
 import FlagIcon from '@material-ui/icons/Flag';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
-import { Oval } from 'react-loading-icons'
+import { Oval } from 'react-loading-icons';
+import ArrowBackIosIcon from '@material-ui/icons//ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons//ArrowForwardIos';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -531,52 +533,86 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     setTyping(true)
                     setFirstTyped(true)
                   }} 
-                  style={{width: "50vw"}}
+                  style={{width: "45vw"}}
                   />
                     <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
               </Box>
           </Box>
 
-          
+          {/* Article Number & Buttons */}
           <Box
                 display="flex"
                 flexDirection="row"
-                style= {{ display: "inline-flex", float: "right", marginTop: "1.9em"}}
+                width="100%" 
+                justify-content="space-between"
+                style= {{float: "left", marginTop: "1.9em"}}
             >
-                  <Box style={{display: "inline-flex", float: "left"}}>
+                  <Box style={{display: "inline-flex"}}>
                     {/* _ of _ */}
                     <Box
                       display="flex"
                       alignItems= "center"
                       justifyContent = "center"
                       className="text-h4" 
-                      style={{marginRight: "1vw"}}
                     >
                       ARTICLE: {currRevisionIdx + 1} OF {revisions.length}
                     </Box>
                   </Box>
 
-                  {/* Previous/next */}
-                  <Box title="Shortcut: <left arrow>" style={{display: "inline-flex", float: "right"}}>
-                    {/* Previous */}
+                  {/* Buttons */}
+                  <Box style={{display: "inline-flex", marginLeft: "auto"}}>
+                    {/* Previous Unannotated */}
                     <Box className="text-h4"
                     display="flex"
                     alignItems= "center"
                     justifyContent= "center"
                     style={{cursor: 'pointer'}}
                     >
-                      <Button className="text-h4" onClick={handlePreviousClick}><ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous</Button>
+                      <Button className="text-h4" onClick={() => {
+                          // TO ADD
+                        }}>
+                        <ArrowBackIosIcon style={{marginRight: "4px"}} className="text-h4"/>Previous Unannotated
+                      </Button>
+                    </Box>
+
+                    {/* Previous */}
+                    <Box className="text-h4"
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    title="Shortcut: <left arrow>"
+                    style={{marginLeft: "5px", cursor: 'pointer'}}
+                    >
+                      <Button className="text-h4" onClick={(handlePreviousClick)}>
+                        <ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous
+                      </Button>
                     </Box>
 
                     {/* Next */}
                     <Box 
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    className="text-h4" 
                     title="Shortcut: <right arrow>"
+                    style={{marginLeft: "5px", cursor: 'pointer'}}>
+                      <Button className="text-h4" onClick={(handleNextClick)}>
+                        Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/>
+                      </Button>
+                    </Box>
+
+                    {/* Next Unannotated */}
+                    <Box 
                     display="flex"
                     alignItems= "center"
                     justifyContent= "center"
                     className="text-h4" 
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button className="text-h4" onClick={handleNextClick}>Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/></Button>
+                      <Button className="text-h4" onClick={() => {
+                          // TO ADD
+                        }}>
+                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px"}} className="text-h4"/>
+                      </Button>
                     </Box>
                   </Box>
 
@@ -585,7 +621,6 @@ const RevisionView = ({ revisions, className, ...rest }) => {
         </Box>
 
         {/* Difference between revision accordion */}
-
         <Accordion style={{marginTop: "10px"}}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
