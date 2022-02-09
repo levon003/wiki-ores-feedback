@@ -306,7 +306,7 @@ def get_sample_revisions():
         rt = db.get_revision_table()
         s = select(rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred)
         s = build_sample_query(filters, rt, s)
-        s.order_by(rt.c.random).limit(500)
+        s = s.order_by(rt.c.random).limit(500)
         logger.info(s)
 
         revision_list = []
@@ -328,7 +328,6 @@ def get_sample_revisions():
                         'filter_hash': filter_hash
                     })
                 session.execute(rct.insert(), rev_cache_list)
-
 
     return {'revisions': revision_list}
 
