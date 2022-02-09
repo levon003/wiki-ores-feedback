@@ -19,7 +19,7 @@ import UserFilterControls from './UserFilterControls';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 
-import HelpIcon from '@material-ui/icons/Help'
+import HelpIcon from '@material-ui/icons/Help';
 
 // const userTypeOptions = [
 //   { key: 'all', desc: 'All users', },
@@ -42,15 +42,15 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl,...rest }) => {
+const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, preDefinedSelected, ...rest }) => {
 
-  return <UserFilterControls userTypeFilter={userTypeFilter} setUserTypeFilter={setUserTypeFilter} filteredUsernames={filteredUsernames} setFilteredUsernames={setFilteredUsernames} userTypeAnchorEl={userTypeAnchorEl} setUserTypeAnchorEl={setUserTypeAnchorEl} useStyles={useStyles} />
+  return <UserFilterControls userTypeFilter={userTypeFilter} setUserTypeFilter={setUserTypeFilter} filteredUsernames={filteredUsernames} setFilteredUsernames={setFilteredUsernames} userTypeAnchorEl={userTypeAnchorEl} setUserTypeAnchorEl={setUserTypeAnchorEl} useStyles={useStyles} preDefinedSelected={preDefinedSelected} />
 
 };
 
-const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, ...rest }) => {
+const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected, ...rest }) => {
 
-  return <PageFilterControls pageValues={pageValues} setPageValues={setPageValues} namespaceSelected={namespaceSelected} setNameSpaceSelected={setNameSpaceSelected} linkedToValues={linkedToValues} setLinkedToValues={setLinkedToValues} linkedFromValues={linkedFromValues} setLinkedFromValues={setLinkedFromValues} pageAnchorEl={pageAnchorEl} setPageAnchorEl={setPageAnchorEl} />
+  return <PageFilterControls pageValues={pageValues} setPageValues={setPageValues} namespaceSelected={namespaceSelected} setNameSpaceSelected={setNameSpaceSelected} linkedToValues={linkedToValues} setLinkedToValues={setLinkedToValues} linkedFromValues={linkedFromValues} setLinkedFromValues={setLinkedFromValues} pageAnchorEl={pageAnchorEl} setPageAnchorEl={setPageAnchorEl} preDefinedSelected={preDefinedSelected}/>
 
 };
 
@@ -58,16 +58,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 
   const theme = useTheme()
 
-  const revisionButtonStyle = (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters) && preDefinedSelected == null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-  
-  const revisionFilterPrettyNames = {
-    largeAdditions: "large additions",
-    smallAdditions: "small additions",
-    neutral: "near zero changes",
-    smallRemovals: "small removals",
-    largeRemovals: "large removals"
-  }
-
+  const revisionButtonStyle = (revisionFilter !== DefaultFilters.defaultRevisionFilters || minorFilter !== DefaultFilters.defaultMinorFilters) && preDefinedSelected == null ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
   const open = Boolean(revisionAnchorEl);
   const id = open ? 'simple-popover' : undefined;
 
@@ -91,103 +82,14 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   const handleIconClickClose = () => {
     setPageHelpPopup(null)
   }
-
-  const getRevisionFilterSummary = () => {
-    const total_checked = revisionFilter.largeAdditions + revisionFilter.smallAdditions + revisionFilter.neutral + revisionFilter.smallRemovals + revisionFilter.largeRemovals
-    let summaryString = "Revision Filters"
-    if (total_checked === 0) {
-      summaryString = "No revisions selected"
-    } else if (total_checked === 1 || total_checked === 2 || total_checked === 3) {
-      if (revisionFilter.largeAdditions && revisionFilter.largeRemovals && total_checked === 2) {
-        summaryString = "Only large changes"
-      } else if (revisionFilter.smallAdditions && revisionFilter.smallRemovals && total_checked === 2) {
-        summaryString = "Only small changes"
-      } else if (revisionFilter.smallAdditions && revisionFilter.largeAdditions && total_checked === 2) {
-        summaryString = "Only additions"
-      } else if (revisionFilter.largeRemovals && revisionFilter.smallRemovals && total_checked === 2) {
-        summaryString = "Only removals"
-      } else if (total_checked === 1 || total_checked === 2) {
-        summaryString = "Only "
-        let count = 0;
-        for (let k in revisionFilter) {
-          if (revisionFilter[k]) {
-            if (count > 0) {
-              summaryString += "and " + revisionFilterPrettyNames[k] + " "
-            } else {
-              summaryString += revisionFilterPrettyNames[k] + " "
-            }
-            count++
-          }
-        }
-      } else if (total_checked === 3) {
-        summaryString = "Everything except "
-        let count = 0;
-        for (let k in revisionFilter) {
-          if (!revisionFilter[k]) {
-            if (count > 0) {
-              summaryString += "and " + revisionFilterPrettyNames[k] + " "
-            } else {
-              summaryString += revisionFilterPrettyNames[k] + " "
-            }
-            count++
-          }
-        }
-      }
-    } else if (total_checked === 4) {
-      if (!revisionFilter.largeAdditions) {
-        summaryString = "Everything except large additions"
-      } else if (!revisionFilter.smallAdditions) {
-        summaryString = "Everything except small additions"
-      } else if (!revisionFilter.neutral) {
-        summaryString = "Everything except near zero changes"
-      } else if (!revisionFilter.smallRemovals) {
-        summaryString = "Everything except small removals"
-      } else if (!revisionFilter.largeRemovals) {
-        summaryString = "Everything except large removals"
-      }
-    }
-    if (minorFilter.isMinor && !minorFilter.isMajor && summaryString !== "Revision Filters") {
-      if (total_checked === 1 || total_checked === 2) {
-        summaryString = summaryString.slice(0, 5) + "minor " + summaryString.slice(5)
-      } else {
-        summaryString = summaryString.slice(0, 18) + "minor " + summaryString.slice(17)
-      }
-    } else if (!minorFilter.isMinor && minorFilter.isMajor && summaryString !== "Revision Filters") {
-      if (total_checked === 1 || total_checked === 2) {
-        summaryString = summaryString.slice(0, 5) + "major " + summaryString.slice(5)
-      } else {
-        summaryString = summaryString.slice(0, 18) + "major " + summaryString.slice(17)
-      }
-    }
-    return summaryString
-  }
-
+  
   return (
     <Box
       display="flex"
       flexDirection="row"
       flexWrap="nowrap"
     >
-      <Button className="text-h3" variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Revision Filters <KeyboardArrowDownIcon/></Button> 
-      <IconButton color="#717281" size="small" className="tooltip-margin" onClick={handleIconClick}>
-      <HelpIcon/>
-      </IconButton>
-      <Popover
-        id={helpID}
-        open={pageHelpOpen}
-        anchorEl={pageHelpPopup}
-          onClose={handleIconClickClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}>
-          <p style={{margin: 5, fontSize: 12}}><a href="https://en.wikipedia.org/wiki/Help:Minor_edit" target="_blank" rel="noopener noreferrer">Minor Edit Definition</a></p>
-          {/* TODO: add something here */}
-      </Popover>
+      <Button className="text-h3" variant="outlined" style={revisionButtonStyle} onClick={handleRevisionChipClick}> Edit Filters <KeyboardArrowDownIcon/></Button> 
       <Popover
         id={id}
         open={open}
@@ -209,9 +111,9 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
   );
 };
 
+// all article edits
 const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
-    setPreDefinedSelected(1)
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultUserFilters)
     setRevisionFilter(DefaultFilters.defaultRevisionFilters)
@@ -225,9 +127,10 @@ const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsern
     <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>All Article Edits</Button>
   )
 }
+
+// newcomer edits
 const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
-    setPreDefinedSelected(2)
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultNewcomerUserFilters)
     setRevisionFilter(DefaultFilters.defaultRevisionFilters)
@@ -241,15 +144,16 @@ const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsern
     <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>Newcomer Edits</Button>
   )
 }
+
+// LGBT History edits
 const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
-    setPreDefinedSelected(3)
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultUserFilters)
-    setRevisionFilter(DefaultFilters.defaultLGBTHistoryFilters)
+    setRevisionFilter(DefaultFilters.defaultRevisionFilters)
     setMinorFilter(DefaultFilters.defaultMinorFilters)
     setPageValues([])
-    setLinkedFromValues([])
+    setLinkedFromValues(DefaultFilters.defaultLGBTHistoryFilters)
     setLinkedToValues([])
     setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
   }
@@ -277,11 +181,11 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
 
   const WarningMessage = () => {
     if (((!revisionFilter.largeAdditions) && (!revisionFilter.smallAdditions) && (!revisionFilter.neutral) && (!revisionFilter.smallRemovals) && (!revisionFilter.largeRemovals)) || ((!minorFilter.isMinor) && (!minorFilter.isMajor))) {
-      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
-        Warning: Current revision filter selection will not yield any results.
-          <Button
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+        Current edit filter selection will not yield any results
+          <Button className="text-h3" style={{fontWeight: "normal"}}
             onClick={ () => {
-              setRevisionFilter (DefaultFilters.defaultRevisionFilters)  
+              setRevisionFilter(DefaultFilters.defaultRevisionFilters)  
               setMinorFilter(DefaultFilters.defaultMinorFilters) 
             }
             }
@@ -291,9 +195,9 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         </Box>
     }
     else if ((!userTypeFilter.unregistered) && (!userTypeFilter.registered) && (!userTypeFilter.newcomers) && (!userTypeFilter.learners) && (!userTypeFilter.experienced) && (!userTypeFilter.bots)) {
-      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
-      Warning: No User Filters Selected
-        <Button
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+      Current user filter selection will not yield any results
+        <Button className="text-h3" style={{fontWeight: "normal"}}
           onClick={ () => {
             setFilteredUsernames([]);
             setUserTypeFilter(DefaultFilters.defaultUserFilters);
@@ -306,9 +210,9 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
       
     }
     else if (namespaceSelected.length === 0) {
-      return <Box style={{color: 'red', paddingTop: 0, textAlign: 'center'}}>
-      Warning: No Page Filters Selected
-        <Button
+      return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>
+      Current page filter selection will not yield any results
+        <Button className="text-h3" style={{fontWeight: "normal"}}
           onClick={ () => {
           setNameSpaceSelected([{namespace: "Main/Article - 0"}]); 
           }
@@ -323,6 +227,19 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
     }
   }
 
+  const [filterControlsPopup, setFilterControlsPopup] = useState();
+
+  const filterControlsOpen = Boolean(filterControlsPopup);
+  const filterID = filterControlsOpen ? 'simple-popover' : undefined;
+
+  const handleIconClick = (event) => {
+    setFilterControlsPopup(event.currentTarget)
+  }
+
+  const handleIconClickClose = () => {
+    setFilterControlsPopup(null)
+  }
+
   return (
     <Card
       className={clsx(classes.root, className)}
@@ -332,6 +249,27 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         <Box className='box'>
           <Box className="title text-h2">
             Filter
+            <IconButton className="tooltip-margin" color="#717281" style={{height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
+              <HelpIcon style={{height:"20px"}}/>
+            </IconButton>
+            <Popover
+              id={filterID}
+              open={filterControlsOpen}
+              anchorEl={filterControlsPopup}
+              onClose={handleIconClickClose}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <p style={{margin: 5, fontSize: 12}}>
+                Filter Popover Placeholder Text
+              </p>
+            </Popover>
           </Box>
 
           {/* pre-defined and custom section */}
@@ -404,12 +342,11 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
                   preDefinedSelected={preDefinedSelected}
                 />
               </Box>
+              <WarningMessage />
             </Box>
           </Box>
         </Box>
 
-        {/* probably need to fix warning message */}
-        <WarningMessage />
       </Box>
     </Card>
   );

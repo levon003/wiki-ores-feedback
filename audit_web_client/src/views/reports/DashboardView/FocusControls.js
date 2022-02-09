@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from 'react';
 
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -19,6 +19,7 @@ import {
   } from '@material-ui/core';
   import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
   import MisalignmentFilter from "./MisalignmentFilter";
+  import HelpIcon from '@material-ui/icons/Help';
 
 const useStyles = makeStyles((theme) => ({
     root: {},
@@ -55,7 +56,7 @@ const FocusButton3 = ({style, setFocusSelected}) => {
         setFocusSelected(3)
     }
     return (
-      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING REVISIONS</Button>
+      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>
     )
 }
 
@@ -69,6 +70,20 @@ const FocusControls = ({className, data, onChange, focusSelected, setFocusSelect
 
     const classes = useStyles();
 
+
+    const [focusControlsPopup, setFocusControlsPopup] = useState();
+
+    const focusControlsOpen = Boolean(focusControlsPopup);
+    const focusID = focusControlsOpen ? 'simple-popover' : undefined;
+
+    const handleIconClick = (event) => {
+        setFocusControlsPopup(event.currentTarget)
+    }
+
+    const handleIconClickClose = () => {
+        setFocusControlsPopup(null)
+    }
+
  
     return (
     <Card
@@ -79,6 +94,27 @@ const FocusControls = ({className, data, onChange, focusSelected, setFocusSelect
             <Box className='box'>
                 <Box className="title text-h2">
                     Focus
+                    <IconButton className="tooltip-margin" color="#717281" style={{height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
+                        <HelpIcon style={{height:"20px"}}/>
+                    </IconButton>
+                    <Popover
+                        id={focusID}
+                        open={focusControlsOpen}
+                        anchorEl={focusControlsPopup}
+                        onClose={handleIconClickClose}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        >
+                        <p style={{margin: 5, fontSize: 12}}>
+                            Focus Popover Placeholder Text
+                        </p>
+                    </Popover>
                 </Box>
 
                 <Box style= {{ overflow: "auto"}}>
@@ -96,7 +132,6 @@ const FocusControls = ({className, data, onChange, focusSelected, setFocusSelect
                         flexDirection="row"
                         style= {{ display: "inline-flex"}}
                     >
-                        {/* add tooltips here */}
                         <FocusButton1 setFocusSelected={setFocusSelected} style={focusButton1Style}></FocusButton1>
                         <FocusButton2 setFocusSelected={setFocusSelected} style={focusButton2Style}></FocusButton2>
                         <FocusButton3 setFocusSelected={setFocusSelected} style={focusButton3Style}></FocusButton3>

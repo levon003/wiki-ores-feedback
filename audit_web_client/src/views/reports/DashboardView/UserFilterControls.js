@@ -24,65 +24,14 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
 
   const theme = useTheme()
 
-  const userButtonStyle = (userTypeFilter !== DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    
   const userTypePrettyNames = {
-      "newcomers": "Newcomers",
-      "learners": "Learners",
-      "experienced": "Experienced users",
-      "bots": "Bots",
+    "newcomers": "Newcomers",
+    "learners": "Learners",
+    "experienced": "Experienced users",
+    "bots": "Bots",
   }
-  
-  const getUserFilterSummary = () => {
-      if (filteredUsernames.length > 0) {
-          // For now, explicit username filters overrule everything
-          // i.e. show all revisions from specified usernames, even if they wouldn't meet the filter criteria
-          return "Only these users: " + filteredUsernames.join(', ');
-      }
-      
-      const total_checked = userTypeFilter.unregistered + userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced + userTypeFilter.bots;
-      if (total_checked === 0) {
-          return "No users";
-      } else if (userTypeFilter.unregistered && total_checked === 1) {
-          return "Only unregistered users";
-      } else if (userTypeFilter.unregistered && userTypeFilter.bots && total_checked === 2) {
-          return "All unregistered and bot users";
-      } else if (total_checked === 1) {
-          if (userTypeFilter.newcomers) {
-              return "Only newcomers";
-          } else if (userTypeFilter.learners) {
-              return "Only learners";
-          } else if (userTypeFilter.experienced) {
-              return "Only experienced users";
-          } else if (userTypeFilter.bots) {
-              return "Only bots";
-          }
-      } else {
-          var bot_string = userTypeFilter.bots ? "" : "non-bot ";
-          var registered_string = userTypeFilter.unregistered ? "" : "registered "
-          
-          var registered_count = userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced;
-          var exception_string = "";
-          if (registered_count > 0 && registered_count < 3) {
-              exception_string = " except";
-              var first_exception = true;
-              if (!userTypeFilter.newcomers) {
-                  exception_string += " newcomers";
-                  first_exception = false;
-              }
-              if (!userTypeFilter.learners) {
-                  exception_string += first_exception ? " learners" : " and learners";
-                  first_exception = false;
-              }
-              if (!userTypeFilter.experienced) {
-                  exception_string += first_exception ? " experienced users" : " and experienced users";
-              }
-          }
-          
-          const summary_string = "All " + bot_string + registered_string + "users" + exception_string;
-          return summary_string;
-      }
-  };
+
+  const userButtonStyle = (userTypeFilter !== DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     
   const handleToggle = (value) => () => {
       // TODO call onChange() with the new state;
@@ -164,25 +113,6 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
       flexWrap="nowrap"
     >
       <Button className="text-h3" variant="outlined" style={userButtonStyle} onClick={handleClick}> User Filters <KeyboardArrowDownIcon /></Button>
-      <IconButton className="tooltip-margin-last" color="#717281" size="small" onClick={handleIconClick}>
-        <HelpIcon/>
-      </IconButton>
-      <Popover
-      id={helpID}
-      open={pageHelpOpen}
-      anchorEl={pageHelpPopup}
-        onClose={handleIconClickClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}>
-        <p style={{margin: 5, fontSize: 12}}>User Filters Popup Placeholder</p>
-        {/* TODO: add something here */}
-    </Popover>
       <Popover
         id={id}
         open={open}

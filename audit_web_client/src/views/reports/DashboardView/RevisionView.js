@@ -24,7 +24,9 @@ import { LoadingContext } from 'src/App';
 import FlagIcon from '@material-ui/icons/Flag';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
-import { Oval } from 'react-loading-icons'
+import { Oval } from 'react-loading-icons';
+import ArrowBackIosIcon from '@material-ui/icons//ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons//ArrowForwardIos';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,13 +65,12 @@ const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
 // gonna keep this here for now, maybe move it later
 // Box can inherit global styles, easier to change styles
 const ErrorNotification = ({ errorMessage }) => {
-  return <Box style={{color: 'red', textAlign: 'center'}}>{errorMessage}</Box>
-}
-const SuccessNotification = ({ successMessage }) => {
-  return <Box style={{color: 'green', textAlign: 'center'}}>{successMessage}</Box>
+  return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>{errorMessage}</Box>
 }
 
-const RevisionView = ({ revision, className, ...rest }) => {
+const RevisionView = ({ revisions, className, ...rest }) => {
+  const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
+  const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
@@ -95,7 +96,6 @@ const RevisionView = ({ revision, className, ...rest }) => {
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
   const [errorMessage, setErrorMessage ] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
   const { /*loading,*/ setLoading } = useContext(LoadingContext)
   
   // this is for setting the typing state of the note field
@@ -123,7 +123,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
-    setLoading(true)
+    setLoading(true, null)
     
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
@@ -140,10 +140,9 @@ const RevisionView = ({ revision, className, ...rest }) => {
       }),
     }).then(res => res.json())
     .then(data => {
-      setLoading(false)
+      setLoading(false, true)
       setErrorMessage(null)
       // update the annotations with the new data (if it was not rejected)
-      setSuccessMessage("Successfully saved.")
         // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
         // that their annotation change was rejected. Should we notify the user in some way?
         setAnnotationData({
@@ -152,7 +151,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         })
         setNote(data.note)
       }).catch(data => {
-        setLoading(false)
+        setLoading(false, false)
         setErrorMessage("Didn't go through, please try again.")
       });
     }
@@ -472,72 +471,37 @@ const RevisionView = ({ revision, className, ...rest }) => {
     );
   }
 
-  const NotesAndNextButtons = () => {
-    return (
-        <Box 
-            style={{overflow: "auto", marginBottom: "10px"}}
-        >
-
-            {/* Notes */}
-            <Box
-                display="flex"
-                flexDirection="row"
-                style= {{ display: "inline-flex", float: "left"}}
-            >
-                <Box display="flex" style={{paddingTop: "8px"}}>
-                    <TextField
-                    multiline
-                    label="Notes" 
-                    value={note} 
-                    onChange={(event) => {
-                      setNote(event.target.value)
-                      setTyping(true)
-                      setFirstTyped(true)
-                    }} 
-                    style={{width: "50vw"}}
-                    />
-                      <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
-                </Box>
-            </Box>
-
-            {/* Previous/next */}
-            <Box
-                display="flex"
-                flexDirection="row"
-                style= {{ display: "inline-flex", float: "right"}}
-            >
-                <Box style={{display: "inline-flex", float: "right"}}>
-                    <Box className="text-h4"
-                    display="flex"
-                    alignItems= "center"
-                    justifyContent= "center"
-                    style={{color: "#C7C7C7"}}>
-                      <ArrowBackIcon style={{color: "#C7C7C7", marginRight: "4px"}} className="text-h4"/>Previous
-                    </Box>
-
-                    <Box 
-                    display="flex"
-                    alignItems= "center"
-                    justifyContent= "center"
-                    className="text-h4" 
-                    style={{color: "#C7C7C7", marginLeft: "20px"}}>
-                      Next<ArrowForwardIcon style={{color: "#C7C7C7", marginLeft: "4px"}} className="text-h4"/>
-                    </Box>
-              </Box>
-            </Box>
-        </Box>
-    );
+  const handlePreviousClick = () => {
+    if (currRevisionIdx > 0) {
+      setCurrRevisionIdx(currRevisionIdx - 1)
+    }
   }
 
+  const handleNextClick = () => {
+    if (currRevisionIdx < revisions.length - 1) {
+      setCurrRevisionIdx(currRevisionIdx + 1)
+    }
+  }
+
+  useEffect(() => {
+    document.onkeydown = (e) => {
+      if (e.keyCode == 37) {
+        handlePreviousClick()
+      }
+      else if (e.keyCode == 39) {
+        handleNextClick()
+      }
+    }
+  })
+
   return (
-  <Card
+  <Box
       className={clsx(classes.root, className)}
       {...rest}
   >
     <Box>
         <RevisionSummary/>
-        <ErrorNotification errorMessage={errorMessage}/>
-        <SuccessNotification successMessage={successMessage}/>
+        
         <Box 
             display="flex"
             flexDirection="row"
@@ -546,13 +510,124 @@ const RevisionView = ({ revision, className, ...rest }) => {
             <Box style={{paddingRight: "12px"}}>
                 <RevisionAnnotationControls/>
             </Box>
+            <ErrorNotification errorMessage={errorMessage}/>
+
         </Box>
 
-        <NotesAndNextButtons/>
+        <Box 
+            style={{overflow: "auto", marginBottom: "10px"}}
+        >
+          {/* Notes */}
+          <Box
+                display="flex"
+                flexDirection="row"
+                style= {{ display: "inline-flex", float: "left"}}
+            >
+              <Box display="flex" style={{paddingTop: "8px"}}>
+                  <TextField
+                  multiline
+                  label="Notes" 
+                  value={note} 
+                  onChange={(event) => {
+                    setNote(event.target.value)
+                    setTyping(true)
+                    setFirstTyped(true)
+                  }} 
+                  style={{width: "45vw"}}
+                  />
+                    <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
+              </Box>
+          </Box>
 
-        <Accordion expanded={expanded} onChange={handleAccordionExpansionToggle}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="diff-content" id="diff-header"> 
-            {expanded ? 'Collapse difference between revisions' : 'View difference between revisions'}
+          {/* Article Number & Buttons */}
+          <Box
+                display="flex"
+                flexDirection="row"
+                width="100%" 
+                justify-content="space-between"
+                style= {{float: "left", marginTop: "1.9em"}}
+            >
+                  <Box style={{display: "inline-flex"}}>
+                    {/* _ of _ */}
+                    <Box
+                      display="flex"
+                      alignItems= "center"
+                      justifyContent = "center"
+                      className="text-h4" 
+                    >
+                      ARTICLE: {currRevisionIdx + 1} OF {revisions.length}
+                    </Box>
+                  </Box>
+
+                  {/* Buttons */}
+                  <Box style={{display: "inline-flex", marginLeft: "auto"}}>
+                    {/* Previous Unannotated */}
+                    <Box className="text-h4"
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    style={{cursor: 'pointer'}}
+                    >
+                      <Button className="text-h4" onClick={() => {
+                          // TO ADD
+                        }}>
+                        <ArrowBackIosIcon style={{marginRight: "4px"}} className="text-h4"/>Previous Unannotated
+                      </Button>
+                    </Box>
+
+                    {/* Previous */}
+                    <Box className="text-h4"
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    title="Shortcut: <left arrow>"
+                    style={{marginLeft: "5px", cursor: 'pointer'}}
+                    >
+                      <Button className="text-h4" onClick={(handlePreviousClick)}>
+                        <ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous
+                      </Button>
+                    </Box>
+
+                    {/* Next */}
+                    <Box 
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    className="text-h4" 
+                    title="Shortcut: <right arrow>"
+                    style={{marginLeft: "5px", cursor: 'pointer'}}>
+                      <Button className="text-h4" onClick={(handleNextClick)}>
+                        Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/>
+                      </Button>
+                    </Box>
+
+                    {/* Next Unannotated */}
+                    <Box 
+                    display="flex"
+                    alignItems= "center"
+                    justifyContent= "center"
+                    className="text-h4" 
+                    style={{marginLeft: "5px", cursor: 'pointer'}}>
+                      <Button className="text-h4" onClick={() => {
+                          // TO ADD
+                        }}>
+                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px"}} className="text-h4"/>
+                      </Button>
+                    </Box>
+                  </Box>
+
+            </Box>
+
+        </Box>
+
+        {/* Difference between revision accordion */}
+        <Accordion style={{marginTop: "10px"}}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+                >
+                <Typography>Difference Between Revisions</Typography>
             </AccordionSummary>
         
             <Box
@@ -581,7 +656,7 @@ const RevisionView = ({ revision, className, ...rest }) => {
         </Accordion>
                 
     </Box>
-  </Card>
+  </Box>
 
   );
 };

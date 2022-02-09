@@ -44,7 +44,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
         subheader={
           <ListItem>
             <ListItemText component="div" id="revision-filter-list-subheader">
-              Filter by Revision Size
+              Filter by Edit Size
             </ListItemText>
           </ListItem>
         }

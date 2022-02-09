@@ -15,6 +15,7 @@ import {
 // import Logo from 'src/components/Logo';
 import { LoadingContext } from 'src/App';
 import { Oval } from 'react-loading-icons'
+import CheckIcon from '@material-ui/icons/Check';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -24,8 +25,8 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const Loading = ({ loading }) => {
-  return loading ? <Oval/> : null
+const Loading = ({ loading, success }) => {
+  return loading ? <Oval/> : success ? <CheckIcon /> : null
 }
 
 const TopBar = ({
@@ -51,7 +52,7 @@ const TopBar = ({
         {/* Make this smaller, or move to bottom, or remove */}
         {/* change to more standard loading format */}
         {/* think about flickering loading icon, too distracting? */}
-        <Loading loading={loadingContext.loading} />
+        <Loading loading={loadingContext.loading} success={loadingContext.success} />
       </Toolbar>
     </AppBar>
   );
