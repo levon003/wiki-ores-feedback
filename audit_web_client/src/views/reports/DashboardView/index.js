@@ -45,6 +45,7 @@ const Dashboard = () => {
     is_minor: true,
     has_edit_summary: true,
     damaging_pred: 0.11111111,
+    annotated: true
   },
   {
     rev_id: 1001836878, 
@@ -59,7 +60,24 @@ const Dashboard = () => {
     is_minor: true,
     has_edit_summary: true,
     damaging_pred: 0.11111111,
-}]); // TODO should be empty, but has one entry for testing
+    annotated: true
+  },
+  {
+    rev_id: 1001836878, 
+    prev_rev_id: 1001836865,
+    rev_timestamp: 0,
+    // has_edit_summary: false,
+    user_text: "Suriname0",
+    user_id: 50,
+    page_title: "Test2",
+    curr_bytes: 2289,
+    delta_bytes: 1550,
+    is_minor: true,
+    has_edit_summary: true,
+    damaging_pred: 0.11111111,
+    annotated: false
+  }
+]); // TODO should be empty, but has one entry for testing
   
   // All of this state has been lifted up from the RevisionFilterChip, UserFilterChip, and PageFilterChip components.
   // filter
