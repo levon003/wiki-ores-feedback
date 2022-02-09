@@ -471,6 +471,8 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     );
   }
 
+  const [previousUnannotatedLength, setPreviousUnannotatedLength] = useState(0)
+
   const handlePreviousClick = () => {
     if (currRevisionIdx > 0) {
       setCurrRevisionIdx(currRevisionIdx - 1)
@@ -483,6 +485,28 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     }
   }
 
+  const handlePreviousUnannotatedClick = () => {
+    let revPtr = currRevisionIdx - 1
+    while (revPtr > 0) {
+      if (!revisions[revPtr].annotated) {
+        setCurrRevisionIdx(revPtr)
+        break
+      }
+      revPtr--
+    }
+  }
+
+
+  const handleNextUnannotatedClick = () => {
+    let revPtr = currRevisionIdx + 1
+    while (revPtr < revisions.length) {
+      if (!revisions[revPtr].annotated) {
+        setCurrRevisionIdx(revPtr)
+        break
+      }
+      revPtr++
+    }
+  }
   useEffect(() => {
     document.onkeydown = (e) => {
       if (e.keyCode == 37) {
@@ -568,9 +592,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     justifyContent= "center"
                     style={{cursor: 'pointer'}}
                     >
-                      <Button className="text-h4" onClick={() => {
-                          // TO ADD
-                        }}>
+                      <Button className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
                         <ArrowBackIosIcon style={{marginRight: "4px"}} className="text-h4"/>Previous Unannotated
                       </Button>
                     </Box>
@@ -583,7 +605,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     title="Shortcut: <left arrow>"
                     style={{marginLeft: "5px", cursor: 'pointer'}}
                     >
-                      <Button className="text-h4" onClick={(handlePreviousClick)}>
+                      <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousClick)}>
                         <ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous
                       </Button>
                     </Box>
@@ -596,7 +618,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     className="text-h4" 
                     title="Shortcut: <right arrow>"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button className="text-h4" onClick={(handleNextClick)}>
+                      <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextClick)}>
                         Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/>
                       </Button>
                     </Box>
@@ -608,9 +630,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     justifyContent= "center"
                     className="text-h4" 
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button className="text-h4" onClick={() => {
-                          // TO ADD
-                        }}>
+                      <Button className="text-h4" onClick={(handleNextUnannotatedClick)}>
                           Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px"}} className="text-h4"/>
                       </Button>
                     </Box>
