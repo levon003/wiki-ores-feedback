@@ -24,6 +24,8 @@ def create_app(test_config=None):
         INSTANCE_DATA_DIR=os.path.join(app.instance_path, 'data'),
         VERSION=VERSION,
         MYSQL_CONFIG_FILEPATH=os.path.join(app.root_path, 'replica.my.cnf'),
+	      REPLICA_PORT=3308,
+	      TOOLFORGE_PORT=3307
     )
     
     if test_config is None:
@@ -56,6 +58,7 @@ def create_app(test_config=None):
 
     from . import sample
     app.register_blueprint(sample.bp)
+    sample.init_app(app)
 
     from . import annotation
     app.register_blueprint(annotation.bp)

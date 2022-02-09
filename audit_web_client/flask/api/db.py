@@ -31,7 +31,7 @@ def get_oidb_engine():
         pool_size = 6
     elif env == 'development':
         # assume an SSH tunnel is set up
-        mariadb_url = '127.0.0.1:3307'
+        mariadb_url = f"127.0.0.1:{current_app.config['TOOLFORGE_PORT']}"
         pool_size = 2
     else:
         raise ValueError(f"Unknown database environment '{env}'.")

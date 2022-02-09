@@ -19,7 +19,7 @@ def get_replica_engine():
         pool_size = 6
     elif env == 'development':
         # assume an SSH tunnel is set up
-        mariadb_url = '127.0.0.1:3308'
+        mariadb_url = f"127.0.0.1:{current_app.config['REPLICA_PORT']}"
         pool_size = 2
     mariadb_pass = current_app.config['MARIADB_PASSWORD']
     mariadb_conn_url = f'mysql+mysqldb://s54660:{mariadb_pass}@{mariadb_url}/enwiki_p?charset=utf8'
