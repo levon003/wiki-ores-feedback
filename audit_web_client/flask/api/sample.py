@@ -119,30 +119,39 @@ def build_sample_query(filters, rt, s):
     :s - SELECT query
     """
     # extract needed data from the revision filters
+
+    # specific page filters
+    page_values = filters['page_values']
+    specific_page_ids = [page['page_id'] for page in page_values]
+    
+    linked_from_values = filters['linked_from_values']
+    linked_to_values = filters['linked_to_values']
+    # Note: currently doing n queries for n pages, rather than 1 query; can be optimized with a new function in replica
+    if len(linked_from_values) > 0:
+        session = replica.get_replica_session()
+        for page in linked_from_values:
+            linked_from_page_ids = replica.get_pages_linked_from_page_id(page['page_id'], session)
+            specific_page_ids.extend(linked_from_page_ids)
+    if len(linked_to_values) > 0:
+        session = replica.get_replica_session()
+        for page in linked_to_values:
+            linked_to_page_ids = replica.get_pages_linked_to_page_id(page['page_id'], session)
+            specific_page_ids.extend(linked_to_page_ids)
+    # add required page_ids as a condition to the query
+    if len(specific_page_ids) > 0:
+       s = s.where(rt.c.page_id.in_(specific_page_ids))
+
+    filtered_usernames = filters['filtered_usernames']
+    if len(filtered_usernames) > 0:
+        user_text_list = [filtered_usernames,]
+        s = s.where(rt.c.user_text.in_(user_text_list))
+
     user_filters = filters['user_type_filter']
     include_bot = user_filters['bots']
     include_unregistered = user_filters['unregistered']
     include_newcomers = user_filters['newcomers']
     include_learners = user_filters['learners']
     include_experienced = user_filters['experienced']
-
-    filtered_usernames = filters['filtered_usernames']
-    linked_from_values = filters['linked_from_values']
-    linked_to_values = filters['linked_to_values']
-    page_values = filters['page_values']
-
-    minor_filters = filters['minor_filters']
-    namespace_selected = filters['namespace_selected']
-
-    revision_filters = filters['revision_filters']
-    large_additions = revision_filters['largeAdditions']
-    large_removals = revision_filters['largeRemovals']
-    neutral = revision_filters['neutral']
-    small_additions = revision_filters['smallAdditions']
-    small_removals = revision_filters['smallRemovals']
-
-    # TODO add all the WHERE clauses
-
     valid_user_types = []
     if include_unregistered:
         valid_user_types.append(0)
@@ -155,7 +164,14 @@ def build_sample_query(filters, rt, s):
     if include_experienced:
         valid_user_types.append(4)
     s = s.where(rt.c.user_type.in_(valid_user_types))
-    
+
+    minor_filters = filters['minor_filters']
+    namespace_selected = filters['namespace_selected']
+    if len(namespace_selected) == 0:
+        raise ValueError("No namespaces selected.")
+    namespace_ids = [int(ns['namespace'].split(" - ")[1]) for ns in namespace_selected]
+    s = s.where(rt.c.page_namespace.in_(namespace_ids))
+
     valid_revision_filters = []
     if minor_filters['isMinor']:
         valid_revision_filters.extend([4, 5, 6, 7])
@@ -163,6 +179,12 @@ def build_sample_query(filters, rt, s):
         valid_revision_filters.extend([0, 1, 2, 3])
     s = s.where(rt.c.revision_filter_mask.in_(valid_revision_filters))
 
+    revision_filters = filters['revision_filters']
+    large_additions = revision_filters['largeAdditions']
+    large_removals = revision_filters['largeRemovals']
+    neutral = revision_filters['neutral']
+    small_additions = revision_filters['smallAdditions']
+    small_removals = revision_filters['smallRemovals']
     valid_delta_bytes_filters = []
     if large_additions:
         valid_delta_bytes_filters.append(2)
@@ -175,60 +197,120 @@ def build_sample_query(filters, rt, s):
     if large_removals:
         valid_delta_bytes_filters.append(-2)
     s = s.where(rt.c.delta_bytes_filter.in_(valid_delta_bytes_filters))
+
+    # TODO implement the rev_count filter criteria
+    s = s.where(rt.c.rev_count_gt_filter.in_([0, 1, 2, 3, 4, 5]))
+    s = s.where(rt.c.rev_count_lt_filter.in_([0, 1, 2, 3, 4, 5]))
+
+    s = s.where(rt.c.damaging_pred_filter == 0)  # TODO implement me
+    s = s.where(rt.c.reverted_filter_mask == 0)
+    s = s.where(rt.c.reverted_within_filter.is_(None))
+    s = s.where(rt.c.reverted_after_filter.is_(None))
+
     return s
 
 
 @bp.route('/api/sample/', methods=('POST',))
 def get_sample_revisions():
-        logger = logging.getLogger('sample.get_sample')
-        start = datetime.now()
-        
-        filters = request.get_json()['filters']
+    # TODO need to do a JOIN to get the page_title from the page table
+    logger = logging.getLogger('sample.get_sample')
+    
+    filters = request.get_json()['filters']
 
-        cached_rev_ids = get_rev_ids_for_filters(filters)
-        if len(cached_rev_ids) > 0:
-            # TODO query the revision table for these specific rev_ids
-            # SELECT * FROM revision WHERE rev_id IN (cached_rev_ids);
-            Session = db.get_oidb_session()
-            with Session() as session:
-                with session.begin():
-                    rt = db.get_revision_table()
-                    s = select(rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.page_title, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred) .where(rt.c.rev_id.in_(cached_rev_ids))
-                    
-                    revision_list = []
-                    for row in session.execute(s):
-                        rev_id = row    
-                        revision_list.append({
-                            'rev_id': rev_id,
-                        })
-                    return {'revisions': revision_list}
-        else:
-            # need to query the revision table for matching revisions
-            rt = db.get_revision_table()
-            s = select(rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.page_title, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred)
-            s = build_sample_query(filters, rt, s)
-            s.order_by(rt.c.random).limit(500)
-            logger.info(s)
+    cached_rev_ids = get_rev_ids_for_filters(filters)
+    if len(cached_rev_ids) > 0:
+        # TODO query the revision table for these specific rev_ids
+        # SELECT * FROM revision WHERE rev_id IN (cached_rev_ids);
+        Session = db.get_oidb_session()
+        with Session() as session:
+            with session.begin():
+                rt = db.get_revision_table()
+                s = select(
+                    rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred
+                ).where(rt.c.rev_id.in_(cached_rev_ids))
+                
+                revision_list = []
+                for row in session.execute(s):
+                    rev_id = row    
+                    revision_list.append({
+                        'rev_id': rev_id,
+                    })
+                return {'revisions': revision_list}
+    else:
+        # need to query the revision table for matching revisions
+        rt = db.get_revision_table()
+        s = select(rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred)
+        s = build_sample_query(filters, rt, s)
+        s.order_by(rt.c.random).limit(500)
+        logger.info(s)
 
-            revision_list = []
-            Session = db.get_oidb_session()
-            with Session() as session:
-                with session.begin():
-                    for row in session.execute(s):
-                        rev_id = row    
-                        revision_list.append({
-                            'rev_id': rev_id,
-                        })
-                    rct = db.get_rev_cache_table()
-                    rev_ids_to_cache = [rev['rev_id'] for rev in revision_list]
-                    filter_hash = get_filter_hash(filters)
-                    rev_cache_list = []
-                    for rev_id in rev_ids_to_cache:
-                        rev_cache_list.append({
-                            'rev_id': rev_id,
-                            'filter_hash': filter_hash
-                        })
-                    session.execute(rct.insert(), rev_cache_list)
+        revision_list = []
+        Session = db.get_oidb_session()
+        with Session() as session:
+            with session.begin():
+                for row in session.execute(s):
+                    rev_id = row    
+                    revision_list.append({
+                        'rev_id': rev_id,
+                    })
+                rct = db.get_rev_cache_table()
+                rev_ids_to_cache = [rev['rev_id'] for rev in revision_list]
+                filter_hash = get_filter_hash(filters)
+                rev_cache_list = []
+                for rev_id in rev_ids_to_cache:
+                    rev_cache_list.append({
+                        'rev_id': rev_id,
+                        'filter_hash': filter_hash
+                    })
+                session.execute(rct.insert(), rev_cache_list)
 
 
-        return {'revisions': revision_list}
+    return {'revisions': revision_list}
+
+
+@click.command('get-sample')
+@click.option('--use-default', default=False, is_flag=True)
+@click.option('--conditions', default=False, is_flag=False)
+def get_sample_command(use_default, conditions):
+    logger = logging.getLogger('cli.get-sample.main')
+    logger.info(f"Running with {use_default} and {conditions}.")
+    start = datetime.now()
+    
+    # make a GET request against the sample endpoint
+    request_json = {
+        'filters': {
+            'page_values': [],
+            'linked_from_values': [],
+            'linked_to_values': [],
+            'filtered_usernames': [],
+            'namespace_selected': [{'namespace': "Main/Article - 0"}],
+            'user_type_filter': {
+                'bots': False,
+                'unregistered': True,
+                'newcomers': True,
+                'learners': True,
+                'experienced': True,
+            },
+            'minor_filters': {
+                'isMinor': True,
+                'isMajor': True,
+            },
+            'revision_filters': {
+                'largeAdditions': True,
+                'smallAdditions': True,
+                'neutral': True,
+                'smallRemovals': True,
+                'largeRemovals': True,
+            },
+        }
+    }
+
+    import requests
+    result = requests.post('http://127.0.0.1:5000/api/sample/', json=request_json)
+    logger.info(result)
+
+    logger.info(f"Finished querying backend after {datetime.now() - start}.")
+
+
+def init_app(app):
+    app.cli.add_command(get_sample_command)

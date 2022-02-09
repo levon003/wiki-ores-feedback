@@ -56,6 +56,7 @@ def create_app(test_config=None):
 
     from . import sample
     app.register_blueprint(sample.bp)
+    sample.init_app(app)
 
     from . import annotation
     app.register_blueprint(annotation.bp)
