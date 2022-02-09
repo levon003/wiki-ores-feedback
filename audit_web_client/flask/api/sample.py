@@ -334,13 +334,12 @@ def get_sample_revisions():
 
 @click.command('get-sample')
 @click.option('--use-default', default=False, is_flag=True)
-@click.option('--conditions', default=False, is_flag=False)
-def get_sample_command(use_default, conditions):
+@click.option('--condition', default=False, type=str)
+def get_sample_command(use_default, condition):
     logger = logging.getLogger('cli.get-sample.main')
-    logger.info(f"Running with {use_default} and {conditions}.")
+    logger.info(f"Running with {use_default} and {condition}.")
     start = datetime.now()
-    
-    # make a GET request against the sample endpoint
+
     request_json = {
         'filters': {
             'page_values': [],
@@ -368,7 +367,9 @@ def get_sample_command(use_default, conditions):
             },
         }
     }
-
+    if condition == 'specific_page':
+        request_json['page_values'] = [{'page_id': 1}]
+    # make a GET request against the sample endpoint
     import requests
     result = requests.post('http://127.0.0.1:5000/api/sample/', json=request_json)
     logger.info(result)
