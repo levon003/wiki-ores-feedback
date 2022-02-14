@@ -9,12 +9,13 @@ fi
 # otherwise, need to provide the connection username as an argument to this script
 user=${1:-levon003}
 echo "Connecting as '${user}'."
+replica_db_local_port=${2:-3306}
+tool_db_local_port=${3:-3307}
+echo "Tunneling replica DB to local port ${replica_db_local_port}."
+echo "Tunneling tool DB to local port ${tool_db_local_port}."
 
 ssh -N ${user}@dev.toolforge.org \
-    -L 3306:enwiki.analytics.db.svc.wikimedia.cloud:3306 \
-    -L 3307:tools.db.svc.eqiad.wmflabs:3306
-#ssh -N levon003@dev.toolforge.org -L 3306:tools.db.svc.wikimedia.cloud:3306
+    -L ${replica_db_local_port}:enwiki.analytics.db.svc.wikimedia.cloud:3306 \
+    -L ${tool_db_local_port}:tools.db.svc.eqiad.wmflabs:3306
 
-#tools.db.eqiad.wmflabs
-#tools.db.svc.wikimedia.cloud
 echo "Terminated SSH tunnel."
