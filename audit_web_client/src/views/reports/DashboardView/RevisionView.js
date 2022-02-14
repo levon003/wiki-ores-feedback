@@ -20,7 +20,6 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
-import { LoadingContext } from 'src/App';
 import FlagIcon from '@material-ui/icons/Flag';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
@@ -89,8 +88,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   const [ noteSuccess, setNoteSuccess ] = useState(null)
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
-  const { /*loading,*/ setLoading } = useContext(LoadingContext)
-  
+  const [ buttonSuccess, setButtonSuccess ] = useState(null) 
   // this is for setting the typing state of the note field
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -116,8 +114,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
-    setLoading(true, null)
-    
+    setButtonSuccess("loading") 
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
       method: 'POST',
@@ -133,7 +130,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
       }),
     }).then(res => res.json())
     .then(data => {
-      setLoading(false, true)
+      setButtonSuccess(true)
       // update the annotations with the new data (if it was not rejected)
         // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
         // that their annotation change was rejected. Should we notify the user in some way?
@@ -143,7 +140,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
         })
         setNote(data.note)
       }).catch(data => {
-        setLoading(false, false)
+        setButtonSuccess(false)
       });
     }
     
@@ -203,6 +200,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   useEffect(() => {
     // When this component loads, make a request to generate the diff
     // Note this could be changed to only make the request once the diff is expanded
+    setButtonSuccess(null)
     const compare_url = 'https://en.wikipedia.org/w/api.php?action=compare&fromrev=' + revision.prev_rev_id.toString() + '&torev=' + revision.rev_id.toString() + '&format=json&prop=diff|title|ids|user|comment|size|timestamp&origin=*'
     fetch(compare_url, {
         crossDomain: true,
@@ -402,10 +400,19 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     );
   }
 
-  const ButtonLoadingIcon = ({ loadingSuccess }) => {
-    //return <Oval stroke="#000000" style={{height: 20, width: 20}}/>
-    //return <CheckIcon style={{fill: "green"}}/>
-    return <CloseIcon style={{fill: "red"}}/>
+  const ButtonLoadingIcon = ({ buttonSuccess }) => {
+    if (buttonSuccess === 'loading') {
+      return <Oval stroke="#000000" style={{height: 20, width: 20}}/>
+    }
+    else if (buttonSuccess === true) {
+      return <CheckIcon style={{fill: "green"}}/>
+    }
+    else if (buttonSuccess === false) {
+      return <CloseIcon style={{fill: "red"}}/>
+    }
+    else {
+      return null
+    }
   }
 
   const AnnotationButtons = () => {
@@ -535,7 +542,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
             <Box style={{marginRight: "8px"}}>
                 <RevisionAnnotationControls/>
             </Box>
-            <ButtonLoadingIcon/>
+            <ButtonLoadingIcon buttonSuccess={buttonSuccess}/>
 
         </Box>
 
