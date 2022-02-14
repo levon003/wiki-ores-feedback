@@ -515,6 +515,12 @@ const RevisionView = ({ revisions, className, ...rest }) => {
       else if (e.keyCode == 39) {
         handleNextClick()
       }
+      else if (e.keyCode == 90) {
+        handlePreviousUnannotatedClick()
+      }
+      else if (e.keyCode == 88) {
+        handleNextUnannotatedClick()
+      }
     }
   })
 
@@ -590,6 +596,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     display="flex"
                     alignItems= "center"
                     justifyContent= "center"
+                    title="Shortcut: z"
                     style={{cursor: 'pointer'}}
                     >
                       <Button className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
@@ -629,6 +636,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     alignItems= "center"
                     justifyContent= "center"
                     className="text-h4" 
+                    title="Shortcut: x"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
                       <Button className="text-h4" onClick={(handleNextUnannotatedClick)}>
                           Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px"}} className="text-h4"/>
