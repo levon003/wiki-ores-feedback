@@ -3,6 +3,7 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 
 import sqlalchemy as sa
+import sqlalchemy.sql
 from sqlalchemy import create_engine, Table, Column, Integer, SmallInteger, String, MetaData, ForeignKey, Text, Boolean, Float, Index, bindparam
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.dialects.mysql import TINYINT
@@ -31,7 +32,7 @@ def get_oidb_engine():
         pool_size = 6
     elif env == 'development':
         # assume an SSH tunnel is set up
-        mariadb_url = f"127.0.0.1:{current_app.config['TOOLFORGE_PORT']}"
+        mariadb_url = f"127.0.0.1:{current_app.config['TOOLS_DB_PORT']}"
         pool_size = 2
     else:
         raise ValueError(f"Unknown database environment '{env}'.")
@@ -600,10 +601,38 @@ def drop_db_command(revision_only, page_only, drop_all):
     logger.info(f"Finished dropping table data after {datetime.now() - start}.")
 
 
+@click.command('test-tools-db')
+@click.option('--type', 'test_type', default='basic', show_default=True, type=str, help='not yet used')
+@click.option('--query', 'query_string', default="SELECT * FROM page LIMIT 3;", show_default=True, type=str, help='query string to execute in a Tools DB session')
+@with_appcontext
+def test_db_command(test_type, query_string):
+    """Test a DB connection by executing a single query. By default, issues a SELECT against Tools DB table 'page'.
+
+\b
+Examples:
+    yarn flask-cli test-tools-db
+    yarn flask-cli test-tools-db --query "SELECT * FROM revision LIMIT 1"
+    """
+    logger = logging.getLogger('cli.test-db.main')
+    logger.info(f'Test type = {test_type}')
+    logger.info(f'Query string = {query_string}')
+    
+    Session = get_oidb_session()
+    with Session() as session:
+        with session.begin():
+            s = sqlalchemy.sql.text(query_string)
+            result = session.execute(s)
+            for i, row in enumerate(result):
+                logger.info(f'{i}: {row}')
+
+    logger.info('Finished DB test.')
+
+
 def init_app(app):
     app.cli.add_command(create_db_command)
     app.cli.add_command(drop_db_command)
     app.cli.add_command(create_index_command)
+    app.cli.add_command(test_db_command)
     app.cli.add_command(update_ores_scores)
     app.teardown_appcontext(teardown_engine)
     app.teardown_request(teardown_session)
