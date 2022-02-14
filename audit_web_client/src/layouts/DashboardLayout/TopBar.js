@@ -13,9 +13,6 @@ import {
 // import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 // import InputIcon from '@material-ui/icons/Input';
 // import Logo from 'src/components/Logo';
-import { LoadingContext } from 'src/App';
-import { Oval } from 'react-loading-icons'
-import CheckIcon from '@material-ui/icons/Check';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -25,17 +22,12 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const Loading = ({ loading, success }) => {
-  return loading ? <Oval/> : success ? <CheckIcon /> : null
-}
-
 const TopBar = ({
   className,
   onMobileNavOpen,
   ...rest
 }) => {
   const classes = useStyles();
-  const loadingContext = useContext(LoadingContext)
 
   return (
     <AppBar
@@ -50,9 +42,6 @@ const TopBar = ({
         </RouterLink>
         <Box flexGrow={1} />
         {/* Make this smaller, or move to bottom, or remove */}
-        {/* change to more standard loading format */}
-        {/* think about flickering loading icon, too distracting? */}
-        <Loading loading={loadingContext.loading} success={loadingContext.success} />
       </Toolbar>
     </AppBar>
   );
