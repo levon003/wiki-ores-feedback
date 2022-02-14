@@ -614,7 +614,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     title="Shortcut: <left arrow>"
                     style={{marginLeft: "5px", cursor: 'pointer'}}
                     >
-                      <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousClick)}>
+                      <Button className="text-h4" onClick={(handlePreviousClick)}>
                         <ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous
                       </Button>
                     </Box>
@@ -627,7 +627,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     className="text-h4" 
                     title="Shortcut: <right arrow>"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextClick)}>
+                      <Button className="text-h4" onClick={(handleNextClick)}>
                         Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/>
                       </Button>
                     </Box>
