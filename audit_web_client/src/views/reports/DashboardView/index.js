@@ -205,7 +205,7 @@ const Dashboard = () => {
       .then(res => res.json())
       .then(data => {
         console.log("data: ", data)
-        setRevisions(data.revisions);
+        // setRevisions(data.revisions);
     })
     .catch(err => {
       console.log(err)
