@@ -123,11 +123,7 @@ def build_sample_query(filters, rt, s):
     # specific page filters
     page_values = filters['page_values']
     specific_page_ids = [page['page_id'] for page in page_values]
-
-
-    rt = db.get_revision_table()
-    s = select(rt.c.rev_id, rt.c.page_id, rt.c.rev_timestamp)  # TODO add the other columns here that are expected by the frontend
-
+    
     linked_from_values = filters['linked_from_values']
     linked_to_values = filters['linked_to_values']
     # Note: currently doing n queries for n pages, rather than 1 query; can be optimized with a new function in replica

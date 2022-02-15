@@ -256,7 +256,7 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
                   style= {{ display: "inline-flex", float: "right"}}
                 >
                     <Box className="text-h3 subtitle" style = {{ color: "#C7C7C7"}}>
-                      [0 out of 10 damaging (00.00%)]
+                      [0 out of 10 annotated, 0 damaging (00.00%)]
                     </Box>
                 </Box>
             </Box>

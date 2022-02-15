@@ -24,13 +24,18 @@ def create_app(test_config=None):
         INSTANCE_DATA_DIR=os.path.join(app.instance_path, 'data'),
         VERSION=VERSION,
         MYSQL_CONFIG_FILEPATH=os.path.join(app.root_path, 'replica.my.cnf'),
-	      REPLICA_PORT=3308,
-	      TOOLFORGE_PORT=3307
+	    REPLICA_DB_PORT=3308,
+	    TOOLS_DB_PORT=3307,
     )
     
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile(os.path.join(app.root_path, 'config.py'), silent=False)
+
+        # check to see if port configuration has been provided
+        port_config_filepath = os.path.join(app.root_path, 'port_config.py')
+        if os.path.exists(port_config_filepath):
+            app.config.from_pyfile(port_config_filepath, silent=False)
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
@@ -42,6 +47,7 @@ def create_app(test_config=None):
     
     # set up logging
     set_up_logging(app)
+    logging.info(f"Root path: {app.root_path}")
     
     from . import index
     app.register_blueprint(index.bp)

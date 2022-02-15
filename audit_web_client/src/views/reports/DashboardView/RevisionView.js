@@ -20,7 +20,6 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
-import { LoadingContext } from 'src/App';
 import FlagIcon from '@material-ui/icons/Flag';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
@@ -50,22 +49,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NotesIcon = ({ typing, firstTyped, noteSuccess }) => {
+const NotesLoadingIcon = ({ typing, firstTyped, noteSuccess }) => {
   if (typing) {
-    return <Oval stroke="#000000" style={{height: 20, width: 20, marginTop: 20, marginLeft: 5}}/>
+    return <Oval stroke="#000000" style={{height: 20, width: 20, marginTop: 20, marginLeft: 8}}/>
   } else if (!typing && firstTyped && noteSuccess) {
-    return <CheckIcon style={{fill: "green", marginTop: 20, marginLeft: 5}}/>
+    return <CheckIcon style={{fill: "green", marginTop: 20, marginLeft: 8}}/>
   } else if (!typing && firstTyped && !noteSuccess) {
-    return <CloseIcon style={{fill: "red", marginTop: 20, marginLeft: 5}}/>
+    return <CloseIcon style={{fill: "red", marginTop: 20, marginLeft: 8}}/>
   } else {
     return null
   }
-}
-
-// gonna keep this here for now, maybe move it later
-// Box can inherit global styles, easier to change styles
-const ErrorNotification = ({ errorMessage }) => {
-  return <Box className="text-h3" style={{color: 'red', fontWeight: "normal"}}>{errorMessage}</Box>
 }
 
 const RevisionView = ({ revisions, className, ...rest }) => {
@@ -95,9 +88,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   const [ noteSuccess, setNoteSuccess ] = useState(null)
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
-  const [errorMessage, setErrorMessage ] = useState(null)
-  const { /*loading,*/ setLoading } = useContext(LoadingContext)
-  
+  const [ buttonSuccess, setButtonSuccess ] = useState(null) 
   // this is for setting the typing state of the note field
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -123,8 +114,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
-    setLoading(true, null)
-    
+    setButtonSuccess("loading") 
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
       method: 'POST',
@@ -140,8 +130,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
       }),
     }).then(res => res.json())
     .then(data => {
-      setLoading(false, true)
-      setErrorMessage(null)
+      setButtonSuccess(true)
       // update the annotations with the new data (if it was not rejected)
         // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
         // that their annotation change was rejected. Should we notify the user in some way?
@@ -151,8 +140,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
         })
         setNote(data.note)
       }).catch(data => {
-        setLoading(false, false)
-        setErrorMessage("Didn't go through, please try again.")
+        setButtonSuccess(false)
       });
     }
     
@@ -212,6 +200,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   useEffect(() => {
     // When this component loads, make a request to generate the diff
     // Note this could be changed to only make the request once the diff is expanded
+    setButtonSuccess(null)
     const compare_url = 'https://en.wikipedia.org/w/api.php?action=compare&fromrev=' + revision.prev_rev_id.toString() + '&torev=' + revision.rev_id.toString() + '&format=json&prop=diff|title|ids|user|comment|size|timestamp&origin=*'
     fetch(compare_url, {
         crossDomain: true,
@@ -411,17 +400,29 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     );
   }
 
+  const ButtonLoadingIcon = ({ buttonSuccess }) => {
+    if (buttonSuccess === 'loading') {
+      return <Oval stroke="#000000" style={{height: 20, width: 20}}/>
+    }
+    else if (buttonSuccess === true) {
+      return <CheckIcon style={{fill: "green"}}/>
+    }
+    else if (buttonSuccess === false) {
+      return <CloseIcon style={{fill: "red"}}/>
+    }
+    else {
+      return null
+    }
+  }
+
   const AnnotationButtons = () => {
     const theme = useTheme()
     const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12p"} : {marginRight: "12px"}
-    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12p"} : {marginRight: "12px"}
+    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
+    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
     return (
-      <Box 
-      display="flex"
-      flexDirection="column"
-      style={{marginBottom: "10px"}}>
-          <Box>
+          <Box
+          >
             <Button 
               style={correctButtonStyle}
               variant="outlined"
@@ -454,8 +455,6 @@ const RevisionView = ({ revisions, className, ...rest }) => {
             </Button>
             <br></br>
           </Box>
-
-      </Box>
     );
   }
 
@@ -464,12 +463,16 @@ const RevisionView = ({ revisions, className, ...rest }) => {
         <Box
           display="flex"
           flexDirection="row"
+          alignItems="center"
         >
           <PredictionDisplay />
-          <AnnotationButtons />
+          <AnnotationButtons/>
+          
         </Box>  
     );
   }
+
+  const [previousUnannotatedLength, setPreviousUnannotatedLength] = useState(0)
 
   const handlePreviousClick = () => {
     if (currRevisionIdx > 0) {
@@ -483,6 +486,28 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     }
   }
 
+  const handlePreviousUnannotatedClick = () => {
+    let revPtr = currRevisionIdx - 1
+    while (revPtr > 0) {
+      if (!revisions[revPtr].annotated) {
+        setCurrRevisionIdx(revPtr)
+        break
+      }
+      revPtr--
+    }
+  }
+
+
+  const handleNextUnannotatedClick = () => {
+    let revPtr = currRevisionIdx + 1
+    while (revPtr < revisions.length) {
+      if (!revisions[revPtr].annotated) {
+        setCurrRevisionIdx(revPtr)
+        break
+      }
+      revPtr++
+    }
+  }
   useEffect(() => {
     document.onkeydown = (e) => {
       if (e.keyCode == 37) {
@@ -490,6 +515,12 @@ const RevisionView = ({ revisions, className, ...rest }) => {
       }
       else if (e.keyCode == 39) {
         handleNextClick()
+      }
+      else if (e.keyCode == 90) {
+        handlePreviousUnannotatedClick()
+      }
+      else if (e.keyCode == 88) {
+        handleNextUnannotatedClick()
       }
     }
   })
@@ -505,12 +536,13 @@ const RevisionView = ({ revisions, className, ...rest }) => {
         <Box 
             display="flex"
             flexDirection="row"
-            style={{paddingTop: "25px"}}
+            alignItems="center"
+            style={{marginTop: "25px"}}
         >
-            <Box style={{paddingRight: "12px"}}>
+            <Box style={{marginRight: "8px"}}>
                 <RevisionAnnotationControls/>
             </Box>
-            <ErrorNotification errorMessage={errorMessage}/>
+            <ButtonLoadingIcon buttonSuccess={buttonSuccess}/>
 
         </Box>
 
@@ -535,7 +567,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                   }} 
                   style={{width: "45vw"}}
                   />
-                    <NotesIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
+                    <NotesLoadingIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
               </Box>
           </Box>
 
@@ -566,11 +598,10 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     display="flex"
                     alignItems= "center"
                     justifyContent= "center"
+                    title="Shortcut: z"
                     style={{cursor: 'pointer'}}
                     >
-                      <Button className="text-h4" onClick={() => {
-                          // TO ADD
-                        }}>
+                      <Button className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
                         <ArrowBackIosIcon style={{marginRight: "4px"}} className="text-h4"/>Previous Unannotated
                       </Button>
                     </Box>
@@ -607,10 +638,9 @@ const RevisionView = ({ revisions, className, ...rest }) => {
                     alignItems= "center"
                     justifyContent= "center"
                     className="text-h4" 
+                    title="Shortcut: x"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button className="text-h4" onClick={() => {
-                          // TO ADD
-                        }}>
+                      <Button className="text-h4" onClick={(handleNextUnannotatedClick)}>
                           Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px"}} className="text-h4"/>
                       </Button>
                     </Box>

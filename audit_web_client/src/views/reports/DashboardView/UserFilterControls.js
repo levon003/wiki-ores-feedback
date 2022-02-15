@@ -30,7 +30,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
     "experienced": "Experienced users",
     "bots": "Bots",
   }
-
+  console.log(filteredUsernames)
   const userButtonStyle = (userTypeFilter !== DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
     
   const handleToggle = (value) => () => {
