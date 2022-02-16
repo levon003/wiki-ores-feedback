@@ -220,28 +220,12 @@ def get_sample_revisions():
 
     cached_rev_ids = get_rev_ids_for_filters(filters)
     logger.info(f"Identified {len(cached_rev_ids)} cached revisions for these filters.")
-    if len(cached_rev_ids) > 0:
-        # query the revision table for these specific rev_ids
-        # SELECT * FROM revision WHERE rev_id IN (cached_rev_ids);
-        Session = db.get_oidb_session()
-        with Session() as session:
-            with session.begin():
-                rt = db.get_revision_table()
-                s = select(
-                    rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred
-                ).where(rt.c.rev_id.in_(cached_rev_ids))
-                logger.info(f"Built revision table query (for cached revs): {s}")
-
-                revision_list = []
-                result = session.execute(s)
-                for row in result:
-                    revision_list.append(row._asdict())
-    else:
+    if len(cached_rev_ids) == 0:
         # need to query the revision table for matching revisions
         rt = db.get_revision_table()
-        s = select(rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred)
+        s = select(rt.c.rev_id)
         s = build_sample_query(filters, rt, s)
-        s = s.order_by(rt.c.random).limit(500)
+        s = s.order_by(rt.c.random).limit(500)  # TODO put this limit somewhere more prominent
         logger.info(f"Built revision table query (for uncached revs): {s}")
 
         revision_list = []
@@ -262,6 +246,25 @@ def get_sample_revisions():
                         'filter_hash': filter_hash,
                     })
                 session.execute(rct.insert(), rev_cache_list)
+        rev_ids = rev_ids_to_cache
+    else:
+        rev_ids = cached_rev_ids
+    
+    # query the revision table for the specific rev_ids we need
+    # SELECT * FROM revision WHERE rev_id IN ({rev_ids});
+    Session = db.get_oidb_session()
+    with Session() as session:
+        with session.begin():
+            rt = db.get_revision_table()
+            s = select(
+                rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred
+            ).where(rt.c.rev_id.in_(rev_ids))
+            logger.info(f"Built revision table query (for cached revs): {s}")
+
+            revision_list = []
+            result = session.execute(s)
+            for row in result:
+                revision_list.append(row._asdict())
 
     logger.info(f"Returning {len(revision_list)} revisions.")
     return {'revisions': revision_list}
@@ -272,36 +275,37 @@ def get_filter_hash_command():
     logger = logging.getLogger('cli.get-filter-hash.main')
     
     filters = {
-            'page_values': [],
-            'linked_from_values': [],
-            'linked_to_values': [],
-            'filtered_usernames': [],
-            'namespace_selected': [{'namespace': "Main/Article - 0"}],
-            'user_type_filter': {
-                'bots': False,
-                'unregistered': True,
-                'newcomers': True,
-                'learners': True,
-                'experienced': True,
-            },
-            'minor_filters': {
-                'isMinor': True,
-                'isMajor': True,
-            },
-            'revision_filters': {
-                'largeAdditions': True,
-                'smallAdditions': True,
-                'neutral': True,
-                'smallRemovals': True,
-                'largeRemovals': True,
-            },
-        }
+        'page_values': [],
+        'linked_from_values': [],
+        'linked_to_values': [],
+        'filtered_usernames': [],
+        'namespace_selected': [{'namespace': "Main/Article - 0"}],
+        'user_type_filter': {
+            'bots': False,
+            'unregistered': True,
+            'newcomers': True,
+            'learners': True,
+            'experienced': True,
+        },
+        'minor_filters': {
+            'isMinor': True,
+            'isMajor': True,
+        },
+        'revision_filters': {
+            'largeAdditions': True,
+            'smallAdditions': True,
+            'neutral': True,
+            'smallRemovals': True,
+            'largeRemovals': True,
+        },
+    }
     filter_hash = get_filter_hash(filters)
     logger.info(filter_hash)
     logger.info("Finished.")
 
 @click.command('initialize-cache')
 def initialize_cache_command():
+    import requests
     logger = logging.getLogger('cli.initialize-cache.main')
     start = datetime.now()
 
@@ -369,22 +373,18 @@ def initialize_cache_command():
             else:
                 filters[key] = val
         # make a GET request against the sample endpoint
-        import requests
         result = requests.post('http://127.0.0.1:5000/api/sample/', json={'filters': filters})
         logger.info(result)
-        logger.info(result.json())
 
-        logger.info(f"Finished querying backend after {datetime.now() - start}.")
+        logger.info(f"Finished cache initialization after {datetime.now() - start}.")
 
 @click.command('get-sample')
 @click.option('--use-default', default=False, is_flag=True)
 @click.option('--condition', default="default", type=str)
-
 def get_sample_command(use_default, condition):
     logger = logging.getLogger('cli.get-sample.main')
     logger.info(f"Running with {use_default} and {condition}.")
     start = datetime.now()
-
     
     request_json = {
         'filters': {
@@ -432,4 +432,3 @@ def init_app(app):
     app.cli.add_command(get_sample_command)
     app.cli.add_command(get_filter_hash_command)
     app.cli.add_command(initialize_cache_command)
-
