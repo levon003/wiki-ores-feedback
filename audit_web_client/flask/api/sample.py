@@ -300,15 +300,92 @@ def get_filter_hash_command():
     logger.info(filter_hash)
     logger.info("Finished.")
 
+@click.command('initialize-cache')
+def initialize_cache_command():
+    logger = logging.getLogger('cli.initialize-cache.main')
+    start = datetime.now()
+
+    filter_criteria_to_change = [
+      # default filters
+      {},
+      # newcomer edits
+        {
+          'user_type_filter': {
+                'learners': False,
+                'experienced': False,
+            }
+        }, 
+      # lgbt edits
+          {
+            'linked_from_values': [
+              {
+                'page_id': 1421393,
+                'primary_text': "LGBT history",
+                'secondary_text': "73 edits"
+              }
+            ]
+          },
+            # experienced edits
+            {
+              'user_type_filter': {
+                'bots': False,
+                'unregistered': False,
+                'newcomers': False,
+                'learners': False,
+                'experienced': True,
+              }
+            },
+          ]
+    for criteria in filter_criteria_to_change:
+        filters = {
+            'page_values': [],
+            'linked_from_values': [],
+            'linked_to_values': [],
+            'filtered_usernames': [],
+            'namespace_selected': [{'namespace': "Main/Article - 0"}],
+            'user_type_filter': {
+                'bots': False,
+                'unregistered': True,
+                'newcomers': True,
+                'learners': True,
+                'experienced': True,
+            },
+            'minor_filters': {
+                'isMinor': True,
+                'isMajor': True,
+            },
+            'revision_filters': {
+                'largeAdditions': True,
+                'smallAdditions': True,
+                'neutral': True,
+                'smallRemovals': True,
+                'largeRemovals': True,
+            },
+        }
+        for key, val in criteria.items():
+            if type(val) == dict:
+                for inner_key, inner_val in val.items():
+                    filters[key][inner_key] = inner_val
+            else:
+                filters[key] = val
+        # make a GET request against the sample endpoint
+        import requests
+        result = requests.post('http://127.0.0.1:5000/api/sample/', json={'filters': filters})
+        logger.info(result)
+        logger.info(result.json())
+
+        logger.info(f"Finished querying backend after {datetime.now() - start}.")
 
 @click.command('get-sample')
 @click.option('--use-default', default=False, is_flag=True)
 @click.option('--condition', default="default", type=str)
+
 def get_sample_command(use_default, condition):
     logger = logging.getLogger('cli.get-sample.main')
     logger.info(f"Running with {use_default} and {condition}.")
     start = datetime.now()
 
+    
     request_json = {
         'filters': {
             'page_values': [],
@@ -354,3 +431,5 @@ def get_sample_command(use_default, condition):
 def init_app(app):
     app.cli.add_command(get_sample_command)
     app.cli.add_command(get_filter_hash_command)
+    app.cli.add_command(initialize_cache_command)
+
