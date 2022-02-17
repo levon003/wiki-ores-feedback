@@ -7,9 +7,10 @@ import {
   Box,
   Typography,
   Toolbar,
-  makeStyles
+  makeStyles,
+  IconButton
 } from '@material-ui/core';
-// import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from '@material-ui/icons/Menu';
 // import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 // import InputIcon from '@material-ui/icons/Input';
 // import Logo from 'src/components/Logo';
@@ -40,8 +41,16 @@ const TopBar = ({
           <Typography variant="h1">ORES-Inspect</Typography>
           {/*Could replace text with a logo per the example like so: <Logo />*/}
         </RouterLink>
+        <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="end"
+            // onClick={handleDrawerOpen}
+            // sx={{ ...(open && { display: 'none' }) }}
+          >
+            <MenuIcon />
+          </IconButton>
         <Box flexGrow={1} />
-        {/* Make this smaller, or move to bottom, or remove */}
       </Toolbar>
     </AppBar>
   );
