@@ -1,15 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Container,
   Grid,
-  makeStyles
+  makeStyles,
+  useTheme
 } from '@material-ui/core';
+import clsx from 'clsx';
 import Page from 'src/components/Page';
 import RevisionViewer from './RevisionViewer';
-import MisalignmentFilter from './MisalignmentFilter';
 import FilterControls from './FilterControls';
 import DefaultFilters from './DefaultFilters';
 import FocusControls from './FocusControls';
+import { DrawerContext } from 'src/App';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
+
+const drawerWidth = 240
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,11 +31,43 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '100%',
     paddingBottom: theme.spacing(1),
     paddingTop: theme.spacing(1)
-  }
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-start',
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginRight: 0,
+  },
+  contentShift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginRight: drawerWidth,
+  },
 }));
 
 const Dashboard = () => {
   const classes = useStyles();
+  const theme = useTheme()
   // Temporary data here: 
   const [data, /*setData*/] =  useState({
     vlhp_r : 1000,
@@ -78,6 +124,8 @@ const Dashboard = () => {
     annotated: false
   }
 ]); // TODO should be empty, but has one entry for testing
+
+  const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
   
   // All of this state has been lifted up from the RevisionFilterChip, UserFilterChip, and PageFilterChip components.
   // filter
@@ -221,73 +269,117 @@ const Dashboard = () => {
   useEffect(() => {
     // TODO Make an initial request with the default/loaded filter criteria 
   }, []);
+
+  const handleDrawerClose = () => {
+    setDrawerOpen(false)
+  }
     
   return (
-    <Page
-      className={classes.root}
-      title="ORES-Inspect"
-    >
-      <Container maxWidth={false}>
-        <Grid
-          container
-          direction="column"
-          spacing={1}
+    <div>
+      <main
+          className={clsx(classes.content, classes.root, {
+            [classes.contentShift]: drawerOpen,
+          })}
         >
-          <Grid
-            item
-            xs={12}
-          >
-             <FilterControls 
-                onChange={handleStateUpdate}
-                revisionFilter={revisionFilter}
-                setRevisionFilter={setRevisionFilter}
-                minorFilter={minorFilter}
-                setMinorFilter={setMinorFilter}
-                userTypeFilter={userTypeFilter}
-                setUserTypeFilter={setUserTypeFilter}
-                filteredUsernames={filteredUsernames}
-                setFilteredUsernames={setFilteredUsernames}
-                pageValues={pageValues}
-                setPageValues={setPageValues}
-                namespaceSelected={namespaceSelected}
-                setNameSpaceSelected={setNameSpaceSelected}
-                linkedToValues={linkedToValues}
-                setLinkedToValues={setLinkedToValues}
-                linkedFromValues={linkedFromValues}
-                setLinkedFromValues={setLinkedFromValues}
-                preDefinedSelected={preDefinedSelected}
-                setPreDefinedSelected={setPreDefinedSelected}
-            />
-          </Grid>
+        <Page
+          title="ORES-Inspect"
+        >
+          <Container maxWidth={false}>
+            <Grid
+              container
+              direction="column"
+              spacing={1}
+            >
+              <Grid
+                item
+                xs={12}
+              >
+                <FilterControls 
+                    onChange={handleStateUpdate}
+                    revisionFilter={revisionFilter}
+                    setRevisionFilter={setRevisionFilter}
+                    minorFilter={minorFilter}
+                    setMinorFilter={setMinorFilter}
+                    userTypeFilter={userTypeFilter}
+                    setUserTypeFilter={setUserTypeFilter}
+                    filteredUsernames={filteredUsernames}
+                    setFilteredUsernames={setFilteredUsernames}
+                    pageValues={pageValues}
+                    setPageValues={setPageValues}
+                    namespaceSelected={namespaceSelected}
+                    setNameSpaceSelected={setNameSpaceSelected}
+                    linkedToValues={linkedToValues}
+                    setLinkedToValues={setLinkedToValues}
+                    linkedFromValues={linkedFromValues}
+                    setLinkedFromValues={setLinkedFromValues}
+                    preDefinedSelected={preDefinedSelected}
+                    setPreDefinedSelected={setPreDefinedSelected}
+                />
+              </Grid>
 
-          <Grid
-            item
-            xs={12}
-          >
-            <FocusControls data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected} onChange={handleMisalignmentFilterChange}/>
+              <Grid
+                item
+                xs={12}
+              >
+                <FocusControls data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected} onChange={handleMisalignmentFilterChange}/>
 
-          </Grid>
+              </Grid>
 
-          <Grid
-            item
-            xs={12}
-          >
-            <RevisionViewer 
-              revisions={revisions}
-              revisionFilter={revisionFilter}
-              minorFilter={minorFilter}
-              preDefinedSelected={preDefinedSelected}
-              filteredUsernames={filteredUsernames}
-              userTypeFilter={userTypeFilter}
-              namespaceSelected={namespaceSelected}
-              pageValues={pageValues}
-              linkedFromValues={linkedFromValues}
-              linkedToValues={linkedToValues}
-            />
-          </Grid>
-        </Grid>
-      </Container>
-    </Page>
+              <Grid
+                item
+                xs={12}
+              >
+                <RevisionViewer 
+                  revisions={revisions}
+                  revisionFilter={revisionFilter}
+                  minorFilter={minorFilter}
+                  preDefinedSelected={preDefinedSelected}
+                  filteredUsernames={filteredUsernames}
+                  userTypeFilter={userTypeFilter}
+                  namespaceSelected={namespaceSelected}
+                  pageValues={pageValues}
+                  linkedFromValues={linkedFromValues}
+                  linkedToValues={linkedToValues}
+                />
+              </Grid>
+            </Grid>
+          </Container>
+        </Page>
+      </main>
+      <Drawer
+      className={classes.drawer}
+      variant="persistent"
+      anchor="right"
+      open={drawerOpen}
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+    >
+      <div className={classes.drawerHeader}>
+        <IconButton onClick={handleDrawerClose}>
+          {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+        </IconButton>
+      </div>
+      <Divider />
+      <List>
+        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+    </Drawer>
+  </div>
   );
 };
 
