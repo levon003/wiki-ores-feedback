@@ -41,6 +41,7 @@ const TopBar = ({
           <Typography variant="h1">ORES-Inspect</Typography>
           {/*Could replace text with a logo per the example like so: <Logo />*/}
         </RouterLink>
+        <Box flexGrow={1} />
         <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -50,7 +51,6 @@ const TopBar = ({
           >
             <MenuIcon />
           </IconButton>
-        <Box flexGrow={1} />
       </Toolbar>
     </AppBar>
   );

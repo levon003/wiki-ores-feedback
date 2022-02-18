@@ -7,27 +7,26 @@ import 'src/mixins/chartjs';
 import theme from 'src/theme';
 import routes from 'src/routes';
 
-export const LoadingContext = createContext({
-  loading: false,
-  success: null,
-  setLoading: () => {}
+export const DrawerContext = createContext({
+  drawerOpen: false,
+  setDrawerOpen: () => {}
 })
 
 const App = () => {
   const routing = useRoutes(routes);
-  const [loading, setLoading] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const value = useMemo(
-    () => ({ loading, setLoading }), 
-    [loading]
+    () => ({ drawerOpen, setDrawerOpen }), 
+    [drawerOpen]
   );
 
   return (
-    <LoadingContext.Provider value={value}>
+    <DrawerContext.Provider value={value}>
       <ThemeProvider theme={theme}>
         <GlobalStyles />
         {routing}
       </ThemeProvider>
-    </LoadingContext.Provider>
+    </DrawerContext.Provider>
   );
 };
 
