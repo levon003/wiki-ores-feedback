@@ -361,24 +361,46 @@ const Dashboard = () => {
           {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </div>
-      <Divider />
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+        <ListItem>
+          <div className="title text-h2">Revision History</div>
+        </ListItem>
+      </List>
+      <Divider />
+      <div style={{'overflowY': 'scroll'}}>
+      <List>
+        {['RevisionName1'].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
+            <ListItemText><b class="text-h3">{text}</b><br></br><div class="text-h5">Unexpected Consensus<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
           </ListItem>
         ))}
       </List>
       <Divider />
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+        {['RevisionName2'].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
+            <ListItemText><b class="text-h3">{text}</b><br></br><div class="text-h5">Unexpected Reverts<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
           </ListItem>
         ))}
       </List>
+      <Divider />
+      <List>
+        {['RevisionName3'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemText><b class="text-h3">{text}</b><br></br><div class="text-h5">Confusing Edits<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {['RevisionName4'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemText><b class="text-h3">{text}</b><br></br><div class="text-h5">Unexpected Reverts<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      </div>
     </Drawer>
   </div>
   );

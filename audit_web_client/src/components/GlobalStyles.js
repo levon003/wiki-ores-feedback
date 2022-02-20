@@ -60,6 +60,11 @@ const useStyles = makeStyles(() => createStyles({
       fontWeight: '500',
       fontSize: '12px',
       color: 'black',
+    },
+    '.text-h5': {
+      fontWeight: '500',
+      fontSize: '10px',
+      color: 'black',
     }
   }
 }));
