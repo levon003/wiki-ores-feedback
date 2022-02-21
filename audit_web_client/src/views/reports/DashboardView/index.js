@@ -176,6 +176,8 @@ const Dashboard = () => {
   })
   
   const handleMisalignmentFilterChange = (new_filter) => {
+    // TODO this function is now deprecated; figuring out a better global logging solution
+    // currently maintained in case the logic here is useful in creating the new function
     console.log("new_filter");
     console.log(new_filter);
     // notify the backend that a new misalignment filter is set
@@ -253,14 +255,18 @@ const Dashboard = () => {
           linked_from_values: linkedFromValues
         },
         focus: {
-          focus_state: focusSelected,
+          focus_selected: focusSelected,
+          revert_definition: {
+            // TODO: implement revert definition state on frontend
+          },
         }
       })
     })
       .then(res => res.json())
       .then(data => {
-        console.log("data: ", data)
-        // setRevisions(data.revisions);
+        //console.log("data: ", data)
+        console.log("retrieved revisions from backend, n =", data.revisions.length)
+        setRevisions(data.revisions);
     })
     .catch(err => {
       console.log(err)
@@ -376,7 +382,7 @@ const Dashboard = () => {
       <List>
         {['RevisionName1'].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemText><b class="text-h3">{text}</b><br></br><div class="text-h5">Unexpected Consensus<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
+            <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Unexpected Consensus<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
           </ListItem>
         ))}
       </List>
@@ -384,7 +390,7 @@ const Dashboard = () => {
       <List>
         {['RevisionName2'].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemText><b class="text-h3">{text}</b><br></br><div class="text-h5">Unexpected Reverts<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
+            <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Unexpected Reverts<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
           </ListItem>
         ))}
       </List>
@@ -392,7 +398,7 @@ const Dashboard = () => {
       <List>
         {['RevisionName3'].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemText><b class="text-h3">{text}</b><br></br><div class="text-h5">Confusing Edits<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
+            <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Confusing Edits<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
           </ListItem>
         ))}
       </List>
@@ -400,7 +406,7 @@ const Dashboard = () => {
       <List>
         {['RevisionName4'].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemText><b class="text-h3">{text}</b><br></br><div class="text-h5">Unexpected Reverts<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
+            <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Unexpected Reverts<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
           </ListItem>
         ))}
       </List>
