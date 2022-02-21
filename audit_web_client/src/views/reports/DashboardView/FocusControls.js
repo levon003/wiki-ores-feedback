@@ -72,10 +72,21 @@ const FocusButton3 = ({style, setFocusSelected}) => {
 const FocusControls = ({className, data, focusSelected, setFocusSelected, ...rest}) => {
     const theme = useTheme()
 
+    const selectedStyle = {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'}
+    const unselectedStyle = {marginRight: '12px'}
+
     // all margins should be the same
-    const focusButton1Style = focusSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
-    const focusButton2Style = focusSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
-    const focusButton3Style = focusSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+    const focusButton1Style = (focusSelected.prediction_filter === 'very_likely_good' & focusSelected.revert_filter === 'reverted') ? 
+        selectedStyle : 
+        unselectedStyle
+    const focusButton2Style = (focusSelected.prediction_filter === 'very_likely_bad' & focusSelected.revert_filter === 'nonreverted') ? 
+        selectedStyle : 
+        unselectedStyle
+    const focusButton3Style = (focusSelected.prediction_filter === 'confusing' & focusSelected.revert_filter === 'any') ? 
+        selectedStyle : 
+        unselectedStyle
+    //const focusButton2Style = focusSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+    //const focusButton3Style = focusSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
 
     const classes = useStyles();
 

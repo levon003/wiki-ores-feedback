@@ -180,9 +180,8 @@ const MisalignmentFilter = ({ data, focusSelected, setFocusSelected, className, 
         new_colors[rbox] = "#FFFBCC"
       }
     }
-    setFocuSelected(new_filter_value);
+    setFocusSelected(new_filter_value);
     setStrokeColor(new_colors);
-    onChange(new_filter_value);
   }
 
   function FlowchartSummarySVG(props) {
