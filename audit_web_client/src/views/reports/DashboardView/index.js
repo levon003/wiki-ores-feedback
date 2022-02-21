@@ -133,7 +133,10 @@ const Dashboard = () => {
   const [ preDefinedSelected, setPreDefinedSelected ] = useState(1)
 
   // focus
-  const [ focusSelected, setFocusSelected ] = useState(1)
+  const [focusSelected, setFocusSelected] = useState({
+    'prediction_filter': 'very_likely_good',  // valid values: very_likely_good, very_likely_bad, confusing, any
+    'revert_filter': 'reverted',  // valid values: reverted, nonreverted, any
+  });
   
   // Revision filter state
   const [revisionFilter, setRevisionFilter] = useState(DefaultFilters.defaultRevisionFilters)
@@ -155,7 +158,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     handleStateUpdate()
-  }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected])
+  }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected])
 
   useEffect(() => {
     if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
@@ -248,6 +251,9 @@ const Dashboard = () => {
           namespace_selected: namespaceSelected,
           linked_to_values: linkedToValues,
           linked_from_values: linkedFromValues
+        },
+        focus: {
+          focus_state: focusSelected,
         }
       })
     })
@@ -322,8 +328,7 @@ const Dashboard = () => {
                 item
                 xs={12}
               >
-                <FocusControls data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected} onChange={handleMisalignmentFilterChange}/>
-
+                <FocusControls data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected} />
               </Grid>
 
               <Grid

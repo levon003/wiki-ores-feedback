@@ -35,7 +35,10 @@ const useStyles = makeStyles((theme) => ({
 const FocusButton1 = ({style, setFocusSelected}) => {
     const onClick = () => {
         //todo: add later?
-        setFocusSelected(1)
+        setFocusSelected({
+            'prediction_filter': 'very_likely_good',
+            'revert_filter': 'reverted',
+          })
     }
     return (
       <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED REVERTS</Button>
@@ -44,7 +47,10 @@ const FocusButton1 = ({style, setFocusSelected}) => {
 const FocusButton2 = ({style, setFocusSelected}) => {
     const onClick = () => {
         //todo: add later?
-        setFocusSelected(2)
+        setFocusSelected({
+            'prediction_filter': 'very_likely_bad',
+            'revert_filter': 'nonreverted',
+          })
     }
     return (
       <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED CONSENSUS</Button>
@@ -53,14 +59,17 @@ const FocusButton2 = ({style, setFocusSelected}) => {
 const FocusButton3 = ({style, setFocusSelected}) => {
     const onClick = () => {
         //todo: add later?
-        setFocusSelected(3)
+        setFocusSelected({
+            'prediction_filter': 'confusing',
+            'revert_filter': 'any',
+          })
     }
     return (
       <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>
     )
 }
 
-const FocusControls = ({className, data, onChange, focusSelected, setFocusSelected, ...rest}) => {
+const FocusControls = ({className, data, focusSelected, setFocusSelected, ...rest}) => {
     const theme = useTheme()
 
     // all margins should be the same
@@ -149,7 +158,7 @@ const FocusControls = ({className, data, onChange, focusSelected, setFocusSelect
                     </AccordionSummary>
                     <AccordionDetails>
                         <Box margin="0 auto">
-                        <MisalignmentFilter data={data} onChange={onChange}/>
+                        <MisalignmentFilter data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected}/>
                         </Box>
                     </AccordionDetails>
                 </Accordion>

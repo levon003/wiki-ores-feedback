@@ -8,7 +8,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { Tooltip as TT } from "react-svg-tooltip";
 
 import {
-  Button,
   Box,
   Tooltip,
   makeStyles
@@ -83,11 +82,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
-  const [activeFilters, setActiveFilters] = useState({
-    'prediction_filter': null,
-    'revert_filter': null,
-  });
+const MisalignmentFilter = ({ data, focusSelected, setFocusSelected, className, ...rest }) => {
   const [strokecolor, setStrokeColor] = useState({
     'vlhp_box': "#eeeeee",
     'itm_box': "#eeeeee",
@@ -139,13 +134,13 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
       'lg_edge_r': "#b6d7a8"
     };
 
-    if (activeFilters.revert_filter !== revert_filter || activeFilters.prediction_filter !== prediction_filter) {
+    if (focusSelected.revert_filter !== revert_filter || focusSelected.prediction_filter !== prediction_filter) {
       new_filter_value = {
         'prediction_filter': prediction_filter,
         'revert_filter': revert_filter,
       };
       console.log(revert_filter + "_" + prediction_filter)
-      console.log(activeFilters.revert_filter)
+      console.log(focusSelected.revert_filter)
       console.log("shi")
       var i;
       var rs = ["r", "nr"]
@@ -185,7 +180,7 @@ const MisalignmentFilter = ({ data, onChange, className, ...rest }) => {
         new_colors[rbox] = "#FFFBCC"
       }
     }
-    setActiveFilters(new_filter_value);
+    setFocuSelected(new_filter_value);
     setStrokeColor(new_colors);
     onChange(new_filter_value);
   }
