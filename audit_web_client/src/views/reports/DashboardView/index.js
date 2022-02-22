@@ -158,8 +158,6 @@ const Dashboard = () => {
 
   const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
 
-  const filters = [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected]
-
   const usePrevious = (value) => {
     const ref = useRef();
     useEffect(() => {
@@ -336,9 +334,9 @@ const Dashboard = () => {
     })
     .then(res => {
       if (res.ok) {
-        console.log("Logged misalignment filter update.");
+        console.log("Logged change.");
       } else {
-        console.warn("Failed to update misaslignment filter.");
+        console.warn("Failed to log :(.");
       }
     });
   }
