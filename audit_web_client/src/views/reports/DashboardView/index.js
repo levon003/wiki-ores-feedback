@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import {
   Container,
   Grid,
@@ -158,8 +158,51 @@ const Dashboard = () => {
 
   const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
 
+  const filters = [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected]
+
+  const usePrevious = (value) => {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
+  const prevFilters = usePrevious({revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected})
+
   useEffect(() => {
     handleStateUpdate()
+    if (prevFilters !== undefined) {
+      if (prevFilters.revisionFilter !== revisionFilter) {
+        handleLogging(revisionFilter)
+      }
+      else if (prevFilters.minorFilter !== minorFilter) {
+        handleLogging(minorFilter)
+      }
+      else if (prevFilters.userTypeFilter !== userTypeFilter) {
+        handleLogging(userTypeFilter)
+      }
+      else if (prevFilters.filteredUsernames !== filteredUsernames) {
+        handleLogging(filteredUsernames)
+      }
+      else if (prevFilters.pageValues !== pageValues) {
+        handleLogging(pageValues)
+      }
+      else if (prevFilters.namespaceSelected !== namespaceSelected) {
+        handleLogging(namespaceSelected)
+      }
+      else if (prevFilters.linkedToValues !== linkedToValues) {
+        handleLogging(linkedToValues)
+      }
+      else if (prevFilters.linkedFromValues !== linkedFromValues) {
+        handleLogging(linkedFromValues)
+      }
+      else if (prevFilters.preDefinedSelected !== preDefinedSelected) {
+        handleLogging(preDefinedSelected)
+      }
+      else if (prevFilters.focusSelected !== focusSelected) {
+        handleLogging(focusSelected)
+      }
+    }
   }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected])
 
   useEffect(() => {
@@ -281,6 +324,24 @@ const Dashboard = () => {
     //     console.log(data);
     // });
   };
+
+  const handleLogging = (change) => {
+     fetch('/api/activity_log', {
+      method: 'POST', 
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(change)
+    })
+    .then(res => {
+      if (res.ok) {
+        console.log("Logged misalignment filter update.");
+      } else {
+        console.warn("Failed to update misaslignment filter.");
+      }
+    });
+  }
 
   useEffect(() => {
     // TODO Make an initial request with the default/loaded filter criteria 
