@@ -34,9 +34,6 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
     largeRemovals: "large removals"
   }
 
-  console.log(linkedFromValues)
-  console.log(pageValues)
-  console.log(linkedToValues)
   const getPageFilterSummary = () => {
     let pageSummaryString = ""
     if (pageValues.length > 0) {
