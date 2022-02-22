@@ -138,7 +138,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
-        setNote(data.note)
+        setNote(data.note == null ? "" : data.note)
       }).catch(data => {
         setButtonSuccess(false)
       });
@@ -159,7 +159,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
     }).then(res => res.json())
     .then(data => {
       setNoteSuccess(true)
-      setNote(data.note)
+      setNote(data.note == null ? "" : data.note)
     })
     .catch(data => {
       setNoteSuccess(false)
@@ -211,20 +211,32 @@ const RevisionView = ({ revisions, className, ...rest }) => {
       })
         .then(res => res.json())
         .then(data => {
-          setRevisionDiff(data.compare['*']);
-          setRevisionMetadata({
-            'from_user': data.compare['fromuser'],
-            'from_timestamp': data.compare['fromtimestamp'],
-            'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
-            'to_user': data.compare['touser'],
-            'to_timestamp': data.compare['totimestamp'],
-            'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
-            'from_revid': data.compare['fromrevid'],
-            'to_revid': data.compare['torevid'],
-            'to_userid': data.compare['touserid'],
-            'from_userid': data.compare['fromuserid'],
-            'loaded': true,
-          })
+          if (data.hasOwnProperty("error")) {
+            console.log(data.error.code, data.error.info)
+            if (data.error.code !== "nosuchrevid") {
+              // We have never seen this error before
+              // Panic
+              setRevisionDiff("Error loading revision: " + data.error.code + " " + data.error.info);
+            } else {
+              setRevisionDiff("Revision was revdeled (probably) after January 2020 or so.");
+            }
+          } else {
+            //console.log(data);
+            setRevisionDiff(data.compare['*']);
+            setRevisionMetadata({
+              'from_user': data.compare['fromuser'],
+              'from_timestamp': data.compare['fromtimestamp'],
+              'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
+              'to_user': data.compare['touser'],
+              'to_timestamp': data.compare['totimestamp'],
+              'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
+              'from_revid': data.compare['fromrevid'],
+              'to_revid': data.compare['torevid'],
+              'to_userid': data.compare['touserid'],
+              'from_userid': data.compare['fromuserid'],
+              'loaded': true,
+            })
+          }
     });
 
     fetch('/api/annotation/?rev_id=' + revision.rev_id.toString(), {
@@ -240,7 +252,7 @@ const RevisionView = ({ revisions, className, ...rest }) => {
           'correctness_type': data.correctness_type,
           'note': data.note,
         })
-        setNote(data.note)
+        setNote(data.note == null ? "" : data.note)
     });
   }, [revision]);
 
@@ -510,16 +522,16 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   }
   useEffect(() => {
     document.onkeydown = (e) => {
-      if (e.keyCode == 37) {
+      if (e.keyCode === 37) {
         handlePreviousClick()
       }
-      else if (e.keyCode == 39) {
+      else if (e.keyCode === 39) {
         handleNextClick()
       }
-      else if (e.keyCode == 90) {
+      else if (e.keyCode === 90) {
         handlePreviousUnannotatedClick()
       }
-      else if (e.keyCode == 88) {
+      else if (e.keyCode === 88) {
         handleNextUnannotatedClick()
       }
     }

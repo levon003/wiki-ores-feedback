@@ -249,7 +249,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
         <Box className='box'>
           <Box className="title text-h2">
             Filter
-            <IconButton className="tooltip-margin" color="#717281" style={{height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
+            <IconButton className="tooltip-margin" style={{color:"#717281", height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
               <HelpIcon style={{height:"20px"}}/>
             </IconButton>
             <Popover

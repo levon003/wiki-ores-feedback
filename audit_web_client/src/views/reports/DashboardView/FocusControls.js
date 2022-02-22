@@ -35,7 +35,10 @@ const useStyles = makeStyles((theme) => ({
 const FocusButton1 = ({style, setFocusSelected}) => {
     const onClick = () => {
         //todo: add later?
-        setFocusSelected(1)
+        setFocusSelected({
+            'prediction_filter': 'very_likely_good',
+            'revert_filter': 'reverted',
+          })
     }
     return (
       <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED REVERTS</Button>
@@ -44,7 +47,10 @@ const FocusButton1 = ({style, setFocusSelected}) => {
 const FocusButton2 = ({style, setFocusSelected}) => {
     const onClick = () => {
         //todo: add later?
-        setFocusSelected(2)
+        setFocusSelected({
+            'prediction_filter': 'very_likely_bad',
+            'revert_filter': 'nonreverted',
+          })
     }
     return (
       <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED CONSENSUS</Button>
@@ -53,20 +59,34 @@ const FocusButton2 = ({style, setFocusSelected}) => {
 const FocusButton3 = ({style, setFocusSelected}) => {
     const onClick = () => {
         //todo: add later?
-        setFocusSelected(3)
+        setFocusSelected({
+            'prediction_filter': 'confusing',
+            'revert_filter': 'any',
+          })
     }
     return (
       <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>
     )
 }
 
-const FocusControls = ({className, data, onChange, focusSelected, setFocusSelected, ...rest}) => {
+const FocusControls = ({className, data, focusSelected, setFocusSelected, ...rest}) => {
     const theme = useTheme()
 
+    const selectedStyle = {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'}
+    const unselectedStyle = {marginRight: '12px'}
+
     // all margins should be the same
-    const focusButton1Style = focusSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
-    const focusButton2Style = focusSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
-    const focusButton3Style = focusSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+    const focusButton1Style = (focusSelected.prediction_filter === 'very_likely_good' & focusSelected.revert_filter === 'reverted') ? 
+        selectedStyle : 
+        unselectedStyle
+    const focusButton2Style = (focusSelected.prediction_filter === 'very_likely_bad' & focusSelected.revert_filter === 'nonreverted') ? 
+        selectedStyle : 
+        unselectedStyle
+    const focusButton3Style = (focusSelected.prediction_filter === 'confusing' & focusSelected.revert_filter === 'any') ? 
+        selectedStyle : 
+        unselectedStyle
+    //const focusButton2Style = focusSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
+    //const focusButton3Style = focusSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
 
     const classes = useStyles();
 
@@ -94,7 +114,7 @@ const FocusControls = ({className, data, onChange, focusSelected, setFocusSelect
             <Box className='box'>
                 <Box className="title text-h2">
                     Focus
-                    <IconButton className="tooltip-margin" color="#717281" style={{height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
+                    <IconButton className="tooltip-margin" style={{color:"#717281", height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
                         <HelpIcon style={{height:"20px"}}/>
                     </IconButton>
                     <Popover
@@ -149,7 +169,7 @@ const FocusControls = ({className, data, onChange, focusSelected, setFocusSelect
                     </AccordionSummary>
                     <AccordionDetails>
                         <Box margin="0 auto">
-                        <MisalignmentFilter data={data} onChange={onChange}/>
+                        <MisalignmentFilter data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected}/>
                         </Box>
                     </AccordionDetails>
                 </Accordion>
