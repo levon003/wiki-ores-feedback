@@ -51,7 +51,6 @@ const TopBar = ({
 }) => {
   const classes = useStyles();
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
-  console.log(drawerOpen)
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true)

@@ -34,8 +34,35 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
     largeRemovals: "large removals"
   }
 
+  console.log(linkedFromValues)
+  console.log(pageValues)
+  console.log(linkedToValues)
   const getPageFilterSummary = () => {
-    // todo: implement
+    let pageSummaryString = ""
+    if (pageValues.length > 0) {
+      if (pageValues.length === 1) {
+        pageSummaryString += "on page "
+      }
+      else {
+        pageSummaryString += "on pages "
+      }
+      pageValues.forEach(element => {
+        pageSummaryString += `${element.primary_text}, `
+      });
+    }
+    if (linkedFromValues.length > 0) {
+      pageSummaryString += "linked from "
+      linkedFromValues.forEach(element => {
+        pageSummaryString += `${element.primary_text}, `
+      });
+    }
+    if (linkedToValues.length > 0) {
+      pageSummaryString += "linked to "
+      linkedToValues.forEach(element => {
+        pageSummaryString += `${element.primary_text}, `
+      });
+    }
+    return pageSummaryString
   }
 
   const getUserFilterSummary = () => {
@@ -171,7 +198,7 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
       result = "LGBT History edits"
     }
     else {
-      result = "edits in [page filters], " + getRevisionFilterSummary() + ", " + getUserFilterSummary()
+      result = "edits " + getPageFilterSummary() + getRevisionFilterSummary() + ", " + getUserFilterSummary()
     }
 
     return result
