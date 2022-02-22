@@ -23,8 +23,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, ...rest }) => {
+const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
+  const [ numAnnotated, setNumAnnotated ] = useState(0)
+  const [ numDamaging, setNumDamaging ] = useState(0)
   
   const revisionFilterPrettyNames = {
     largeAdditions: "large additions",
@@ -280,7 +282,7 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
                   style= {{ display: "inline-flex", float: "right"}}
                 >
                     <Box className="text-h3 subtitle" style = {{ color: "#C7C7C7"}}>
-                      [0 out of 10 annotated, 0 damaging (00.00%)]
+                      [{numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({numAnnotated !==  0 ?numDamaging / numAnnotated * 100 : 0}%)]
                     </Box>
                 </Box>
             </Box>
@@ -299,6 +301,12 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
               <Box>
                 <RevisionView 
                   revisions={revisions}
+                  numAnnotated={numAnnotated}
+                  setNumAnnotated={setNumAnnotated}
+                  numDamaging={numDamaging}
+                  setNumDamaging={setNumDamaging}
+                  currRevisionIdx={currRevisionIdx}
+                  setCurrRevisionIdx={setCurrRevisionIdx}
                 />
               </Box>
             </Box>

@@ -156,6 +156,8 @@ const Dashboard = () => {
   
   const [linkedFromValues, setLinkedFromValues] = useState([])
 
+  const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
+
   useEffect(() => {
     handleStateUpdate()
   }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected])
@@ -267,6 +269,7 @@ const Dashboard = () => {
         //console.log("data: ", data)
         console.log("retrieved revisions from backend, n =", data.revisions.length)
         setRevisions(data.revisions);
+        setCurrRevisionIdx(0)
     })
     .catch(err => {
       console.log(err)
@@ -343,6 +346,8 @@ const Dashboard = () => {
               >
                 <RevisionViewer 
                   revisions={revisions}
+                  currRevisionIdx={currRevisionIdx}
+                  setCurrRevisionIdx={setCurrRevisionIdx}
                   revisionFilter={revisionFilter}
                   minorFilter={minorFilter}
                   preDefinedSelected={preDefinedSelected}

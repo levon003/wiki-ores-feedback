@@ -61,8 +61,7 @@ const NotesLoadingIcon = ({ typing, firstTyped, noteSuccess }) => {
   }
 }
 
-const RevisionView = ({ revisions, className, ...rest }) => {
-  const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
+const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, numDamaging, setNumDamaging, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
@@ -110,11 +109,15 @@ const RevisionView = ({ revisions, className, ...rest }) => {
   }
   
   const handleButtonClick = (button_type) => {
-    const correctness_type = button_type === annotationData.correctness_type ? null : button_type;
+    const correctness_type = button_type
     // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
-    setButtonSuccess("loading") 
+    setButtonSuccess("loading")
+    setNumAnnotated(numAnnotated + 1)
+    if (button_type === 'correct') {
+      setNumDamaging(numDamaging + 1)
+    }
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
       method: 'POST',
