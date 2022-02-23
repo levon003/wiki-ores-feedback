@@ -256,9 +256,11 @@ def get_sample_revisions():
     with Session() as session:
         with session.begin():
             rt = db.get_revision_table()
+            pt = db.get_page_table()
+            
             s = select(
-                rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred
-            ).where(rt.c.rev_id.in_(rev_ids))
+                rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred, pt.c.page_title
+            ).where(rt.c.rev_id.in_(rev_ids)).join(pt, rt.c.page_id == pt.c.page_id)
             logger.info(f"Built revision table query (for cached revs): {s}")
 
             revision_list = []
