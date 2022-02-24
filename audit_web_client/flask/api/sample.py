@@ -4,8 +4,10 @@ import click
 from flask import current_app, g, request, make_response, Blueprint, jsonify
 from flask.cli import with_appcontext
 
+import sqlalchemy
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import select, or_, and_, func
+
 
 import logging
 from datetime import datetime
@@ -15,6 +17,7 @@ import json
 
 from . import replica
 from . import db
+from . import user_db
 
 bp = Blueprint('sample', __name__)
 
@@ -248,8 +251,9 @@ def get_sample_revisions():
                 session.execute(rct.insert(), rev_cache_list)
         rev_ids = rev_ids_to_cache
     else:
-        rev_ids = cached_rev_ids
-    
+        rev_ids = list(set(cached_rev_ids))
+    logger.info(f"Retrieving full data for {len(rev_ids)} rev_ids.")
+
     # query the revision table for the specific rev_ids we need
     # SELECT * FROM revision WHERE rev_id IN ({rev_ids});
     Session = db.get_oidb_session()
@@ -260,13 +264,60 @@ def get_sample_revisions():
             
             s = select(
                 rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred, pt.c.page_title
-            ).where(rt.c.rev_id.in_(rev_ids)).join(pt, rt.c.page_id == pt.c.page_id)
+            ).where(rt.c.rev_id.in_(rev_ids)).join(pt, (rt.c.page_id == pt.c.page_id))
+            user_token = ""  # TODO retrieve this from the current session
+            if user_token is not None:
+                # if the user is logged in, then retrieve annotations they may have done on these revisions
+                rat = user_db.get_rev_annotation_table()
+
+                # join in correctness data
+                rat_c = rat.alias("rat_c")
+                most_recent_c = select(sqlalchemy.sql.functions.max(rat_c.c.annotation_id)).\
+                where(
+                    rat_c.c.rev_id == rt.c.rev_id, 
+                    rat_c.c.user_token == user_token,
+                    rat_c.c.annotation_type == 'correctness'
+                ).scalar_subquery().correlate(rt)
+                s = s.join(rat_c, 
+                    (rat_c.c.rev_id == rt.c.rev_id)&(rat_c.c.user_token == user_token)&(rat_c.c.annotation_type == 'correctness'),
+                    isouter=True,
+                ).where(
+                    or_(
+                        rat_c.c.annotation_id == None,
+                        rat_c.c.annotation_id == most_recent_c
+                    )
+                ).add_columns(
+                    rat_c.c.annotation_data.label("correctness_data")
+                )
+
+                # join in note data
+                rat_n = rat.alias("rat_n")
+                most_recent_n = select(sqlalchemy.sql.functions.max(rat_n.c.annotation_id)).\
+                where(
+                    rat_n.c.rev_id == rt.c.rev_id, 
+                    rat_n.c.user_token == user_token,
+                    rat_n.c.annotation_type == 'note'
+                ).scalar_subquery().correlate(rt)
+                s = s.join(rat_n, 
+                    (rat_n.c.rev_id == rt.c.rev_id)&(rat_n.c.user_token == user_token)&(rat_n.c.annotation_type == 'note'),
+                    isouter=True,
+                ).where(
+                    or_(
+                        rat_n.c.annotation_id == None,
+                        rat_n.c.annotation_id == most_recent_n
+                    )
+                ).add_columns(
+                    rat_n.c.annotation_data.label("note_data")
+                )
+
             logger.info(f"Built revision table query (for cached revs): {s}")
 
             revision_list = []
             result = session.execute(s)
             for row in result:
                 revision_list.append(row._asdict())
+            if len(revision_list) != len(rev_ids):
+                logger.warning(f"Expected {len(rev_ids)} revisions; retrieved {len(revision_list)} instead.")
 
     logger.info(f"Returning {len(revision_list)} revisions.")
     return {'revisions': revision_list}
