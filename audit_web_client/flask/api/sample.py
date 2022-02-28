@@ -287,7 +287,7 @@ def get_sample_revisions():
                         rat_c.c.annotation_id == most_recent_c
                     )
                 ).add_columns(
-                    rat_c.c.annotation_data.label("correctness_data")
+                    rat_c.c.annotation_data.label("correctness_type_data")
                 )
 
                 # join in note data

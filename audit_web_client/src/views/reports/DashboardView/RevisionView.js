@@ -134,9 +134,8 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
     }).then(res => res.json())
     .then(data => {
       setButtonSuccess(true)
-      // update the annotations with the new data (if it was not rejected)
-        // TODO what if this would change the annotation data?  The user might have scrolled away, not noticing 
-        // that their annotation change was rejected. Should we notify the user in some way?
+        // update the annotations with the new data (if it was not rejected)
+        // FIXME should this call setRevisions instead? (Should update exactly "revisions[currRevisionIdx].correctness_type_data = <new_data>")
         setAnnotationData({
           'correctness_type': data.correctness_type,
           'note': data.note,
@@ -242,6 +241,7 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
           }
     });
 
+    // TODO this is deprecated
     fetch('/api/annotation/?rev_id=' + revision.rev_id.toString(), {
       method: 'GET',
       headers: {'Content-Type': 'application/json',
