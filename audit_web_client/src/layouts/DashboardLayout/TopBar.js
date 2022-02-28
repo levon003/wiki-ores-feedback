@@ -11,10 +11,13 @@ import {
   IconButton
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
+import PersonIcon from '@material-ui/icons/Person';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { DrawerContext } from 'src/App';
 // import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 // import InputIcon from '@material-ui/icons/Input';
 // import Logo from 'src/components/Logo';
+
 
 const drawerWidth = 240;
 
@@ -68,6 +71,24 @@ const TopBar = ({
           {/*Could replace text with a logo per the example like so: <Logo />*/}
         </RouterLink>
         <Box flexGrow={1} />
+        
+        {/* Logged in */}
+        <Box
+        display="flex"
+        alignItems= "center"
+        justifyContent= "center"
+        >
+          <PersonIcon/>Logged in as [Name]<ExitToAppIcon/>Logout
+        </Box>
+        {/* Logged out */}
+        <Box
+        display="flex"
+        alignItems= "center"
+        justifyContent= "center"
+        >
+          <PersonIcon/>Login
+        </Box>
+
         <IconButton
             color="inherit"
             aria-label="open drawer"
