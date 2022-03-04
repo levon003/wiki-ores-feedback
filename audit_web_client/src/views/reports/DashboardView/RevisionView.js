@@ -26,6 +26,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { Oval } from 'react-loading-icons';
 import ArrowBackIosIcon from '@material-ui/icons//ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons//ArrowForwardIos';
+import { LoggingContext } from '../../../App'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,6 +65,7 @@ const NotesLoadingIcon = ({ typing, firstTyped, noteSuccess }) => {
 const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, numDamaging, setNumDamaging, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
+  const handleLogging = useContext(LoggingContext)
   const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
   const [expanded, setExpanded] = useState(false);
   const [revisionMetadata, setRevisionMetadata] = useState({
@@ -527,6 +529,7 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
     document.onkeydown = (e) => {
       if (e.keyCode === 37) {
         handlePreviousClick()
+        handleLogging("User used keyboard shortcut to move to previous revision")
       }
       else if (e.keyCode === 39) {
         handleNextClick()

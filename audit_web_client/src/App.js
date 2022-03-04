@@ -12,6 +12,26 @@ export const DrawerContext = createContext({
   setDrawerOpen: () => {}
 })
 
+export const LoggingContext = createContext()
+
+const handleLogging = (change) => {
+    fetch('/api/activity_log', {
+    method: 'POST', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(change)
+  })
+  .then(res => {
+    if (res.ok) {
+      console.log("Logged change.");
+    } else {
+      console.warn("Failed to log :(.");
+    }
+  });
+}
+
 const App = () => {
   const routing = useRoutes(routes);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -22,10 +42,12 @@ const App = () => {
 
   return (
     <DrawerContext.Provider value={value}>
-      <ThemeProvider theme={theme}>
-        <GlobalStyles />
-        {routing}
-      </ThemeProvider>
+      <LoggingContext.Provider value={handleLogging}>
+        <ThemeProvider theme={theme}>
+          <GlobalStyles />
+          {routing}
+        </ThemeProvider>
+      </LoggingContext.Provider>
     </DrawerContext.Provider>
   );
 };
