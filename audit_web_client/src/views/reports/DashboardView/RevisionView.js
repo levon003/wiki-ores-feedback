@@ -619,7 +619,7 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
                     title="Shortcut: z"
                     style={{cursor: 'pointer'}}
                     >
-                      <Button className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
+                      <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
                         <ArrowBackIosIcon style={{marginRight: "4px"}} className="text-h4"/>Previous Unannotated
                       </Button>
                     </Box>
@@ -632,7 +632,7 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
                     title="Shortcut: <left arrow>"
                     style={{marginLeft: "5px", cursor: 'pointer'}}
                     >
-                      <Button className="text-h4" onClick={(handlePreviousClick)}>
+                      <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousClick)}>
                         <ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous
                       </Button>
                     </Box>
@@ -645,7 +645,7 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
                     className="text-h4" 
                     title="Shortcut: <right arrow>"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button className="text-h4" onClick={(handleNextClick)}>
+                      <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextClick)}>
                         Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/>
                       </Button>
                     </Box>
@@ -658,7 +658,7 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
                     className="text-h4" 
                     title="Shortcut: x"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button className="text-h4" onClick={(handleNextUnannotatedClick)}>
+                      <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextUnannotatedClick)}>
                           Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px"}} className="text-h4"/>
                       </Button>
                     </Box>
