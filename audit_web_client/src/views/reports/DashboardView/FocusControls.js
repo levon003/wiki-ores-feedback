@@ -168,8 +168,11 @@ const FocusControls = ({className, data, focusSelected, setFocusSelected, ...res
                         <Typography>Misalignment Graph</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
+
                         <Box margin="0 auto">
+                        <Box>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec semper dolor. Vivamus nec leo interdum, placerat libero nec, tempus diam. Nunc eu neque pulvinar, pulvinar orci ut, fermentum massa. Integer aliquet ante ex, ut maximus nisi hendrerit sed. Aliquam enim quam, aliquet ac dolor venenatis, pretium imperdiet augue. Aliquam blandit vel tortor maximus dapibus. Vivamus sollicitudin ex ac sapien malesuada, id eleifend augue gravida. Proin eleifend, dui non ullamcorper viverra, purus odio pharetra eros, et volutpat nisi risus nec mauris. Suspendisse non urna vel quam eleifend dictum vitae at arcu. Sed at ante vel erat dictum finibus. Vivamus convallis porta aliquam. Curabitur id nibh elit. Integer egestas risus nisi. Aliquam id odio sem.</Box>
                         <MisalignmentFilter data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected}/>
+                        <Box>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec semper dolor. Vivamus nec leo interdum, placerat libero nec, tempus diam. Nunc eu neque pulvinar, pulvinar orci ut, fermentum massa. Integer aliquet ante ex, ut maximus nisi hendrerit sed. Aliquam enim quam, aliquet ac dolor venenatis, pretium imperdiet augue. Aliquam blandit vel tortor maximus dapibus. Vivamus sollicitudin ex ac sapien malesuada, id eleifend augue gravida. Proin eleifend, dui non ullamcorper viverra, purus odio pharetra eros, et volutpat nisi risus nec mauris. Suspendisse non urna vel quam eleifend dictum vitae at arcu. Sed at ante vel erat dictum finibus. Vivamus convallis porta aliquam. Curabitur id nibh elit. Integer egestas risus nisi. Aliquam id odio sem.</Box>
                         </Box>
                     </AccordionDetails>
                 </Accordion>
