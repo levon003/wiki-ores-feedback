@@ -25,6 +25,10 @@ SELECT * FROM revision WHERE page_id = 38901460 LIMIT 10;
 
 SELECT * FROM revision WHERE rev_id = 876227298;
 
+SELECT * FROM revision_count LIMIT 10;
+SELECT COUNT(*) FROM revision_count;
+SELECT SUM(count) FROM revision_count WHERE damaging_pred_filter in (1, 2);
+
 
 ###################
 SELECT rev_id, page_id, rev_timestamp, seconds_to_prev, is_minor, user_text, is_user_registered
