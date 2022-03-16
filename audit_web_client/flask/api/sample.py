@@ -246,8 +246,8 @@ def get_sample_revisions():
     
     request_json = request.get_json()
     filters = request_json['filters']
-    if 'focus_selected' in request_json:
-        focus_selected = request_json['focus_selected']
+    if 'focus' in request_json:
+        focus_selected = request_json['focus']['focus_selected']
         filters['prediction_filter'] = focus_selected['prediction_filter']
         assert filters['prediction_filter'] in ['very_likely_bad', 'very_likely_good', 'confusing', 'any']
         filters['revert_filter'] = focus_selected['revert_filter']
@@ -256,6 +256,7 @@ def get_sample_revisions():
         filters['prediction_filter'] = 'any'
         filters['revert_filter'] = 'any'
         logger.warn("No focus_selected key provided in the JSON body of this request; using defaults.")
+        raise ValueError("No focus_selected.")
 
     cached_rev_ids = get_rev_ids_for_filters(filters)
     logger.info(f"Identified {len(cached_rev_ids)} cached revisions for these filters.")

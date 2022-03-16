@@ -244,28 +244,7 @@ const Dashboard = () => {
       }
     });
     // get a new sample of revisions from the backend with the revised misalignment filter
-    fetch('/api/sample/', {
-      method: 'POST', 
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        revert_filter: new_filter.revert_filter,
-        prediction_filter: new_filter.prediction_filter,
-      })
-    })
-    .then(res => {
-      if (!res.ok) {
-        throw new Error("Failed to retrieve sample.");
-      }
-      return res;
-    })
-    .then(res => res.json())
-    .then(data => {
-      setRevisions(data.revisions);
-    })
-    .catch(err => console.error(err));
+    // Code removed
   };
 
   const handleStateUpdate = () => {
