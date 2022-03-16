@@ -239,6 +239,18 @@ def build_sample_query(filters, rt, s):
 
     return s
 
+def get_counts(filters, revision_list_length):
+    rt = db.get_revision_count_table()
+    s = select(sqlalchemy.sql.functions.sum(rt.c.count))
+    s = build_sample_query(filters, rt, s)
+    with Session() as session:
+        with session.begin():
+            result = session.execute(s)
+            count = result.scalar()
+    return {'count': count}
+            
+            
+
 
 @bp.route('/api/sample/', methods=('POST',))
 def get_sample_revisions():
@@ -357,7 +369,8 @@ def get_sample_revisions():
                 logger.warning(f"Expected {len(rev_ids)} revisions; retrieved {len(revision_list)} instead.")
 
     logger.info(f"Returning {len(revision_list)} revisions.")
-    return {'revisions': revision_list}
+    counts = get_counts(filters, len(revision_list))
+    return {'revisions': revision_list, 'counts': counts}
 
 
 @click.command('get-filter-hash')
@@ -501,6 +514,12 @@ def get_sample_command(use_default, condition):
                 'smallRemovals': True,
                 'largeRemovals': True,
             },
+        },
+        'focus': {
+            'focus_selected': {
+                'prediction_filter': 'very_likely_good',
+                'revert_filter': 'nonreverted'
+            }
         }
     }
     if condition == 'specific_page':

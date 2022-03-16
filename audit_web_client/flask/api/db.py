@@ -156,6 +156,9 @@ def get_revision_table():
 def get_rev_cache_table():
     return get_table('rev_cache')
 
+def get_revision_count_table():
+    return get_table('revision_count')
+
 
 def create_tables(engine):
     #logger = logging.getLogger('cli.create-db.create_tables')
