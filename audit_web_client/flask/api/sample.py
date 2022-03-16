@@ -100,31 +100,8 @@ def sort_page_list_by_edit_count(ns, page_list):
     logger.debug(f"Sorted {len(page_list)} pages by edit count ({len(page_id_index_dict)} / {len(page_list)} have 0 edits).")
 
 
-def build_sample_query(filters, rt, s):
-    """
-    Given a SELECT query, adds WHERE clauses based on the given filters.
-
-    The default query conditions are something like:
-    SELECT ... FROM revision
-    WHERE damaging_pred_filter = 0 AND
-            reverted_filter_mask = 0 AND  # not reverted
-            reverted_within_filter IS NULL AND
-            reverted_after_filter IS NULL AND
-            page_namespace = 0 AND
-            user_type IN (0, 2, 3, 4) AND
-            rev_count_gt_filter IN (0, 1, 2, 3, 4, 5) AND
-            rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND
-            revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND
-            delta_bytes_filter IN (-2, -1, 0, 1, 2)
-    ORDER BY random
-
-    :filters - dict of user filters
-    :rt - revision table
-    :s - SELECT query
-    """
-    # extract needed data from the revision filters
-
-    # specific page filters
+def get_page_ids_from_filters(filters):
+    # based on specific page filters
     page_values = filters['page_values']
     specific_page_ids = [page['page_id'] for page in page_values]
     
@@ -141,15 +118,25 @@ def build_sample_query(filters, rt, s):
         for page in linked_to_values:
             linked_to_page_ids = replica.get_pages_linked_to_page_id(page['page_id'], session)
             specific_page_ids.extend(linked_to_page_ids)
+    # TODO add some logging here?
+    return specific_page_ids
+
+
+def add_text_filter_clauses(filters, rt, s):
     # add required page_ids as a condition to the query
+    specific_page_ids = get_page_ids_from_filters(filters)
     if len(specific_page_ids) > 0:
        s = s.where(rt.c.page_id.in_(specific_page_ids))
 
+    # add any specific usernames
     filtered_usernames = filters['filtered_usernames']
     if len(filtered_usernames) > 0:
         user_text_list = [filtered_usernames,]
         s = s.where(rt.c.user_text.in_(user_text_list))
+    return s
 
+
+def add_categorical_filter_clauses(filters, rt, s):
     user_filters = filters['user_type_filter']
     include_bot = user_filters['bots']
     include_unregistered = user_filters['unregistered']
@@ -205,7 +192,10 @@ def build_sample_query(filters, rt, s):
     # TODO implement the rev_count filter criteria
     s = s.where(rt.c.rev_count_gt_filter.in_([0, 1, 2, 3, 4, 5]))
     s = s.where(rt.c.rev_count_lt_filter.in_([0, 1, 2, 3, 4, 5]))
+    return s
 
+
+def add_focus_filter_clauses(filters, rt, s):
     prediction_filter = filters['prediction_filter']
     if prediction_filter == 'any':
         s = s.where(rt.c.damaging_pred_filter.in_([0, 1, 2]))
@@ -236,20 +226,54 @@ def build_sample_query(filters, rt, s):
         s = s.where(rt.c.reverted_after_filter.is_(None))
     else:
         raise ValueError("Invlaid revert_filter.")
-
     return s
 
+
+def build_sample_query(filters, rt, s):
+    """
+    Given a SELECT query, adds WHERE clauses based on the given filters.
+
+    The default query conditions are something like:
+    SELECT ... FROM revision
+    WHERE damaging_pred_filter = 0 AND
+            reverted_filter_mask = 0 AND  # not reverted
+            reverted_within_filter IS NULL AND
+            reverted_after_filter IS NULL AND
+            page_namespace = 0 AND
+            user_type IN (0, 2, 3, 4) AND
+            rev_count_gt_filter IN (0, 1, 2, 3, 4, 5) AND
+            rev_count_lt_filter IN (0, 1, 2, 3, 4, 5) AND
+            revision_filter_mask IN (0, 1, 2, 3, 4, 5, 6, 7) AND
+            delta_bytes_filter IN (-2, -1, 0, 1, 2)
+    ORDER BY random
+
+    :filters - dict of user filters
+    :rt - revision table
+    :s - SELECT query
+    """
+    # extract needed data from the revision filters
+    s = add_text_filter_clauses(filters, rt, s)
+    s = add_categorical_filter_clauses(filters, rt, s)
+    s = add_focus_filter_clauses(filters, rt, s)
+    return s
+
+
 def get_counts(filters, revision_list_length):
-    rt = db.get_revision_count_table()
-    s = select(sqlalchemy.sql.functions.sum(rt.c.count))
-    s = build_sample_query(filters, rt, s)
+    """
+    Given filters, computes counts based on the filters.
+    """
+    rct = db.get_revision_count_table()
+    s = select(sqlalchemy.sql.functions.sum(rct.c.count).label("total_count"))
+    s = add_categorical_filter_clauses(filters, rct, s)
+    # TODO groupby in some way
+
+    Session = db.get_oidb_session()
     with Session() as session:
         with session.begin():
+            
             result = session.execute(s)
-            count = result.scalar()
+            count = int(result.scalar())
     return {'count': count}
-            
-            
 
 
 @bp.route('/api/sample/', methods=('POST',))

@@ -156,8 +156,12 @@ def get_revision_table():
 def get_rev_cache_table():
     return get_table('rev_cache')
 
+
 def get_revision_count_table():
-    return get_table('revision_count')
+    metadata = get_metadata()
+    engine = get_oidb_engine()
+    metadata.reflect(engine)
+    return metadata.tables['revision_count']
 
 
 def create_tables(engine):
