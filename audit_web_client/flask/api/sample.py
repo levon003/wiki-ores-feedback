@@ -206,20 +206,56 @@ def build_sample_query(filters, rt, s):
     s = s.where(rt.c.rev_count_gt_filter.in_([0, 1, 2, 3, 4, 5]))
     s = s.where(rt.c.rev_count_lt_filter.in_([0, 1, 2, 3, 4, 5]))
 
-    s = s.where(rt.c.damaging_pred_filter == 0)  # TODO implement me
-    s = s.where(rt.c.reverted_filter_mask == 0)
-    s = s.where(rt.c.reverted_within_filter.is_(None))
-    s = s.where(rt.c.reverted_after_filter.is_(None))
+    prediction_filter = filters['prediction_filter']
+    if prediction_filter == 'any':
+        s = s.where(rt.c.damaging_pred_filter.in_([0, 1, 2]))
+    elif prediction_filter == 'very_likely_good':
+        s = s.where(rt.c.damaging_pred_filter == 0)
+    elif prediction_filter == 'confusing':
+        s = s.where(rt.c.damaging_pred_filter == 1)
+    elif prediction_filter == 'very_likely_bad':
+        s = s.where(rt.c.damaging_pred_filter == 2)
+    else:
+        raise ValueError("Invalid prediction_filter.")
+    
+    revert_filter = filters['revert_filter']
+    if revert_filter == 'any':
+        s = s.where(rt.c.reverted_filter_mask.in_([0, 1, 3, 5, 7]))
+        s = s.where(rt.c.reverted_within_filter.in_([None, 0, 1, 2, 3, 4, 5]))
+        s = s.where(rt.c.reverted_after_filter.in_([None, 0, 1, 2, 3, 4, 5]))
+    elif revert_filter == 'reverted':
+        # is_self_reverted == False
+        # is_user_trusted == False
+        # is_reverted_to_by_other in [True, False]
+        s = s.where(rt.c.reverted_filter_mask.in_([1, 3]))
+        s = s.where(rt.c.reverted_within_filter.in_([0, 1, 2, 3, 4, 5]))
+        s = s.where(rt.c.reverted_after_filter.in_([0, 1, 2, 3, 4, 5]))
+    elif revert_filter == 'nonreverted':
+        s = s.where(rt.c.reverted_filter_mask == 0)
+        s = s.where(rt.c.reverted_within_filter.is_(None))
+        s = s.where(rt.c.reverted_after_filter.is_(None))
+    else:
+        raise ValueError("Invlaid revert_filter.")
 
     return s
 
 
 @bp.route('/api/sample/', methods=('POST',))
 def get_sample_revisions():
-    # TODO need to do a JOIN to get the page_title from the page table
     logger = logging.getLogger('sample.get_sample')
     
-    filters = request.get_json()['filters']
+    request_json = request.get_json()
+    filters = request_json['filters']
+    if 'focus_selected' in request_json:
+        focus_selected = request_json['focus_selected']
+        filters['prediction_filter'] = focus_selected['prediction_filter']
+        assert filters['prediction_filter'] in ['very_likely_bad', 'very_likely_good', 'confusing', 'any']
+        filters['revert_filter'] = focus_selected['revert_filter']
+        assert filters['revert_filter'] in ['reverted', 'nonreverted', 'any']
+    else:
+        filters['prediction_filter'] = 'any'
+        filters['revert_filter'] = 'any'
+        logger.warn("No focus_selected key provided in the JSON body of this request; using defaults.")
 
     cached_rev_ids = get_rev_ids_for_filters(filters)
     logger.info(f"Identified {len(cached_rev_ids)} cached revisions for these filters.")
