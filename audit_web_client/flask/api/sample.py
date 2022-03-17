@@ -21,8 +21,9 @@ from . import user_db
 
 bp = Blueprint('sample', __name__)
 
+PAGE_SIZE = 10  # deprecated
+MAX_REVISION_SAMPLE_SIZE = 500
 
-PAGE_SIZE = 10
 
 def get_filter_hash(filter_dict):
     """
@@ -101,6 +102,14 @@ def sort_page_list_by_edit_count(ns, page_list):
 
 
 def get_page_ids_from_filters(filters):
+    """
+    Given filters, uses the 'page_values', 'linked_from_values', and 'linked_to_values'
+    to identify page_ids responsive to the filters.
+
+    TODO This function should be cached (at the global/session/request level doesn't matter, just some kind of basic caching to avoid repeat queries for the same filters)
+    """
+    logger = logging.getLogger('sample.get_page_ids_from_filters')
+
     # based on specific page filters
     page_values = filters['page_values']
     specific_page_ids = [page['page_id'] for page in page_values]
@@ -118,7 +127,8 @@ def get_page_ids_from_filters(filters):
         for page in linked_to_values:
             linked_to_page_ids = replica.get_pages_linked_to_page_id(page['page_id'], session)
             specific_page_ids.extend(linked_to_page_ids)
-    # TODO add some logging here?
+    if len(specific_page_ids) > 0:
+        logger.debug(f"Identified {len(specific_page_ids)} pages from {len(page_values)} specific pages, {len(linked_from_values)} linked from pages, {len(linked_to_values)} linked to pages.")
     return specific_page_ids
 
 
@@ -262,18 +272,80 @@ def get_counts(filters, revision_list_length):
     """
     Given filters, computes counts based on the filters.
     """
-    rct = db.get_revision_count_table()
-    s = select(sqlalchemy.sql.functions.sum(rct.c.count).label("total_count"))
-    s = add_categorical_filter_clauses(filters, rct, s)
-    # TODO groupby in some way
+    logger = logging.getLogger('sample.get_counts')
+
+    use_revision_count_table = True  # use revision_count counts, unless open-text filters are present
+    if len(get_page_ids_from_filters(filters)) > 0:
+        # this is a page-restricted query
+        use_revision_count_table = False
+    if len(filters['filtered_usernames']) > 0:
+        # this is a user-restricted query
+        use_revision_count_table = False
+
+    if use_revision_count_table:
+        rt = db.get_revision_count_table()
+        # TODO add reverted_within_filter & reverted_after_filter in select and group_by clauses, once necessary
+        s = select(
+            rt.c.damaging_pred_filter, 
+            rt.c.reverted_filter_mask,
+            sqlalchemy.sql.functions.sum(
+                rt.c.count
+            ).label("total_count")
+        )
+    else:
+        logger.debug("Can't use revision count table; building full query.")
+        rt = db.get_revision_table()
+        s = select(
+            rt.c.damaging_pred_filter, 
+            rt.c.reverted_filter_mask,
+            func.count(rt.c.rev_id).label("total_count")
+        )
+        s = add_text_filter_clauses(filters, rt, s)
+
+    s = add_categorical_filter_clauses(filters, rt, s)
+    s = s.group_by(rt.c.damaging_pred_filter, rt.c.reverted_filter_mask)
+    logger.info(f"Built revision counts query: {s}")
+
+    counts = {}
+    for revert_filter in ['reverted_damaging', 'reverted_nondamaging', 'nonreverted', 'all']:
+        for prediction_filter in ['very_likely_good', 'very_likely_bad', 'confusing', 'all']:
+            if prediction_filter not in counts:
+                counts[prediction_filter] = {}
+            counts[prediction_filter][revert_filter] = 0
 
     Session = db.get_oidb_session()
     with Session() as session:
         with session.begin():
             
             result = session.execute(s)
-            count = int(result.scalar())
-    return {'count': count}
+            for row in result:
+                # prediction_filter = very_likely_good, very_likely_bad, confusing, any
+                if row.damaging_pred_filter == 0:
+                    prediction_filter = 'very_likely_good'
+                elif row.damaging_pred_filter == 1:
+                    prediction_filter = 'confusing'
+                elif row.damaging_pred_filter == 2:
+                    prediction_filter = 'very_likely_bad'
+                else:
+                    raise ValueError("Unknown damaging_pred_filter.")
+
+                # revert_filter = reverted_damaging, reverted_nondamaging, nonreverted, any
+                # TODO also use reverted_within_filter and reverted_after_filter, once those are values that can change
+                if row.reverted_filter_mask == 0:
+                    revert_filter = 'nonreverted'
+                elif row.reverted_filter_mask in [1, 3]:
+                    # magic number is believed to be the appropriate default reverted_filter_mask for "reverted for damage".
+                    # in the future, this should be defined by the "damaging revert" definition used
+                    revert_filter = 'reverted_damaging'
+                else:
+                    revert_filter = 'reverted_nondamaging'
+                
+                count = int(row.total_count)
+                counts[prediction_filter][revert_filter] += count
+                counts[prediction_filter]['all'] += count
+                counts['all'][revert_filter] += count
+                counts['all']['all'] += count
+    return counts
 
 
 @bp.route('/api/sample/', methods=('POST',))
@@ -301,7 +373,7 @@ def get_sample_revisions():
         rt = db.get_revision_table()
         s = select(rt.c.rev_id)
         s = build_sample_query(filters, rt, s)
-        s = s.order_by(rt.c.random).limit(500)  # TODO put this limit somewhere more prominent
+        s = s.order_by(rt.c.random).limit(MAX_REVISION_SAMPLE_SIZE)
         logger.info(f"Built revision table query (for uncached revs): {s}")
 
         revision_list = []
@@ -394,6 +466,7 @@ def get_sample_revisions():
 
     logger.info(f"Returning {len(revision_list)} revisions.")
     counts = get_counts(filters, len(revision_list))
+    logger.info(f"Computed counts: {counts}")
     return {'revisions': revision_list, 'counts': counts}
 
 

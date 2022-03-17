@@ -28,6 +28,7 @@ SELECT * FROM revision WHERE rev_id = 876227298;
 SELECT * FROM revision_count LIMIT 10;
 SELECT COUNT(*) FROM revision_count;
 SELECT SUM(count) FROM revision_count WHERE damaging_pred_filter in (1, 2);
+SELECT damaging_pred_filter, reverted_filter_mask, SUM(count) FROM revision_count GROUP BY damaging_pred_filter, reverted_filter_mask;
 
 
 ###################
