@@ -64,6 +64,7 @@ const NotesLoadingIcon = ({ typing, firstTyped, noteSuccess }) => {
 }
 
 const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
+  
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const handleLogging = useContext(LoggingContext)
@@ -90,7 +91,60 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const [ noteSuccess, setNoteSuccess ] = useState(null)
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
-  const [ buttonSuccess, setButtonSuccess ] = useState(null) 
+  const [ buttonSuccess, setButtonSuccess ] = useState(null)
+  
+  useEffect(() => {
+    // When this component loads, make a request to generate the diff
+    // Note this could be changed to only make the request once the diff is expanded
+    const compare_url = 'https://en.wikipedia.org/w/api.php?action=compare&fromrev=' + revision.prev_rev_id.toString() + '&torev=' + revision.rev_id.toString() + '&format=json&prop=diff|title|ids|user|comment|size|timestamp&origin=*'
+    fetch(compare_url, {
+        crossDomain: true,
+        method: 'GET',
+        headers: {'Content-Type': 'application/json',
+                  'Origin': 'https://ores-inspect.toolforge.org'
+                  },
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.hasOwnProperty("error")) {
+            console.log(data.error.code, data.error.info)
+            if (data.error.code !== "nosuchrevid") {
+              // We have never seen this error before
+              // Panic
+              setRevisionDiff("Error loading revision: " + data.error.code + " " + data.error.info);
+            } else {
+              setRevisionDiff("Revision was revdeled (probably) after January 2020 or so.");
+            }
+          } else {
+            //console.log(data);
+            setRevisionDiff(data.compare['*']);
+            setRevisionMetadata({
+              'from_user': data.compare['fromuser'],
+              'from_timestamp': data.compare['fromtimestamp'],
+              'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
+              'to_user': data.compare['touser'],
+              'to_timestamp': data.compare['totimestamp'],
+              'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
+              'from_revid': data.compare['fromrevid'],
+              'to_revid': data.compare['torevid'],
+              'to_userid': data.compare['touserid'],
+              'from_userid': data.compare['fromuserid'],
+              'loaded': true,
+            })
+          }
+    });
+    setAnnotationData({
+      'correctness_type': revisions[currRevisionIdx].correctness_type_data,
+      'note': revisions[currRevisionIdx].note_data
+    })
+  }, [revision]);
+  
+  let prevUnannotatedDisabledCount = currRevisionIdx - 1
+  if (revisions.length !== 3 && currRevisionIdx !== 0) {
+    while (prevUnannotatedDisabledCount >= 0 && revisions[prevUnannotatedDisabledCount].correctness_type_data !== null) {
+      prevUnannotatedDisabledCount--
+    }
+  }
   // this is for setting the typing state of the note field
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -201,51 +255,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     return doc.body.innerHTML;
   }
 
-  useEffect(() => {
-    // When this component loads, make a request to generate the diff
-    // Note this could be changed to only make the request once the diff is expanded
-    const compare_url = 'https://en.wikipedia.org/w/api.php?action=compare&fromrev=' + revision.prev_rev_id.toString() + '&torev=' + revision.rev_id.toString() + '&format=json&prop=diff|title|ids|user|comment|size|timestamp&origin=*'
-    fetch(compare_url, {
-        crossDomain: true,
-        method: 'GET',
-        headers: {'Content-Type': 'application/json',
-                 'Origin': 'https://ores-inspect.toolforge.org'
-                 },
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.hasOwnProperty("error")) {
-            console.log(data.error.code, data.error.info)
-            if (data.error.code !== "nosuchrevid") {
-              // We have never seen this error before
-              // Panic
-              setRevisionDiff("Error loading revision: " + data.error.code + " " + data.error.info);
-            } else {
-              setRevisionDiff("Revision was revdeled (probably) after January 2020 or so.");
-            }
-          } else {
-            //console.log(data);
-            setRevisionDiff(data.compare['*']);
-            setRevisionMetadata({
-              'from_user': data.compare['fromuser'],
-              'from_timestamp': data.compare['fromtimestamp'],
-              'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
-              'to_user': data.compare['touser'],
-              'to_timestamp': data.compare['totimestamp'],
-              'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
-              'from_revid': data.compare['fromrevid'],
-              'to_revid': data.compare['torevid'],
-              'to_userid': data.compare['touserid'],
-              'from_userid': data.compare['fromuserid'],
-              'loaded': true,
-            })
-          }
-    });
-    setAnnotationData({
-      'correctness_type': revisions[currRevisionIdx].correctness_type_data,
-      'note': revisions[currRevisionIdx].note_data
-    })
-  }, [revision]);
 
   const DiffTable = () => {
     if (revisionMetadata.loaded) {
@@ -609,7 +618,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     title="Shortcut: z"
                     style={{cursor: 'pointer'}}
                     >
-                      <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
+                      <Button disabled={currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1} className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
                         <ArrowBackIosIcon style={{marginRight: "4px"}} className="text-h4"/>Previous Unannotated
                       </Button>
                     </Box>
