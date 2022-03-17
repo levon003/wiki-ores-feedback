@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -23,10 +23,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
+const RevisionViewer = ({ className, revisions, setRevisions, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
-  const [ numAnnotated, setNumAnnotated ] = useState(0)
-  const [ numDamaging, setNumDamaging ] = useState(0)
+  // todo: this is not very efficient, but works. think of better way like useRef or something.
+  const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
+  const numDamaging = revisions.filter(revision => revision.correctness_type_data === "correct").length
+  const percentDisplay = numAnnotated === 0 ? 0 : Number(numDamaging / numAnnotated * 100).toFixed(2)
   
   const revisionFilterPrettyNames = {
     largeAdditions: "large additions",
@@ -282,7 +284,7 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
                   style= {{ display: "inline-flex", float: "right"}}
                 >
                     <Box className="text-h3 subtitle" style = {{ color: "#C7C7C7"}}>
-                      [{numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({numAnnotated !==  0 ?numDamaging / numAnnotated * 100 : 0}%)]
+                      [{numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%)]
                     </Box>
                 </Box>
             </Box>
@@ -301,10 +303,7 @@ const RevisionViewer = ({ className, revisions, revisionFilter, minorFilter, pre
               <Box>
                 <RevisionView 
                   revisions={revisions}
-                  numAnnotated={numAnnotated}
-                  setNumAnnotated={setNumAnnotated}
-                  numDamaging={numDamaging}
-                  setNumDamaging={setNumDamaging}
+                  setRevisions={setRevisions}
                   currRevisionIdx={currRevisionIdx}
                   setCurrRevisionIdx={setCurrRevisionIdx}
                 />
