@@ -28,7 +28,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, revisionFilter, mi
   // todo: this is not very efficient, but works. think of better way like useRef or something.
   const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
   const numDamaging = revisions.filter(revision => revision.correctness_type_data === "correct").length
-  console.log(revisions)
+  const percentDisplay = numAnnotated === 0 ? 0 : Number(numDamaging / numAnnotated * 100).toFixed(2)
   
   const revisionFilterPrettyNames = {
     largeAdditions: "large additions",
@@ -284,7 +284,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, revisionFilter, mi
                   style= {{ display: "inline-flex", float: "right"}}
                 >
                     <Box className="text-h3 subtitle" style = {{ color: "#C7C7C7"}}>
-                      [{numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({numDamaging / numAnnotated * 100}%)]
+                      [{numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%)]
                     </Box>
                 </Box>
             </Box>
