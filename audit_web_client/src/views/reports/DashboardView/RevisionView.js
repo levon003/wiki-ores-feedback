@@ -495,7 +495,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     setButtonSuccess(null)
     let revPtr = currRevisionIdx - 1
     while (revPtr > 0) {
-      if (!revisions[revPtr].annotated) {
+      if (!revisions[revPtr].correctness_type_data) {
         setCurrRevisionIdx(revPtr)
         break
       }
@@ -508,7 +508,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     setButtonSuccess(null)
     let revPtr = currRevisionIdx + 1
     while (revPtr < revisions.length) {
-      if (!revisions[revPtr].annotated) {
+      if (!revisions[revPtr].correctness_type_data) {
         setCurrRevisionIdx(revPtr)
         break
       }
