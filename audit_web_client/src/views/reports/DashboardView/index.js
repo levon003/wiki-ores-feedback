@@ -384,6 +384,7 @@ const Dashboard = () => {
               >
                 <RevisionViewer 
                   revisions={revisions}
+                  setRevisions={setRevisions}
                   currRevisionIdx={currRevisionIdx}
                   setCurrRevisionIdx={setCurrRevisionIdx}
                   revisionFilter={revisionFilter}

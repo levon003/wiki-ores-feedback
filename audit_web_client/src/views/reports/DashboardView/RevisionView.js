@@ -27,6 +27,7 @@ import { Oval } from 'react-loading-icons';
 import ArrowBackIosIcon from '@material-ui/icons//ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons//ArrowForwardIos';
 import { LoggingContext } from '../../../App'
+import { set } from 'nprogress';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +63,7 @@ const NotesLoadingIcon = ({ typing, firstTyped, noteSuccess }) => {
   }
 }
 
-const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, numDamaging, setNumDamaging, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
+const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const handleLogging = useContext(LoggingContext)
@@ -116,10 +117,6 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
     setButtonSuccess("loading")
-    setNumAnnotated(numAnnotated + 1)
-    if (button_type === 'correct') {
-      setNumDamaging(numDamaging + 1)
-    }
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
       method: 'POST',
@@ -143,6 +140,9 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
           'note': data.note,
         })
         setNote(data.note == null ? "" : data.note)
+        let copy = [...revisions]
+        copy[currRevisionIdx] = {...copy[currRevisionIdx], correctness_type_data: data.correctness_type, note_data: data.note}
+        setRevisions(copy)
       }).catch(data => {
         setButtonSuccess(false)
       });
@@ -204,7 +204,6 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
   useEffect(() => {
     // When this component loads, make a request to generate the diff
     // Note this could be changed to only make the request once the diff is expanded
-    setButtonSuccess(null)
     const compare_url = 'https://en.wikipedia.org/w/api.php?action=compare&fromrev=' + revision.prev_rev_id.toString() + '&torev=' + revision.rev_id.toString() + '&format=json&prop=diff|title|ids|user|comment|size|timestamp&origin=*'
     fetch(compare_url, {
         crossDomain: true,
@@ -242,23 +241,10 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
             })
           }
     });
-
-    // TODO this is deprecated
-    fetch('/api/annotation/?rev_id=' + revision.rev_id.toString(), {
-      method: 'GET',
-      headers: {'Content-Type': 'application/json',
-                'Origin': 'https://ores-inspect.toolforge.org'
-                },
+    setAnnotationData({
+      'correctness_type': revisions[currRevisionIdx].correctness_type_data,
+      'note': revisions[currRevisionIdx].note_data
     })
-      .then(res => res.json())
-      .then(data => {
-        // this is causing button to automatically be set to misclassification?
-        setAnnotationData({
-          'correctness_type': data.correctness_type,
-          'note': data.note,
-        })
-        setNote(data.note == null ? "" : data.note)
-    });
   }, [revision]);
 
   const DiffTable = () => {
@@ -492,18 +478,21 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
   const [previousUnannotatedLength, setPreviousUnannotatedLength] = useState(0)
 
   const handlePreviousClick = () => {
+    setButtonSuccess(null)
     if (currRevisionIdx > 0) {
       setCurrRevisionIdx(currRevisionIdx - 1)
     }
   }
 
   const handleNextClick = () => {
+    setButtonSuccess(null)
     if (currRevisionIdx < revisions.length - 1) {
       setCurrRevisionIdx(currRevisionIdx + 1)
     }
   }
 
   const handlePreviousUnannotatedClick = () => {
+    setButtonSuccess(null)
     let revPtr = currRevisionIdx - 1
     while (revPtr > 0) {
       if (!revisions[revPtr].annotated) {
@@ -516,6 +505,7 @@ const RevisionView = ({ revisions, className, numAnnotated, setNumAnnotated, num
 
 
   const handleNextUnannotatedClick = () => {
+    setButtonSuccess(null)
     let revPtr = currRevisionIdx + 1
     while (revPtr < revisions.length) {
       if (!revisions[revPtr].annotated) {
