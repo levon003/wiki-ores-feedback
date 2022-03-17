@@ -289,7 +289,11 @@ const Dashboard = () => {
         //console.log("data: ", data)
         console.log("retrieved revisions from backend, n =", data.revisions.length)
         setRevisions(data.revisions);
-        setCurrRevisionIdx(0)
+        let i = 0;
+        while (data.revisions[i].correctness_type_data !== null) {
+          i++
+        }
+        setCurrRevisionIdx(i)
     })
     .catch(err => {
       console.log(err)
