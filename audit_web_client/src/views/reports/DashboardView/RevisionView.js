@@ -140,7 +140,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   }, [revision]);
   
   let prevUnannotatedDisabledCount = currRevisionIdx - 1
-  if (revisions.length !== 3 && currRevisionIdx !== 0) {
+  if (currRevisionIdx !== 0) {
     while (prevUnannotatedDisabledCount >= 0 && revisions[prevUnannotatedDisabledCount].correctness_type_data !== null) {
       prevUnannotatedDisabledCount--
     }
