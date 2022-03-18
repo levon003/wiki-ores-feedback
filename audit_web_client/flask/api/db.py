@@ -635,11 +635,35 @@ Examples:
     logger.info('Finished DB test.')
 
 
+@click.command('export-page-data')
+@with_appcontext
+def export_page_data_command():
+    """Export page data to stdout.
+
+\b
+Example:
+    yarn flask-cli export-page-data
+    """
+    logger = logging.getLogger('cli.export-page-data.main')
+    
+    Session = get_oidb_session()
+    with Session() as session:
+        with session.begin():
+            s = sqlalchemy.sql.text("SELECT * FROM page")
+            logger.info(f"Executing page query: {s}")
+            result = session.execute(s)
+            for row in result:
+                print(f"{row.page_id}\t{row.wiki_namespace}\t{row.page_title}\t{row.is_redirect}\t{row.rev_count}")
+
+    logger.info('Finished exporting page data.')
+
+
 def init_app(app):
     app.cli.add_command(create_db_command)
     app.cli.add_command(drop_db_command)
     app.cli.add_command(create_index_command)
     app.cli.add_command(test_db_command)
+    app.cli.add_command(export_page_data_command)
     app.cli.add_command(update_ores_scores)
     app.teardown_appcontext(teardown_engine)
     app.teardown_request(teardown_session)
