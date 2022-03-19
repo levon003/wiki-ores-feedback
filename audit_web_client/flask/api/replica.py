@@ -1,13 +1,14 @@
 # For functions that depend on the enwiki replica database
 
-from sqlalchemy import create_engine
-from sqlalchemy.sql import text
+from sqlalchemy import create_engine, MetaData, Table
+from sqlalchemy.sql import text, select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 import logging
+
 
 def get_replica_engine():
     if 'replica_engine' in g:
@@ -37,7 +38,6 @@ def get_replica_session():
         return g.replica_session
     engine = get_replica_engine()
     g.replica_session = scoped_session(sessionmaker(engine))
-    #g.replica_session = Session()
     return g.replica_session
 
 
@@ -133,14 +133,96 @@ def get_pages_by_partial_title(query_str, page_namespace, session):
     return page_list
 
 
+def _get_pages_in_categories(metadata, session, category_set, curr_depth=0, max_depth=None):
+    """
+    :returns page_ids - a set of page_ids
+             previous_category_dict - a list of tuples: (page_id, parent_category, curr_depth)
+    """
+    logger = logging.getLogger('replica.get_pages_in_categories')
+    page_ids = set()
+    page_category_list = []
+    previous_category_dict = {}
+    while len(category_set) > 0 and (max_depth is None or curr_depth < max_depth):
+        if len(category_set) > 999:
+            logger.warn(f"Searching for {len(category_set)} > 999 categories at depth {curr_depth}, which might violate MariaDB's IN clause limits.")
+            logger.warn("This might just break, or we might need to randomly remove categories until fewer than 999 exist at a given depth.")
+
+        # this is the proper way to do this, but I couldn't make this work in SQLAlchemy
+        """ pt = metadata.tables['page']
+        clt = metadata.tables['categorylinks']
+        
+        s = select(
+            pt.c.page_id,
+            pt.c.page_namespace,
+            pt.c.page_title,
+            pt.c.page_is_redirect,
+            clt.c.cl_to,
+            clt.c.cl_type
+        ).select_from(
+            pt.join(clt, 
+                clt.c.cl_from == pt.c.page_id,
+            )
+        ).where(
+            # can't pass strings for a VARBINARY(255) column
+            clt.c.cl_to.in_([bytes(cat, "utf-8") for cat in category_set])
+        ) """
+
+        s = text("""
+        SELECT p.page_id, p.page_namespace, p.page_title, p.page_is_redirect, cl.cl_to, cl.cl_type
+        FROM page p
+        JOIN categorylinks cl ON cl.cl_from = p.page_id
+        WHERE cl.cl_to IN :category_list;
+        """)
+        s = s.bindparams(category_list=list(category_set))
+        logger.info(f"Generated category query: {s} (with |category_list|={len(category_set)}; curr_depth={curr_depth}; {len(page_ids)} found so far)")
+
+        # mark categories in query as previously searched
+        for category in category_set:
+            previous_category_dict[category] = curr_depth
+        category_set = set()
+        
+        result = session.execute(s)
+        for row in result:
+            cl_type = row.cl_type.decode("utf-8")
+            page_title = row.page_title.decode("utf-8")
+            cl_to = row.cl_to.decode("utf-8")
+            parent_category = cl_to
+            if cl_type == 'page':
+                page_ids.add(row.page_id)
+                page_category_list.append((row.page_id, parent_category, curr_depth))
+            elif cl_type == 'subcat':
+                child_category = page_title
+                assert row.page_namespace == 14
+                if child_category in previous_category_dict:
+                    # this is a cycle
+                    # don't include it
+                    pass
+                else:  # this is a new category
+                    category_set.add(str(child_category))
+                    #logger.info(f"New category '{child_category}'; depth={curr_depth}")
+        curr_depth += 1
+    return page_ids, page_category_list
+
+
+def get_pages_in_category(category, max_depth=None):
+    engine = get_replica_engine()
+    metadata = MetaData()
+    # reflect the tables needed in the query
+    Table('page', metadata, autoload_with=engine)
+    Table('categorylinks', metadata, autoload_with=engine)
+    
+    Session = get_replica_session()
+    with Session() as session:
+        with session.begin():
+            return _get_pages_in_categories(metadata, session, set([category]), max_depth=max_depth)
+
+
 @click.command('test-replica')
 @with_appcontext
 def test_replicas_command():
     logger = logging.getLogger('cli.test-replica')
     logger.info("Testing replica database connection.")
 
-    #engine = get_replica_engine()
-    #Session = sessionmaker(engine)
     Session = get_replica_session()
     with Session() as session:
         with session.begin():
@@ -156,7 +238,27 @@ def test_replicas_command():
             logger.info(f"Identified {len(page_list)} pages linked to query '{query_str}', including '{page_list[0]}'.")
 
 
+@click.command('get-pages-in-category')
+@click.option('--category', 'category', default="LGBT_history", show_default=True, type=str, help='root category to search through')
+@click.option('--stdout/--no-stdout', 'write_to_stdout', default=False, show_default=True, help='if the pages found should be written to stdout')
+@with_appcontext
+def get_pages_in_category_command(category, write_to_stdout):
+    logger = logging.getLogger('replica.cli.main')
+    logger.info("Testing replica database connection.")
+
+    page_ids, page_category_list = get_pages_in_category(category)
+    
+    logger.info(f"Identified {len(page_ids)} pages in category '{category}'.")
+
+    if write_to_stdout:
+        # write the page_category_list to stdout
+        for tup in page_category_list:
+            line = "\t".join([str(v) for v in tup])
+            print(line)
+
+
 def init_app(app):
     app.cli.add_command(test_replicas_command)
+    app.cli.add_command(get_pages_in_category_command)
     app.teardown_appcontext(teardown_engine)
     app.teardown_request(teardown_session)
