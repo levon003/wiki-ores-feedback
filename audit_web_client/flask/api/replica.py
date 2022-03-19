@@ -188,8 +188,12 @@ def _get_pages_in_categories(metadata, session, category_set, curr_depth=0, max_
             cl_to = row.cl_to.decode("utf-8")
             parent_category = cl_to
             if cl_type == 'page':
-                page_ids.add(row.page_id)
-                page_category_list.append((row.page_id, parent_category, curr_depth))
+                if row.page_id not in page_ids:
+                    page_ids.add(row.page_id)
+                    page_category_list.append((row.page_id, parent_category, curr_depth))
+                else:
+                    # we found this page in multiple categories, potentially at multiple depths
+                    pass
             elif cl_type == 'subcat':
                 child_category = page_title
                 assert row.page_namespace == 14
