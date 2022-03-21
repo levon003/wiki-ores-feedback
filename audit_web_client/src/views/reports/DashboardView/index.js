@@ -79,52 +79,7 @@ const Dashboard = () => {
     vlg_nr  : 400,
   });
 
-  const [revisions, setRevisions] = useState([{
-    rev_id: 1057473596, 
-    prev_rev_id: 1001836865,
-    rev_timestamp: 0,
-    // has_edit_summary: false,
-    user_text: "Suriname0",
-    user_id: 50,
-    page_title: "Test",
-    curr_bytes: 2289,
-    delta_bytes: 1550,
-    is_minor: true,
-    has_edit_summary: true,
-    damaging_pred: 0.11111111,
-    annotated: true
-  },
-  {
-    rev_id: 1001836878, 
-    prev_rev_id: 1001836865,
-    rev_timestamp: 0,
-    // has_edit_summary: false,
-    user_text: "Suriname0",
-    user_id: 50,
-    page_title: "Armadillidium vulgare",
-    curr_bytes: 2289,
-    delta_bytes: 1550,
-    is_minor: true,
-    has_edit_summary: true,
-    damaging_pred: 0.11111111,
-    annotated: true
-  },
-  {
-    rev_id: 1001836878, 
-    prev_rev_id: 1001836865,
-    rev_timestamp: 0,
-    // has_edit_summary: false,
-    user_text: "Suriname0",
-    user_id: 50,
-    page_title: "Test2",
-    curr_bytes: 2289,
-    delta_bytes: 1550,
-    is_minor: true,
-    has_edit_summary: true,
-    damaging_pred: 0.11111111,
-    annotated: false
-  }
-]); // TODO should be empty, but has one entry for testing
+  const [revisions, setRevisions] = useState([]); 
 
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
   
@@ -248,6 +203,7 @@ const Dashboard = () => {
   };
 
   const handleStateUpdate = () => {
+    setRevisions([])
     // setGlobalFilterState(new_state);
     // TODO do a POST request to the backend with the new filters
     // Get the new revisions and save them
@@ -289,6 +245,7 @@ const Dashboard = () => {
         //console.log("data: ", data)
         console.log("retrieved revisions from backend, n =", data.revisions.length)
         setRevisions(data.revisions);
+        console.log(data.counts)
         let i = 0;
         while (data.revisions[i].correctness_type_data !== null) {
           i++

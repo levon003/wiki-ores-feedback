@@ -12,6 +12,7 @@ import {
 import RevisionView from './RevisionView';
 
 import HelpIcon from '@material-ui/icons/Help';
+import { Oval } from 'react-loading-icons';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -300,7 +301,8 @@ const RevisionViewer = ({ className, revisions, setRevisions, revisionFilter, mi
               flexWrap="nowrap"
               alignItems="center"
             >
-              <Box>
+             {revisions.length !== 0 ? ( 
+             <Box>
                 <RevisionView 
                   revisions={revisions}
                   setRevisions={setRevisions}
@@ -308,7 +310,10 @@ const RevisionViewer = ({ className, revisions, setRevisions, revisionFilter, mi
                   setCurrRevisionIdx={setCurrRevisionIdx}
                 />
               </Box>
+              ) : <Oval />
+             }
             </Box>
+             
 
         </Box>
 
