@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevisionViewer = ({ className, revisions, setRevisions, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
+const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
   // todo: this is not very efficient, but works. think of better way like useRef or something.
   const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
@@ -201,9 +201,27 @@ const RevisionViewer = ({ className, revisions, setRevisions, revisionFilter, mi
     }
     else {
       result = "edits " + getPageFilterSummary() + getRevisionFilterSummary() + ", " + getUserFilterSummary()
+      result = `edits${pageValues.length === 0 ? "," : ` ${getPageFilterSummary()}`} ${getRevisionFilterSummary()}, ${getUserFilterSummary()}`
     }
 
     return result
+  }
+  var ranges = [
+    { divider: 1e18 , suffix: 'E' },
+    { divider: 1e15 , suffix: 'P' },
+    { divider: 1e12 , suffix: 'T' },
+    { divider: 1e9 , suffix: 'G' },
+    { divider: 1e6 , suffix: 'M' },
+    { divider: 1e3 , suffix: 'k' }
+  ];
+
+  const formatNumber = (n) => {
+    for (var i = 0; i < ranges.length; i++) {
+      if (n >= ranges[i].divider) {
+        return (n / ranges[i].divider).toFixed(1).toString() + ranges[i].suffix;
+      }
+    }
+    return n.toString();
   }
 
   const classes = useStyles();
@@ -275,7 +293,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, revisionFilter, mi
                   >
                     <Box className="text-h3 subtitle">
                       {/* todo: add correct updating text line, add number of revisions returned from the backend */}
-                      [Inspecting 6.7 million {getSummary()}]
+                      [Inspecting {counts?.all?.all ? formatNumber(counts?.all?.all) : 0} {getSummary()}]
                     </Box>
                 </Box>
 

@@ -79,7 +79,8 @@ const Dashboard = () => {
     vlg_nr  : 400,
   });
 
-  const [revisions, setRevisions] = useState([]); 
+  const [revisions, setRevisions] = useState([]);
+  const [counts, setCounts] = useState({}) 
 
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
   
@@ -204,6 +205,7 @@ const Dashboard = () => {
 
   const handleStateUpdate = () => {
     setRevisions([])
+    setCounts({})
     // setGlobalFilterState(new_state);
     // TODO do a POST request to the backend with the new filters
     // Get the new revisions and save them
@@ -245,7 +247,7 @@ const Dashboard = () => {
         //console.log("data: ", data)
         console.log("retrieved revisions from backend, n =", data.revisions.length)
         setRevisions(data.revisions);
-        console.log(data.counts)
+        setCounts(data.counts)
         let i = 0;
         while (data.revisions[i].correctness_type_data !== null) {
           i++
@@ -346,6 +348,7 @@ const Dashboard = () => {
                 <RevisionViewer 
                   revisions={revisions}
                   setRevisions={setRevisions}
+                  counts={counts}
                   currRevisionIdx={currRevisionIdx}
                   setCurrRevisionIdx={setCurrRevisionIdx}
                   revisionFilter={revisionFilter}
