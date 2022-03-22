@@ -7,7 +7,7 @@
   "private": false,
   "scripts": {
     "start": "react-scripts start",
-    "start-flask": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask run",
+    "start-flask": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask run --cert=adhoc",
     "create-db": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask create-db",
     "flask-cli": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask",
     "build": "react-scripts build",

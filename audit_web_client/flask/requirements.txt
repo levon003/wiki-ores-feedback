@@ -6,4 +6,6 @@ numpy
 pytz
 sqlalchemy==1.4.*
 mysqlclient
+pyopenssl
+mwoauth
 
