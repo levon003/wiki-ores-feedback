@@ -20,7 +20,7 @@ bp = Blueprint('auth', __name__)
 def get_auth_redirect_request():
     """
     Makes a Flask response object.
-    
+
     Should redirect the user back to the index.
     """
     if current_app.config['ENV'] == 'development':
@@ -78,6 +78,8 @@ def callback():
         session['access_token'] = dict(zip(access_token._fields, access_token))
         username = identity['username']
         session['username'] = username
+        session.permanent = True  # ideally, this will keep the user logged-in
+        logger.info(f"Session created for user '{username}'; (new session? = {session.new})")
 
     response = get_auth_redirect_request()
     # note: could set an additional cookie here, using response.set_cookie?

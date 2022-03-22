@@ -29,16 +29,12 @@ mysql_file_config = get_mysql_file_config(MYSQL_CONFIG_FILEPATH)
 
 MARIADB_PASSWORD = mysql_file_config['password']
 
-DEV_OAUTH_CONSUMER_TOKEN = mysql_file_config['dev_oauth_consumer_token']
-DEV_OAUTH_CONSUMER_SECRET = mysql_file_config['dev_oauth_consumer_secret']
-DEV_OAUTH_ACCESS_TOKEN = mysql_file_config['dev_oauth_access_token']
-DEV_OAUTH_ACCESS_SECRET = mysql_file_config['dev_oauth_access_secret']
+DEV_CONSUMER_KEY = mysql_file_config['dev_oauth_consumer_token']
+DEV_CONSUMER_SECRET = mysql_file_config['dev_oauth_consumer_secret']
+PROD_CONSUMER_KEY = mysql_file_config['prod_oauth_consumer_token']
+PROD_CONSUMER_SECRET = mysql_file_config['prod_oauth_consumer_secret']
 
-#CONSUMER_KEY = DEV_OAUTH_CONSUMER_TOKEN
-#CONSUMER_SECRET = DEV_OAUTH_CONSUMER_SECRET
-CONSUMER_KEY = mysql_file_config['oauth_consumer_token']
-CONSUMER_SECRET = mysql_file_config['oauth_consumer_secret']
-
+# used by the mwoauth library to target an OAuth request
 OAUTH_MWURI = 'https://en.wikipedia.org/w/index.php'
 
 SECRET_KEY = mysql_file_config['secret_key']

@@ -1,4 +1,5 @@
 from flask import current_app, g, request, make_response, Blueprint
+from flask import session as flask_session
 from flask.cli import with_appcontext
 
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -44,7 +45,7 @@ def set_revision_annotation(user_token):
         return {}, 404
     rev_id = data['rev_id']
     annotation_type = data['annotation_type']
-    logger.info(f"Setting annotation for rev {rev_id} of type '{annotation_type}'.")
+    logger.info(f"Setting annotation for rev {rev_id} of type '{annotation_type}'. (user='{user_token}')")
 
     annotation_data = None
     if annotation_type == 'correctness':
@@ -93,16 +94,16 @@ def get_revision_annotation(user_token, rev_id):
                 timestamp, annotation_type, annotation_data = row
                 if annotation_type == 'correctness':
                     data['correctness_type'] = annotation_data if annotation_data != 'none' else None
-                    logger.info(f"Identified existing correctness annotation '{annotation_data}', originally made {datetime.utcfromtimestamp(timestamp)} ({timestamp})")
+                    logger.info(f"Identified existing correctness annotation '{annotation_data}', originally made {datetime.utcfromtimestamp(timestamp)} ({timestamp}). (user='{user_token}')")
                     existing_annotation_identified = True
                 elif annotation_type == 'note':
                     data['note'] = annotation_data
-                    logger.info(f"Identified existing note annotation with {len(annotation_data)} characters, originally made {datetime.utcfromtimestamp(timestamp).replace(tzinfo=pytz.UTC)} ({timestamp})")
+                    logger.info(f"Identified existing note annotation with {len(annotation_data)} characters, originally made {datetime.utcfromtimestamp(timestamp).replace(tzinfo=pytz.UTC)} ({timestamp}). (user='{user_token}')")
                     existing_annotation_identified = True
                 else:
                     logger.warn(f"Annotation type {annotation_type} not yet implemented.")
     if not existing_annotation_identified:
-        logger.info(f"Identified no existing annotations for rev_id {rev_id}.")
+        logger.info(f"Identified no existing annotations for rev_id {rev_id}. (user='{user_token}')")
 
     return data, 200
 
@@ -110,7 +111,9 @@ def get_revision_annotation(user_token, rev_id):
 @bp.route('/api/annotation/', methods=('GET', 'POST',))
 def handle_annotation_request():
     logger = logging.getLogger('annotation.handle_annotation_request')
-    user_token = ""  # TODO once oauth authentication is implemented, need to retrieve the user_token from the session/transaction/request
+    user_token = flask_session['username'] if 'username' in flask_session else ""
+    if user_token == "":
+        logger.warn("User not logged in, so setting this annotation should be impossible.")
     if request.method == 'POST':
         # trying to set the value of an annotation
         return set_revision_annotation(user_token)

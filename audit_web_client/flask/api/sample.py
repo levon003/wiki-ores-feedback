@@ -2,6 +2,7 @@
 from webbrowser import get
 import click
 from flask import current_app, g, request, make_response, Blueprint, jsonify
+from flask import session as flask_session
 from flask.cli import with_appcontext
 
 import sqlalchemy
@@ -410,7 +411,7 @@ def get_sample_revisions():
             s = select(
                 rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred, pt.c.page_title
             ).where(rt.c.rev_id.in_(rev_ids)).join(pt, (rt.c.page_id == pt.c.page_id))
-            user_token = ""  # TODO retrieve this from the current session
+            user_token = flask_session['username'] if 'username' in flask_session else None
             if user_token is not None:
                 # if the user is logged in, then retrieve annotations they may have done on these revisions
                 rat = user_db.get_rev_annotation_table()

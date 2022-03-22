@@ -56,6 +56,9 @@ const TopBar = ({
   const classes = useStyles();
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
 
+  const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+  const loggedIn = username !== ""
+
   const handleDrawerOpen = () => {
     setDrawerOpen(true)
   }
@@ -72,25 +75,36 @@ const TopBar = ({
           {/*Could replace text with a logo per the example like so: <Logo />*/}
         </RouterLink>
         <Box flexGrow={1} />
-        
-        {/* Logged in */}
-        <Box
-        display="flex"
-        alignItems= "center"
-        justifyContent= "center"
-        >
-          <PersonIcon/>Logged in as [Name]<ExitToAppIcon/> Logout
-        </Box>
-        {/* Logged out */}
-        <Box
-        display="flex"
-        alignItems= "center"
-        justifyContent= "center"
-        >
-          <Link href="https://localhost:5000/auth/login" variant="button" color="white">
-            <PersonIcon/>Login
-          </Link>
-        </Box>
+        {loggedIn
+          ? <Box
+          display="flex"
+          alignItems= "center"
+          justifyContent= "center"
+          >
+            <PersonIcon/>Logged in as {username}
+            <Link 
+              href="https://localhost:5000/auth/logout"
+              style={{ color: 'white' }}
+            >
+              <ExitToAppIcon/><Typography>Logout</Typography>
+            </Link>
+          </Box>
+
+          : <Box
+          display="flex"
+          alignItems= "center"
+          justifyContent= "center"
+          >
+            <Link 
+              href="/auth/login" 
+              style={{ color: 'white' }}
+            >
+              <PersonIcon/>
+              <Typography>Login</Typography>
+            </Link>
+            
+          </Box>
+        }
 
         <IconButton
             color="inherit"

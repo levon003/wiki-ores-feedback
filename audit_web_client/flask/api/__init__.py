@@ -36,6 +36,14 @@ def create_app(test_config=None):
         port_config_filepath = os.path.join(app.root_path, 'port_config.py')
         if os.path.exists(port_config_filepath):
             app.config.from_pyfile(port_config_filepath, silent=False)
+
+        # use different OAuth consumers depending on dev vs prod
+        if app.config['ENV'] == 'development':
+            app.config['CONSUMER_KEY'] = app.config['DEV_CONSUMER_KEY']
+            app.config['CONSUMER_SECRET'] = app.config['DEV_CONSUMER_SECRET']
+        else:
+            app.config['CONSUMER_KEY'] = app.config['PROD_CONSUMER_KEY']
+            app.config['CONSUMER_SECRET'] = app.config['PROD_CONSUMER_SECRET']
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
