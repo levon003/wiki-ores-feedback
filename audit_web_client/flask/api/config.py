@@ -39,6 +39,4 @@ DEV_OAUTH_ACCESS_SECRET = mysql_file_config['dev_oauth_access_secret']
 CONSUMER_KEY = mysql_file_config['oauth_consumer_token']
 CONSUMER_SECRET = mysql_file_config['oauth_consumer_secret']
 
-#OAUTH_MWURI = 'https://localhost:5000/auth/callback'
-#OAUTH_MWURI = 'https://en.wikipedia.org/wiki/Special:OAuth'
 OAUTH_MWURI = 'https://en.wikipedia.org/w/index.php'

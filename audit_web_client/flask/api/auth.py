@@ -17,6 +17,14 @@ from . import db
 bp = Blueprint('auth', __name__)
 
 
+def get_auth_redirect_request():
+    if current_app.config['ENV'] == 'development':
+        # during development, redirect to front-end dev server
+        return redirect("http://localhost:3000")
+    else:
+        # redirect to index of the app
+        return redirect(url_for('index.redirect_to_index'))
+
 @bp.route('/auth/login')
 def login():
     logger = logging.getLogger('auth.login')
@@ -29,7 +37,7 @@ def login():
         )
     except Exception:
         logger.exception('mwoauth.initiate failed')
-        return redirect(url_for('index.redirect_to_index'))
+        return get_auth_redirect_request()
     else:
         session['request_token'] = dict(zip(
             request_token._fields, request_token))
@@ -41,7 +49,7 @@ def callback():
     logger = logging.getLogger('auth.callback')
     if 'request_token' not in session:
         logger.warn('OAuth callback failed. Are cookies disabled?')
-        return redirect(url_for('index.redirect_to_index'))
+        return get_auth_redirect_request()
 
     consumer_token = mwoauth.ConsumerToken(
         current_app.config['CONSUMER_KEY'], current_app.config['CONSUMER_SECRET'])
@@ -63,10 +71,14 @@ def callback():
             access_token._fields, access_token))
         session['username'] = identity['username']
 
-    
-    response = redirect(url_for('index.redirect_to_index'))
+    response = get_auth_redirect_request()
     # note: could set an additional cookie here, using response.set_cookie?
     # otherwise: figure out what cookie mwoauth is setting and check for it on the front-end
+    response.set_cookie(
+        "username",
+        "Suriname0",
+    )
+
     return response
 
 

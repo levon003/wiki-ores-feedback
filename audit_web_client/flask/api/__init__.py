@@ -57,7 +57,6 @@ def create_app(test_config=None):
     auth.init_app(app)
     app.register_blueprint(auth.bp)
 
-
     from . import db
     db.init_app(app)
 

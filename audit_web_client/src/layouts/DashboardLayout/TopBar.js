@@ -8,7 +8,8 @@ import {
   Typography,
   Toolbar,
   makeStyles,
-  IconButton
+  IconButton,
+  Link
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonIcon from '@material-ui/icons/Person';
@@ -78,7 +79,7 @@ const TopBar = ({
         alignItems= "center"
         justifyContent= "center"
         >
-          <PersonIcon/>Logged in as [Name]<ExitToAppIcon/>Logout
+          <PersonIcon/>Logged in as [Name]<ExitToAppIcon/> Logout
         </Box>
         {/* Logged out */}
         <Box
@@ -86,7 +87,9 @@ const TopBar = ({
         alignItems= "center"
         justifyContent= "center"
         >
-          <PersonIcon/>Login
+          <Link href="https://localhost:5000/auth/login" variant="button" color="white">
+            <PersonIcon/>Login
+          </Link>
         </Box>
 
         <IconButton
