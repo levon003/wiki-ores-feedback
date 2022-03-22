@@ -79,7 +79,7 @@ def create_app(test_config=None):
     logging.info(app.url_map)
     logging.debug('Loaded configuration mapping:')
     for key, value in app.config.items():
-        logging.debug(f'{key}: \t{value}')
+        logging.debug(f'{key}: \t{value if "SECRET" not in key else "****"}')
     
     return app
 

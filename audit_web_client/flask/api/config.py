@@ -40,3 +40,5 @@ CONSUMER_KEY = mysql_file_config['oauth_consumer_token']
 CONSUMER_SECRET = mysql_file_config['oauth_consumer_secret']
 
 OAUTH_MWURI = 'https://en.wikipedia.org/w/index.php'
+
+SECRET_KEY = mysql_file_config['secret_key']
