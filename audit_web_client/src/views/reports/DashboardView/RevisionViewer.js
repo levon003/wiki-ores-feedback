@@ -328,7 +328,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   setCurrRevisionIdx={setCurrRevisionIdx}
                 />
               </Box>
-              ) : <Oval />
+              ) : <Oval stroke="#000000"/>
              }
             </Box>
              
