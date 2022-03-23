@@ -54,7 +54,12 @@ const LoginView = () => {
           >
             Start inspecting:
           </Typography>
-          <Button variant="outlined">Login with your English Wikipedia account</Button>
+          <Button 
+            href="/auth/login" 
+            variant="outlined"
+          >
+            Login with your English Wikipedia account
+            </Button>
         </Container>
       </Box>
     </Page>
