@@ -81,8 +81,9 @@ const useStyles = makeStyles((theme) => ({
     strokeWidth : 0.1
   }
 }));
-
-const MisalignmentFilter = ({ data, focusSelected, setFocusSelected, className, ...rest }) => {
+// todo: get rid of data variable, all of that will be in counts variable
+// leaving data for now as it is entrenched in the misalignment filter
+const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, className, ...rest }) => {
   const [strokecolor, setStrokeColor] = useState({
     'vlhp_box': "#eeeeee",
     'itm_box': "#eeeeee",
