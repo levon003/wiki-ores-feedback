@@ -338,7 +338,7 @@ const Dashboard = () => {
                 item
                 xs={12}
               >
-                <FocusControls data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected} />
+                <FocusControls counts={counts} data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected} />
               </Grid>
 
               <Grid
@@ -385,40 +385,16 @@ const Dashboard = () => {
           <div className="title text-h2">Revision History</div>
         </ListItem>
       </List>
-      <Divider />
       <div style={{'overflowY': 'scroll'}}>
-      <List>
-        {['RevisionName1'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Unexpected Consensus<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['RevisionName2'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Unexpected Reverts<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['RevisionName3'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Confusing Edits<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['RevisionName4'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Unexpected Reverts<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
+        <List>
+          {['RevisionName1', 'revname2', 'revname3', 'revname4'].map((text) => (
+            <div key={text}>
+              <ListItem button key={text}>
+                <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Unexpected Consensus<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
+              </ListItem>
+            </div>
+          ))}
+        </List>
       </div>
     </Drawer>
   </div>
