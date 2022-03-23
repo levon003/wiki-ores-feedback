@@ -24,6 +24,8 @@ const LoginView = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
+  // TODO consider not showing the login button if the user is already logged in
+
   return (
     <Page
       className={classes.root}
