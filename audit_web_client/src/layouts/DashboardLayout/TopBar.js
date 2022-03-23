@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -8,7 +8,8 @@ import {
   Typography,
   Toolbar,
   makeStyles,
-  IconButton
+  IconButton,
+  Link
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonIcon from '@material-ui/icons/Person';
@@ -54,6 +55,13 @@ const TopBar = ({
 }) => {
   const classes = useStyles();
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
+  const location = useLocation();
+
+  const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+  const loggedIn = username !== ""
+
+  // a bit hacky: only display the drawer button in the DashboardView
+  const displayDrawerButton = location.pathname === "/app/dashboard";
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true)
@@ -71,24 +79,37 @@ const TopBar = ({
           {/*Could replace text with a logo per the example like so: <Logo />*/}
         </RouterLink>
         <Box flexGrow={1} />
-        
-        {/* Logged in */}
-        <Box
-        display="flex"
-        alignItems= "center"
-        justifyContent= "center"
-        >
-          <PersonIcon/>Logged in as [Name]<ExitToAppIcon/>Logout
-        </Box>
-        {/* Logged out */}
-        <Box
-        display="flex"
-        alignItems= "center"
-        justifyContent= "center"
-        >
-          <PersonIcon/>Login
-        </Box>
+        {loggedIn
+          ? <Box
+          display="flex"
+          alignItems= "center"
+          justifyContent= "center"
+          >
+            <PersonIcon/>Logged in as {username}
+            <Link 
+              href="https://localhost:5000/auth/logout"
+              style={{ color: 'white' }}
+            >
+              <ExitToAppIcon/><Typography>Logout</Typography>
+            </Link>
+          </Box>
 
+          : <Box
+          display="flex"
+          alignItems= "center"
+          justifyContent= "center"
+          >
+            <Link 
+              href="/auth/login" 
+              style={{ color: 'white' }}
+            >
+              <PersonIcon/>
+              <Typography>Login</Typography>
+            </Link>
+            
+          </Box>
+        }
+        {displayDrawerButton ?
         <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -98,6 +119,7 @@ const TopBar = ({
           >
             <MenuIcon />
           </IconButton>
+          : null }
       </Toolbar>
     </AppBar>
   );

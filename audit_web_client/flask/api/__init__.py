@@ -36,6 +36,14 @@ def create_app(test_config=None):
         port_config_filepath = os.path.join(app.root_path, 'port_config.py')
         if os.path.exists(port_config_filepath):
             app.config.from_pyfile(port_config_filepath, silent=False)
+
+        # use different OAuth consumers depending on dev vs prod
+        if app.config['ENV'] == 'development':
+            app.config['CONSUMER_KEY'] = app.config['DEV_CONSUMER_KEY']
+            app.config['CONSUMER_SECRET'] = app.config['DEV_CONSUMER_SECRET']
+        else:
+            app.config['CONSUMER_KEY'] = app.config['PROD_CONSUMER_KEY']
+            app.config['CONSUMER_SECRET'] = app.config['PROD_CONSUMER_SECRET']
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
@@ -52,6 +60,10 @@ def create_app(test_config=None):
     from . import index
     app.register_blueprint(index.bp)
     #app.add_url_rule('/', endpoint='index')
+
+    from . import auth
+    auth.init_app(app)
+    app.register_blueprint(auth.bp)
 
     from . import db
     db.init_app(app)
@@ -75,7 +87,7 @@ def create_app(test_config=None):
     logging.info(app.url_map)
     logging.debug('Loaded configuration mapping:')
     for key, value in app.config.items():
-        logging.debug(f'{key}: \t{value}')
+        logging.debug(f'{key}: \t{value if "SECRET" not in key else "****"}')
     
     return app
 

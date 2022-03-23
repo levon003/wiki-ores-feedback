@@ -7,7 +7,7 @@
   "private": false,
   "scripts": {
     "start": "react-scripts start",
-    "start-flask": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask run",
+    "start-flask": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask run --cert=adhoc",
     "create-db": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask create-db",
     "flask-cli": "export 'FLASK_APP=flask/api:create_app' && export 'FLASK_ENV=development' && flask",
     "build": "react-scripts build",
@@ -47,6 +47,7 @@
     "fontsource-roboto": "^4.0.0",
     "formik": "^2.2.6",
     "history": "^5.0.0",
+    "http-proxy-middleware": "^0.19.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "nprogress": "^0.2.0",
@@ -76,5 +77,5 @@
     "eslint-plugin-react-hooks": "^2.5.1",
     "prettier": "^1.19.1"
   },
-  "proxy": "http://localhost:5000"
+  "proxy-back": "https://localhost:5000"
 }
