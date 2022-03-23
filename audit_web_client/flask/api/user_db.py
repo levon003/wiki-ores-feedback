@@ -39,6 +39,18 @@ def get_metadata():
         Column('annotation_data', Text, nullable=False),
         Index('rev_annotation_multiindex', 'user_token', 'rev_id', 'annotation_type', 'timestamp'),
     )
+    Table('annotation_history', g.oidb_user_metadata,
+        Column('history_id', Integer, primary_key=True, autoincrement=True),
+        Column('last_updated', Integer, nullable=False),
+        Column('user_token', Text(85), nullable=False),
+        Column('custom_name', Text, nullable=False),
+        Column('filter_hash', Text, nullable=False),
+        Column('total_annotated', Integer, nullable=False),
+        Column('num_damaging', Integer, nullable=False),
+        Column('num_flagged', Integer, nullable=False),
+        Column('num_not_damaging', Integer, nullable=False),
+        Index('history_annotation_idx', 'user_token')
+    )
     return g.oidb_user_metadata
 
 
