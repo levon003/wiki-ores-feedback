@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -55,9 +55,13 @@ const TopBar = ({
 }) => {
   const classes = useStyles();
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
+  const location = useLocation();
 
   const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1")
   const loggedIn = username !== ""
+
+  // a bit hacky: only display the drawer button in the DashboardView
+  const displayDrawerButton = location.pathname === "/app/dashboard";
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true)
@@ -105,7 +109,7 @@ const TopBar = ({
             
           </Box>
         }
-
+        {displayDrawerButton ?
         <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -115,6 +119,7 @@ const TopBar = ({
           >
             <MenuIcon />
           </IconButton>
+          : null }
       </Toolbar>
     </AppBar>
   );

@@ -21,7 +21,3 @@ def retrieve_static_files(path):
 @bp.route('/api', methods=('GET',))
 def get_api_route_description():
     return "API not yet designed for public access; ask the developers if you would benefit from documentation."
-
-@bp.route('/api/login', methods=('GET', 'POST'))
-def login():
-    return {'value': 'login'}
