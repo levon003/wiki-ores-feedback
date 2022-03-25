@@ -71,7 +71,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     if (filteredUsernames.length > 0) {
         // For now, explicit username filters overrule everything
         // i.e. show all revisions from specified usernames, even if they wouldn't meet the filter criteria
-        return "Only these users: " + filteredUsernames.join(', ');
+        return "Only these users: " + filteredUsernames.map(username => username.user_name).join(', ');
     }
     
     const total_checked = userTypeFilter.unregistered + userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced + userTypeFilter.bots;

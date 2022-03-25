@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo} from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
+import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match';
+import throttle from 'lodash/throttle';
 import {
   Box,
   Button,
@@ -18,6 +23,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import HelpIcon from '@material-ui/icons/Help'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
+import Typography from 'src/theme/typography';
 
 const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, preDefinedSelected, ...rest}) => {
   const classes = useStyles();
@@ -31,6 +37,57 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
     "bots": "Bots",
   }
   const userButtonStyle = (userTypeFilter !== DefaultFilters.defaultUserFilters || filteredUsernames.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+
+  const [filteredUsernamesInputValue, setFilteredUsernamesInputValue] = useState('')
+  const [filteredUsernamesOptions, setFilteredUsernamesOptions] = useState([])
+  const [filteredUsernamesOpen, setFilteredUsernamesOpen] = useState(false);
+  const [filteredUsernamesActiveQuery, setFilteredUsernamesActiveQuery] = useState(false);
+  const filteredUsernamesLoading = filteredUsernamesOpen && filteredUsernamesActiveQuery;
+
+  const usernameThrottledAutocompleteFetch = useMemo(
+    () =>
+      throttle((request, callback) => {
+        setFilteredUsernamesActiveQuery(true);
+        const username_autocomplete_url = '/api/autocomplete/username?query=' + encodeURI(request.input);
+        fetch(username_autocomplete_url, {method: 'GET'})
+          .then(res => res.json())
+          .then(data => data.users)
+          .then(callback);
+      }, 200),
+    [],
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    if (filteredUsernamesInputValue === '') {
+      setFilteredUsernamesOptions(filteredUsernames.length > 0 ? filteredUsernames : []);
+      return undefined;
+    }
+
+    usernameThrottledAutocompleteFetch({ input: filteredUsernamesInputValue }, (results) => {
+      if (active) {
+        let newOptions = [];
+
+        if (filteredUsernames.length > 0) {
+          newOptions = filteredUsernames;
+        }
+
+        if (results) {
+          newOptions = [...newOptions, ...results];
+        }
+
+        setFilteredUsernamesOptions(newOptions);
+        setFilteredUsernamesActiveQuery(false);
+      }
+    });
+
+    return () => {
+      active = false;
+      setFilteredUsernamesActiveQuery(false);
+    };
+  }, [filteredUsernames, filteredUsernamesInputValue, usernameThrottledAutocompleteFetch]);
+
     
   const handleToggle = (value) => () => {
       // TODO call onChange() with the new state;
@@ -94,12 +151,12 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
   }
     
   const handleUsernameFilterChange = (event, value, reason) => {
-      setFilteredUsernames(value);
+    setFilteredUsernames(value);
   };
     
   const handleUserFilterReset = (event) => {
-      setFilteredUsernames([]);
-      setUserTypeFilter(DefaultFilters.defaultUserFilters);
+    setFilteredUsernames([]);
+    setUserTypeFilter(DefaultFilters.defaultUserFilters);
   };
     
   const open = Boolean(userTypeAnchorEl);
@@ -186,6 +243,73 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
           </List>
           <Autocomplete
             multiple
+            id="username-filter-complete"
+            open={filteredUsernamesOpen}
+            onOpen={() => {
+              setFilteredUsernamesOpen(true);
+            }}
+            onClose={() => {
+              setFilteredUsernamesOpen(false);
+            }}
+            getOptionLabel={(option) => (typeof option === 'string' ? option : option.primary_text)}
+            filterOptions={(x) => x}
+            options={filteredUsernamesOptions}
+            autoComplete
+            includeInputInList
+            filterSelectedOptions
+            value={filteredUsernames}
+            onChange={(event, newValues) => {
+              setFilteredUsernamesOptions(newValues ? [...newValues, ...filteredUsernamesOptions] : filteredUsernamesOptions);
+              setFilteredUsernames(newValues);
+              // TODO call onChange with new set of filter criteria
+            }}
+            onInputChange={(event, newInputValue) => {
+              setFilteredUsernamesInputValue(newInputValue);
+            }}
+            renderInput={(params) => (
+              <TextField {...params} 
+                label="Filter to specific users" 
+                variant="outlined" 
+                fullWidth 
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <React.Fragment>
+                      {filteredUsernamesLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                      {params.InputProps.endAdornment}
+                    </React.Fragment>
+                  ),
+                }}
+                />
+            )}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip label={option.user_name} {...getTagProps({ index })} />
+              ))
+            }
+            renderOption={(option) => {
+              const matches = match(option.user_name, filteredUsernamesInputValue);
+              const parts = parse(
+                option.user_name,
+                matches
+              );
+
+              return (
+                <Grid container alignItems="center">
+                  <Grid item xs>
+                    {parts.map((part, index) => (
+                      <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                        {part.text}
+                      </span>
+                    ))}
+                    {/* <Typography>{option.user_name}</Typography> */}
+                  </Grid>
+                </Grid>
+              );
+            }}
+          />
+          {/* <Autocomplete
+            multiple
             freeSolo
             id="username-filter-autocomplete"
             onChange={handleUsernameFilterChange}
@@ -198,7 +322,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
                 label="Filter to specific users"
               />
             )}
-          />
+          /> */}
           <Button
             onClick={handleUserFilterReset}
           >

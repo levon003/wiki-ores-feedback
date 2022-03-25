@@ -275,7 +275,6 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
     <Autocomplete
       multiple
       id="specific-site-filter"
-      style={{ width: 300 }}
       open={open}
       onOpen={() => {
         setOpen(true);
@@ -373,7 +372,6 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
     <Autocomplete
       multiple
       id="linked-to"
-      style={{ width: 300 }}
       open={linkedToOpen}
       onOpen={() => {
         setLinkedToOpen(true);
@@ -444,7 +442,6 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
     <Autocomplete
       multiple
       id="linked-from"
-      style={{ width: 300 }}
       open={linkedFromOpen}
       onOpen={() => {
         setLinkedFromOpen(true);
