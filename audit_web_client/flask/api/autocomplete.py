@@ -134,3 +134,21 @@ def autocomplete_page_title():
 
     return {'options': page_title_data, 'page_namespace': ns}
 
+@bp.route('/api/autocomplete/username')
+def autocomplete_username():
+    logger = logging.getLogger('autocomplete.username')
+    start = datetime.now()
+    query_str = request.args.get('query', '')
+    query_str = unquote(query_str)
+    if query_str.strip() == '':
+        logger.debug(f"Served query request with query param '{request.args.get('query', 'NONE')}'.")
+        return make_response("Need a non-empty text query.", 400)
+    query_str = query_str.replace(' ', '_')
+    logger.debug(f"Serving autocomplete request with query '{query_str}'.")
+
+    Session = replica.get_replica_session()
+    with Session() as session:
+        with session.begin():
+            user_list = replica.get_usernames(query_str, session)
+    logger.info(f"Identified {len(user_list)} users for query '{query_str}' in {datetime.now() - start}.")
+    return {'users': user_list}

@@ -132,6 +132,30 @@ def get_pages_by_partial_title(query_str, page_namespace, session):
     logger.debug(f'Identified {len(page_list)} pages in namespace {page_namespace} for query "{query_str}".')
     return page_list
 
+def get_usernames(query_str, session):
+    logger = logging.getLogger('replica.user')
+    s = text("""
+    SELECT user_name, user_id
+    FROM user
+    WHERE user_name LIKE :query_str 
+    LIMIT 5;
+    """)
+
+    # fix query string to remove any existing wildcard characters
+    query_str = query_str.replace('%', '\\%').replace('_', '\\_') + "%"
+
+    s = s.bindparams(query_str=query_str)
+
+    result = session.execute(s)
+    user_list = []
+    for row in result.all():
+        user_name, user_id = row
+        user_list.append({
+            'user_id': user_id,
+            'user_name': user_name.decode('utf-8')
+        })
+    logger.debug(f'Identified {len(user_list)} users for query "{query_str}".')
+    return user_list
 
 def _get_pages_in_categories(metadata, session, category_set, curr_depth=0, max_depth=None):
     """
