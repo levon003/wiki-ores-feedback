@@ -308,21 +308,6 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
               );
             }}
           />
-          {/* <Autocomplete
-            multiple
-            freeSolo
-            id="username-filter-autocomplete"
-            onChange={handleUsernameFilterChange}
-            options={filteredUsernames}
-            value={filteredUsernames}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                label="Filter to specific users"
-              />
-            )}
-          /> */}
           <Button
             onClick={handleUserFilterReset}
           >
