@@ -78,4 +78,16 @@ Currently just scratch notes for this process.
  - React Hooks tutorial: https://reactjs.org/docs/hooks-intro.html
  - Material-UI: https://material-ui.com/getting-started/usage/
  
+ ### FAQ
+ 
+ #### What ports are in use?
+ 
+ The Flask server runs on port 5000 by default, while the Node development server runs on port 3000 by default.
+ 
+ `flask/api/port_config.py` specifies the ports expected for the Tools and Replica DBs. (likely 4000 and 4001) These parameters should be passed to the `db_tunnel.sh` script.
+ 
+ #### How can I run the backend on an M1/Silicon Mac?
+ 
+ Installing mysqlclient will be a bit of a pain: https://github.com/PyMySQL/mysqlclient/issues/496
+ 
  
