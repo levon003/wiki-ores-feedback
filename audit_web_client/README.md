@@ -39,6 +39,11 @@ To start the development backend: `yarn start-flask`
 
 To start the development frontend: `yarn start`
 
+#### Developing remotely
+
+If you're running the backend on another server, you can use whatever port you want to run that server, just make sure to port forward to port 5000 e.g. `ssh -L 5000:localhost:5001 {iuser}@{server_name}`.  This is necessary because the development OAuth consumer will redirect to the URL `https://localhost:5000`.
+
+#### Directory structure
 
 Directories:
  - `flask`: Code for the Flask back-end.
