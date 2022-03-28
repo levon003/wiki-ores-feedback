@@ -76,6 +76,5 @@
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^2.5.1",
     "prettier": "^1.19.1"
-  },
-  "proxy-back": "https://localhost:5000"
+  }
 }

@@ -574,6 +574,7 @@ def initialize_cache_command():
             else:
                 filters[key] = val
         # make a GET request against the sample endpoint
+        # TODO should add a command option that specifies the port
         result = requests.post('http://127.0.0.1:5000/api/sample/', json={'filters': filters})
         logger.info(result)
 

@@ -87,7 +87,7 @@ const TopBar = ({
           >
             <PersonIcon/>Logged in as {username}
             <Link 
-              href="https://localhost:5000/auth/logout"
+              href="/auth/logout"
               style={{ color: 'white' }}
             >
               <ExitToAppIcon/><Typography>Logout</Typography>
