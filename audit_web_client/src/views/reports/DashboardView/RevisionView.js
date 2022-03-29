@@ -27,7 +27,7 @@ import { Oval } from 'react-loading-icons';
 import ArrowBackIosIcon from '@material-ui/icons//ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons//ArrowForwardIos';
 import { LoggingContext } from '../../../App'
-import { set } from 'nprogress';
+import { handleAnnotationHistoryRequest } from './index'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,7 +63,7 @@ const NotesLoadingIcon = ({ typing, firstTyped, noteSuccess }) => {
   }
 }
 
-const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
+const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected, ...rest }) => {
   
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
@@ -164,6 +164,41 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
   }
+
+  const handleAnnotationHistoryRequest = (total_annotated,num_damaging, num_flagged, num_not_damaging) => {
+    fetch('/api/annotation_history/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filters: {
+          revision_filters: revisionFilter,
+          minor_filters: minorFilter,
+          user_type_filter: userTypeFilter,
+          filtered_usernames: filteredUsernames,
+          page_values: pageValues,
+          namespace_selected: namespaceSelected,
+          linked_to_values: linkedToValues,
+          linked_from_values: linkedFromValues
+        },
+        focus: {
+          focus_selected: focusSelected,
+          revert_definition: {
+            // TODO: implement revert definition state on frontend
+          },
+        },
+        custom_name: filter_summary,
+        total_annotated: total_annotated,
+        num_damaging: num_damaging,
+        num_flagged: num_flagged,
+        num_not_damaging: num_not_damaging,
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      setAnnotationHistory(data.annotation_history)
+    })
+    .catch(err => console.log(err))
+  }
   
   const handleButtonClick = (button_type) => {
     const correctness_type = button_type
@@ -200,6 +235,12 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       }).catch(data => {
         setButtonSuccess(false)
       });
+      handleAnnotationHistoryRequest(
+        revisions.filter(revision => revision.correctness_type_data != null).length,
+        revisions.filter(revision => revision.correctness_type_data === "correct").length,
+        revisions.filter(revision => revision.correctness_type_data === "flag").length,
+        revisions.filter(revision => revision.correctness_type_data === "misclassification").length
+      )
     }
     
     const handleNoteSave = () => {
