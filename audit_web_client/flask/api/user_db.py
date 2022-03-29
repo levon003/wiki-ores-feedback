@@ -65,6 +65,8 @@ def get_activity_log_table():
 def get_rev_annotation_table():
     return get_table('rev_annotation')
 
+def get_annotation_history_table():
+    return get_table('annotation_history')
 
 def create_tables(engine):
     metadata = get_metadata()

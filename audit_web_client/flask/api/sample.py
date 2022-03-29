@@ -353,6 +353,11 @@ def get_counts(filters, revision_list_length):
 def get_sample_revisions():
     logger = logging.getLogger('sample.get_sample')
     
+    user_token = flask_session['username'] if 'username' in flask_session else ""
+    if user_token == "":
+        logger.warn("User not logged in, so setting this annotation should be impossible.")
+        return {'error': 'No identified user token.'}, 403
+
     request_json = request.get_json()
     filters = request_json['filters']
     if 'focus' in request_json:

@@ -81,6 +81,9 @@ def create_app(test_config=None):
     from . import annotation
     app.register_blueprint(annotation.bp)
 
+    from . import annotation_history
+    app.register_blueprint(annotation_history.bp)
+
     from . import autocomplete
     app.register_blueprint(autocomplete.bp)
 

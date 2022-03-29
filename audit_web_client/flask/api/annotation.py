@@ -114,6 +114,7 @@ def handle_annotation_request():
     user_token = flask_session['username'] if 'username' in flask_session else ""
     if user_token == "":
         logger.warn("User not logged in, so setting this annotation should be impossible.")
+        return {'error': 'No identified user token.'}, 403
     if request.method == 'POST':
         # trying to set the value of an annotation
         return set_revision_annotation(user_token)
