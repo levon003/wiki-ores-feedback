@@ -6,7 +6,7 @@ A web application for auditing ORES predictions.
 The deployed version is available at: https://ores-inspect.toolforge.org/
 
 The web interface is built using a React front-end and a Flask back-end.
-The Flask back-end uses SQLite as its database.
+The Flask back-end uses Toolforge's MariaDB as its database.
 The React front-end is based directly on the [Devias Kit - React Admin Dashboard](https://material-ui.com/store/items/devias-kit/) code.
 
 ### Prepare for local development
