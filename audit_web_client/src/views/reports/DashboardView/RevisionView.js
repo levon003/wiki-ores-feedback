@@ -53,9 +53,9 @@ const useStyles = makeStyles((theme) => ({
 const NotesLoadingIcon = ({ typing, firstTyped, noteSuccess }) => {
   if (typing) {
     return <Oval stroke="#000000" style={{height: 20, width: 20, marginTop: 20, marginLeft: 8}}/>
-  } else if (!typing && firstTyped && noteSuccess) {
+  } else if (!typing && firstTyped && noteSuccess === true) {
     return <CheckIcon style={{fill: "green", marginTop: 20, marginLeft: 8}}/>
-  } else if (!typing && firstTyped && !noteSuccess) {
+  } else if (!typing && firstTyped && noteSuccess === false) {
     return <CloseIcon style={{fill: "red", marginTop: 20, marginLeft: 8}}/>
   } else {
     return null
@@ -82,24 +82,35 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     'to_userid' :'',
     'loaded': false,
   });
-  const [ correctnessType, setCorrectnessType ] = useState(revision.correctness_type_data ? "" : revision.correctness_type_data)
-  const [ note, setNote ] = useState(revision.note_data ? "" : revision.note_data)
+  const [ correctnessType, setCorrectnessType ] = useState(revision.correctness_type_data)
+  const [ note, setNote ] = useState(revision.note_data == null ? "" : revision.note_data)
   const [ noteSuccess, setNoteSuccess ] = useState(null)
-  const [typing, setTyping ] = useState(false)
+  const [ typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
   const [ buttonSuccess, setButtonSuccess ] = useState(null)
   
   useEffect(() => {
+    //Whenever the revision changes, need to update the data
+    console.log("Resetting state values to defaults")
+    setCorrectnessType(revision.correctness_type_data)
+    setNote(revision.note_data == null ? "" : revision.note_data)
+    setNoteSuccess(null)
+    setTyping(false)
+    setFirstTyped(false)
+    setButtonSuccess(null)
+
     // When this component loads, make a request to generate the diff
     // Note this could be changed to only make the request once the diff is expanded
-    const compare_url = 'https://en.wikipedia.org/w/api.php?action=compare&fromrev=' + revision.prev_rev_id.toString() + '&torev=' + revision.rev_id.toString() + '&format=json&prop=diff|title|ids|user|comment|size|timestamp&origin=*'
-    fetch(compare_url, {
-        crossDomain: true,
-        method: 'GET',
-        headers: {'Content-Type': 'application/json',
-                  'Origin': 'https://ores-inspect.toolforge.org'
-                  },
-      })
+    let ignoreFetchResult = false
+    async function fetchRevisionDiff() {
+      const compare_url = 'https://en.wikipedia.org/w/api.php?action=compare&fromrev=' + revision.prev_rev_id.toString() + '&torev=' + revision.rev_id.toString() + '&format=json&prop=diff|title|ids|user|comment|size|timestamp&origin=*'
+      fetch(compare_url, {
+          crossDomain: true,
+          method: 'GET',
+          headers: {'Content-Type': 'application/json',
+                    'Origin': 'https://ores-inspect.toolforge.org'
+                    },
+        })
         .then(res => res.json())
         .then(data => {
           if (data.hasOwnProperty("error")) {
@@ -113,22 +124,30 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             }
           } else {
             //console.log(data);
-            setRevisionDiff(data.compare['*']);
-            setRevisionMetadata({
-              'from_user': data.compare['fromuser'],
-              'from_timestamp': data.compare['fromtimestamp'],
-              'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
-              'to_user': data.compare['touser'],
-              'to_timestamp': data.compare['totimestamp'],
-              'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
-              'from_revid': data.compare['fromrevid'],
-              'to_revid': data.compare['torevid'],
-              'to_userid': data.compare['touserid'],
-              'from_userid': data.compare['fromuserid'],
-              'loaded': true,
-            })
+            if (!ignoreFetchResult) {
+              setRevisionDiff(data.compare['*']);
+              setRevisionMetadata({
+                'from_user': data.compare['fromuser'],
+                'from_timestamp': data.compare['fromtimestamp'],
+                'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
+                'to_user': data.compare['touser'],
+                'to_timestamp': data.compare['totimestamp'],
+                'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
+                'from_revid': data.compare['fromrevid'],
+                'to_revid': data.compare['torevid'],
+                'to_userid': data.compare['touserid'],
+                'from_userid': data.compare['fromuserid'],
+                'loaded': true,
+              })
+            } else {
+              console.log("Skipping revision metadata result.")
+            }
           }
-    });
+        });
+    }
+
+    fetchRevisionDiff()
+    return () => { ignoreFetchResult = true }
   }, [revision]);
   
   let prevUnannotatedDisabledCount = currRevisionIdx - 1
@@ -147,11 +166,44 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }
   }, [note])
   
+  // determines when to POST
   useEffect(() => {
-    if (!typing && firstTyped) {
-      handleNoteSave()
+    let ignoreFetchResult = false
+    async function postNoteUpdate() {
+      fetch('/api/annotation/', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          rev_id: revision.rev_id,
+          annotation_type: 'note',
+          note_text: note,
+        })
+      }).then(res => res.json())
+      .then(data => {
+        if (!ignoreFetchResult && data.rev_id === revision.rev_id) {
+          setNoteSuccess(true)
+          setNote(data.note_data == null ? "" : data.note_data)
+          // Will this trigger a revision update?
+          revision.note_data = data.note_data == null ? "" : data.note_data
+        } else {
+          // FIXME should update the appropriate entry in the revisions list based on data.rev_id
+          console.log("WARNING: revision note may not be updated in revisions list.")
+        }
+      })
+      .catch(data => {
+        setNoteSuccess(false)
+      })
     }
-  })
+
+    if (!typing && firstTyped) {
+      console.log(`POSTing note update: Typing ${typing}, firstTyped ${firstTyped}, revision.rev_id ${revision.rev_id}, revision.note_data ${revision.note_data}, note ${note}`)
+      postNoteUpdate()
+    }
+    return () => { ignoreFetchResult = true }
+  }, [revision, typing, firstTyped, note])
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
@@ -216,12 +268,11 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       setButtonSuccess(true)
         // update the annotations with the new data (if it was not rejected)
         setCorrectnessType(data.correctness_type_data)
-        setNote(data.note == null ? "" : data.note_data)
+        setNote(data.note_data == null ? "" : data.note_data)
         let copy = [...revisions]
         copy[currRevisionIdx] = {...copy[currRevisionIdx], correctness_type_data: data.correctness_type_data, note_data: data.note_data}
         setRevisions(copy)
-        // TODO I think this is probably all unnecessary....
-        // Really just need to call: revision.correctness_type_data = data.correctness_type_data
+        // TODO The above might be unnecessary, and could potentially be replaced with: revision.correctness_type_data = data.correctness_type_data
       }).catch(data => {
         setButtonSuccess(false)
       });
@@ -238,31 +289,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           revisions.filter(revision => revision.correctness_type_data === "misclassification").length
         )
       }
-    }, [revisions])
-    
-    const handleNoteSave = () => {
-      fetch('/api/annotation/', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-      body: JSON.stringify({
-        rev_id: revision.rev_id,
-        annotation_type: 'note',
-        note_text: note,
-      })
-    }).then(res => res.json())
-    .then(data => {
-      setNoteSuccess(true)
-      setNote(data.note_data == null ? "" : data.note_data)
-      revision.note_data = data.note_data == null ? "" : data.note_data
-    })
-    .catch(data => {
-      setNoteSuccess(false)
-    })
-  }
-  
+    }, [revisions])  
 
   const getUserLink = (user_text, user_id) => {
     if (user_id === 0) {
@@ -584,7 +611,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   return (
   <Box
       className={clsx(classes.root, className)}
-      {...rest}
   >
     <Box>
         <RevisionSummary/>

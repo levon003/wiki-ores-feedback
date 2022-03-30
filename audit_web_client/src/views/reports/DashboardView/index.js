@@ -400,14 +400,14 @@ const Dashboard = () => {
       <div style={{'overflowY': 'scroll'}}>
         <List>
           {annotationHistory.length > 0 ? annotationHistory.map((history) => (
-            <div key={history.custom_name}>
+            <div key={history.custom_name + history.prediction_filter + history.revert_filter} >
               <ListItem button key={history.custom_name}>
                 <ListItemText><b className="text-h3">{history.custom_name}</b><br></br><div className="text-h5">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}<br></br>{history.total_annotated} Annotated<br></br>{history.num_not_damaging} Misclassifications<br></br>{history.num_flagged} Flagged<br></br>{history.num_damaging} Damaging</div></ListItemText>
               </ListItem>
             </div>
           ))
           :
-          <div style={{textAlign: 'center'}}>No annotation history...</div>}
+          <div style={{textAlign: 'center'}}>No annotations yet.</div>}
         </List>
       </div>
     </Drawer>
