@@ -22,10 +22,10 @@ def get_annotation_history(user_token):
     with Session() as session:
         with session.begin():
             aht = user_db.get_annotation_history_table()
-            s = select(aht.c.custom_name, aht.c.total_annotated, aht.c.num_damaging, aht.c.num_flagged, aht.c.num_not_damaging).where(aht.c.user_token == user_token).order_by(aht.c.last_updated.desc())
+            s = select(aht.c.custom_name, aht.c.total_annotated, aht.c.num_damaging, aht.c.num_flagged, aht.c.num_not_damaging, aht.c.prediction_filter, aht.c.revert_filter).where(aht.c.user_token == user_token).order_by(aht.c.last_updated.desc())
             for row in session.execute(s):
-                custom_name, total_annotated, num_damaging, num_flagged, num_not_damaging = row
-                annotation_history.append({'custom_name': custom_name, 'total_annotated': total_annotated, 'num_damaging': num_damaging, 'num_flagged': num_flagged, 'num_not_damaging': num_not_damaging})
+                custom_name, total_annotated, num_damaging, num_flagged, num_not_damaging, prediction_filter, revert_filter = row
+                annotation_history.append({'custom_name': custom_name, 'total_annotated': total_annotated, 'num_damaging': num_damaging, 'num_flagged': num_flagged, 'num_not_damaging': num_not_damaging, 'prediction_filter': prediction_filter, 'revert_filter': revert_filter})
     return {'annotation_history': annotation_history}
 
 

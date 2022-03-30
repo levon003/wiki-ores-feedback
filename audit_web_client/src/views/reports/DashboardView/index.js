@@ -15,14 +15,10 @@ import { DrawerContext } from 'src/App';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
-import Divider from '@material-ui/core/Divider';
 import ChevronLeftIcon from '@material-ui/icons/ChevronRight';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 
 const drawerWidth = 240
 
@@ -115,7 +111,6 @@ const Dashboard = () => {
   const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
 
   const [annotationHistory, setAnnotationHistory] = useState([])
-  console.log(annotationHistory)
 
   const usePrevious = (value) => {
     const ref = useRef();
@@ -399,7 +394,7 @@ const Dashboard = () => {
       </div>
       <List>
         <ListItem>
-          <div className="title text-h2">Revision History</div>
+          <div className="title text-h2">Annotation History</div>
         </ListItem>
       </List>
       <div style={{'overflowY': 'scroll'}}>
@@ -407,7 +402,7 @@ const Dashboard = () => {
           {annotationHistory.length > 0 ? annotationHistory.map((history) => (
             <div key={history.custom_name}>
               <ListItem button key={history.custom_name}>
-                <ListItemText><b className="text-h3">{history.custom_name}</b><br></br><div className="text-h5">Unexpected Consensus<br></br>{history.total_annotated} Annotated<br></br>{history.num_not_damaging} Misclassifications<br></br>{history.num_flagged} Flagged<br></br>{history.num_damaging} Damaging</div></ListItemText>
+                <ListItemText><b className="text-h3">{history.custom_name}</b><br></br><div className="text-h5">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}<br></br>{history.total_annotated} Annotated<br></br>{history.num_not_damaging} Misclassifications<br></br>{history.num_flagged} Flagged<br></br>{history.num_damaging} Damaging</div></ListItemText>
               </ListItem>
             </div>
           ))
