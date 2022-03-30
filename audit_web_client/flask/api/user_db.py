@@ -41,8 +41,11 @@ def get_metadata():
     )
     Table('annotation_history', g.oidb_user_metadata,
         Column('history_id', Integer, primary_key=True, autoincrement=True),
+        Column('created_at', Integer, nullable=False),
         Column('last_updated', Integer, nullable=False),
         Column('user_token', Text(85), nullable=False),
+        Column('prediction_filter', Text, nullable=False),
+        Column('revert_filter', Text, nullable=False),
         Column('custom_name', Text, nullable=False),
         Column('filter_hash', Text, nullable=False),
         Column('total_annotated', Integer, nullable=False),
@@ -86,8 +89,9 @@ def create_user_db_command():
 
 @click.command('drop-user-db')
 @click.option('--all', 'drop_all', default=False, is_flag=True)
+@click.option('--table', 'table_name', default="", show_default=True, type=str, help='Name of table to drop')
 @with_appcontext
-def drop_user_db_command(drop_all):
+def drop_user_db_command(drop_all, table_name):
     logger = logging.getLogger('cli.drop-user-db.main')
     logger.info("Dropping user tables in Tools OIDB database.")
     start = datetime.now()
@@ -99,7 +103,10 @@ def drop_user_db_command(drop_all):
         logger.info(f"{key}")
     if drop_all:
         logger.info("Dropping all user tables identified via reflection.")
-        metadata.drop_all(tables=[metadata.tables['rev_annotation'], metadata.tables['activity_log'], ])
+        metadata.drop_all(tables=[metadata.tables['rev_annotation'], metadata.tables['activity_log'], metadata.tables['annotation_history']])
+    elif table_name != "":
+        logger.info(f"Dropping table '{table_name}'.")
+        metadata.drop_all(tables=[metadata.tables[table_name],])
     else:
         logger.info("Only listing tables without --all.")
     logger.info(f"Finished dropping table data after {datetime.now() - start}.")

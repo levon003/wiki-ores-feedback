@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, ...rest }) => {
+const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, setAnnotationHistory, focusSelected, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
   // todo: this is not very efficient, but works. think of better way like useRef or something.
   const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
@@ -326,6 +326,18 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   setRevisions={setRevisions}
                   currRevisionIdx={currRevisionIdx}
                   setCurrRevisionIdx={setCurrRevisionIdx}
+                  filter_summary={getSummary()}
+                  revisionFilter={revisionFilter}
+                  minorFilter={minorFilter}
+                  preDefinedSelected={preDefinedSelected}
+                  filteredUsernames={filteredUsernames}
+                  userTypeFilter={userTypeFilter}
+                  namespaceSelected={namespaceSelected}
+                  pageValues={pageValues}
+                  linkedFromValues={linkedFromValues}
+                  linkedToValues={linkedToValues}
+                  focusSelected={focusSelected}
+                  setAnnotationHistory={setAnnotationHistory}
                 />
               </Box>
               ) : <Oval stroke="#000000"/>

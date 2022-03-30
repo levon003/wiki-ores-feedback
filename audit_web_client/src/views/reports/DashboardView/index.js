@@ -114,6 +114,9 @@ const Dashboard = () => {
 
   const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
 
+  const [annotationHistory, setAnnotationHistory] = useState([])
+  console.log(annotationHistory)
+
   const usePrevious = (value) => {
     const ref = useRef();
     useEffect(() => {
@@ -122,6 +125,10 @@ const Dashboard = () => {
     return ref.current;
   }
   const prevFilters = usePrevious({revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected})
+
+  useEffect(() => {
+    fetchInitAnnotationHistory()
+  }, [])
 
   useEffect(() => {
     handleStateUpdate()
@@ -265,6 +272,13 @@ const Dashboard = () => {
     // });
   };
 
+  const fetchInitAnnotationHistory = () => {
+    fetch('/api/annotation_history/')
+    .then(res => res.json())
+    .then(data => setAnnotationHistory(data.annotation_history))
+    .catch(err => console.log(err))
+  }
+
   const handleLogging = (change) => {
      fetch('/api/activity_log', {
       method: 'POST', 
@@ -360,6 +374,8 @@ const Dashboard = () => {
                   pageValues={pageValues}
                   linkedFromValues={linkedFromValues}
                   linkedToValues={linkedToValues}
+                  focusSelected={focusSelected}
+                  setAnnotationHistory={setAnnotationHistory}
                 />
               </Grid>
             </Grid>
@@ -387,13 +403,15 @@ const Dashboard = () => {
       </List>
       <div style={{'overflowY': 'scroll'}}>
         <List>
-          {['RevisionName1', 'revname2', 'revname3', 'revname4'].map((text) => (
-            <div key={text}>
-              <ListItem button key={text}>
-                <ListItemText><b className="text-h3">{text}</b><br></br><div className="text-h5">Unexpected Consensus<br></br>X Annotated<br></br>Y Unannotated<br></br>Z Flagged<br></br>P of H damaging</div></ListItemText>
+          {annotationHistory.length > 0 ? annotationHistory.map((history) => (
+            <div key={history.custom_name}>
+              <ListItem button key={history.custom_name}>
+                <ListItemText><b className="text-h3">{history.custom_name}</b><br></br><div className="text-h5">Unexpected Consensus<br></br>{history.total_annotated} Annotated<br></br>{history.num_not_damaging} Misclassifications<br></br>{history.num_flagged} Flagged<br></br>{history.num_damaging} Damaging</div></ListItemText>
               </ListItem>
             </div>
-          ))}
+          ))
+          :
+          <div style={{textAlign: 'center'}}>No annotation history...</div>}
         </List>
       </div>
     </Drawer>
