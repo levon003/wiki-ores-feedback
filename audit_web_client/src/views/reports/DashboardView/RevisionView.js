@@ -82,11 +82,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     'to_userid' :'',
     'loaded': false,
   });
-  const [annotationData, setAnnotationData] = useState({
-    'correctness_type': null,
-    'note': null,
-  });
-  const [ note, setNote ] = useState("")
+  const [ correctnessType, setCorrectnessType ] = useState(revision.correctness_type_data ? "" : revision.correctness_type_data)
+  const [ note, setNote ] = useState(revision.note_data ? "" : revision.note_data)
   const [ noteSuccess, setNoteSuccess ] = useState(null)
   const [typing, setTyping ] = useState(false)
   const [ firstTyped, setFirstTyped ] = useState(false)
@@ -132,10 +129,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             })
           }
     });
-    setAnnotationData({
-      'correctness_type': revision.correctness_type_data,
-      'note': revision.note_data
-    })
   }, [revision]);
   
   let prevUnannotatedDisabledCount = currRevisionIdx - 1
@@ -222,14 +215,13 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     .then(data => {
       setButtonSuccess(true)
         // update the annotations with the new data (if it was not rejected)
-        setAnnotationData({
-          'correctness_type': data.correctness_type_data,
-          'note': data.note_data,
-        })
-        setNote(data.note == null ? "" : data.note)
+        setCorrectnessType(data.correctness_type_data)
+        setNote(data.note == null ? "" : data.note_data)
         let copy = [...revisions]
         copy[currRevisionIdx] = {...copy[currRevisionIdx], correctness_type_data: data.correctness_type_data, note_data: data.note_data}
         setRevisions(copy)
+        // TODO I think this is probably all unnecessary....
+        // Really just need to call: revision.correctness_type_data = data.correctness_type_data
       }).catch(data => {
         setButtonSuccess(false)
       });
@@ -469,9 +461,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
 
   const AnnotationButtons = () => {
     const theme = useTheme()
-    const flagButtonStyle = annotationData.correctness_type === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const correctButtonStyle = annotationData.correctness_type === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
-    const misclassButtonStyle = annotationData.correctness_type === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
+    const flagButtonStyle = correctnessType === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
+    const correctButtonStyle = correctnessType === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
+    const misclassButtonStyle = correctnessType === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
     return (
           <Box
           >

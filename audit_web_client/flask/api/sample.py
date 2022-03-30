@@ -305,7 +305,7 @@ def get_counts(filters, revision_list_length):
 
     s = add_categorical_filter_clauses(filters, rt, s)
     s = s.group_by(rt.c.damaging_pred_filter, rt.c.reverted_filter_mask)
-    logger.info(f"Built revision counts query: {s}")
+    #logger.debug(f"Built revision counts query: {s}")
 
     counts = {}
     for revert_filter in ['reverted_damaging', 'reverted_nondamaging', 'nonreverted', 'all']:
@@ -470,7 +470,7 @@ def get_sample_revisions():
                     rat_n.c.annotation_data.label("note_data")
                 )
 
-            logger.info(f"Built revision table query (for cached revs): {s}")
+            #logger.debug(f"Built revision table query (for cached revs): {s}")
 
             revision_list = []
             result = session.execute(s)
