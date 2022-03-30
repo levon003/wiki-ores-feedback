@@ -27,7 +27,6 @@ import { Oval } from 'react-loading-icons';
 import ArrowBackIosIcon from '@material-ui/icons//ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons//ArrowForwardIos';
 import { LoggingContext } from '../../../App'
-import { handleAnnotationHistoryRequest } from './index'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -225,12 +224,12 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         // update the annotations with the new data (if it was not rejected)
         // FIXME should this call setRevisions instead? (Should update exactly "revisions[currRevisionIdx].correctness_type_data = <new_data>")
         setAnnotationData({
-          'correctness_type': data.correctness_type,
-          'note': data.note,
+          'correctness_type': data.correctness_type_data,
+          'note': data.note_data,
         })
         setNote(data.note == null ? "" : data.note)
         let copy = [...revisions]
-        copy[currRevisionIdx] = {...copy[currRevisionIdx], correctness_type_data: data.correctness_type, note_data: data.note}
+        copy[currRevisionIdx] = {...copy[currRevisionIdx], correctness_type_data: data.correctness_type_data, note_data: data.note_data}
         setRevisions(copy)
       }).catch(data => {
         setButtonSuccess(false)
@@ -258,7 +257,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }).then(res => res.json())
     .then(data => {
       setNoteSuccess(true)
-      setNote(data.note == null ? "" : data.note)
+      setNote(data.note_data == null ? "" : data.note_data)
+      revision.note_data = data.note_data == null ? "" : data.note_data
     })
     .catch(data => {
       setNoteSuccess(false)

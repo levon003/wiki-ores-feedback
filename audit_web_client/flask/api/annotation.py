@@ -70,8 +70,8 @@ def get_revision_annotation(user_token, rev_id):
     # this is the JSON data that is returned with this request
     data = {
         'rev_id': rev_id,
-        'correctness_type': None,
-        'note': None,
+        'correctness_type_data': None,
+        'note_data': None,
     }
 
     existing_annotation_identified = False
@@ -93,11 +93,11 @@ def get_revision_annotation(user_token, rev_id):
             for row in session.execute(s):
                 timestamp, annotation_type, annotation_data = row
                 if annotation_type == 'correctness':
-                    data['correctness_type'] = annotation_data if annotation_data != 'none' else None
+                    data['correctness_type_data'] = annotation_data if annotation_data != 'none' else None
                     logger.info(f"Identified existing correctness annotation '{annotation_data}', originally made {datetime.utcfromtimestamp(timestamp)} ({timestamp}). (user='{user_token}')")
                     existing_annotation_identified = True
                 elif annotation_type == 'note':
-                    data['note'] = annotation_data
+                    data['note_data'] = annotation_data
                     logger.info(f"Identified existing note annotation with {len(annotation_data)} characters, originally made {datetime.utcfromtimestamp(timestamp).replace(tzinfo=pytz.UTC)} ({timestamp}). (user='{user_token}')")
                     existing_annotation_identified = True
                 else:
