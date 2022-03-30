@@ -86,8 +86,9 @@ def create_user_db_command():
 
 @click.command('drop-user-db')
 @click.option('--all', 'drop_all', default=False, is_flag=True)
+@click.option('--table', 'table_name', default="", show_default=True, type=str, help='Name of table to drop')
 @with_appcontext
-def drop_user_db_command(drop_all):
+def drop_user_db_command(drop_all, table_name):
     logger = logging.getLogger('cli.drop-user-db.main')
     logger.info("Dropping user tables in Tools OIDB database.")
     start = datetime.now()
@@ -99,7 +100,10 @@ def drop_user_db_command(drop_all):
         logger.info(f"{key}")
     if drop_all:
         logger.info("Dropping all user tables identified via reflection.")
-        metadata.drop_all(tables=[metadata.tables['rev_annotation'], metadata.tables['activity_log'], ])
+        metadata.drop_all(tables=[metadata.tables['rev_annotation'], metadata.tables['activity_log'], metadata.tables['annotation_history']])
+    elif table_name != "":
+        logger.info(f"Dropping table '{table_name}'.")
+        metadata.drop_all(tables=[metadata.tables[table_name],])
     else:
         logger.info("Only listing tables without --all.")
     logger.info(f"Finished dropping table data after {datetime.now() - start}.")
