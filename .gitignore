@@ -1,6 +1,9 @@
 # Project-specific
 data/
 
+# Vim swap files
+*.swp 
+
 # Mac files
 .DS_Store
 
