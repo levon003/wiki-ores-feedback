@@ -237,10 +237,10 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
 
     // update revision history whenever revisions changes
     useEffect(() => {
-      const unannotated = revisions.filter(revision => revision.correctness_type_data != null).length
-      if (unannotated != 0) { 
+      const annotated = revisions.filter(revision => revision.correctness_type_data != null).length
+      if (annotated != 0) { 
         handleAnnotationHistoryRequest(
-          unannotated,
+          annotated,
           revisions.filter(revision => revision.correctness_type_data === "correct").length,
           revisions.filter(revision => revision.correctness_type_data === "flag").length,
           revisions.filter(revision => revision.correctness_type_data === "misclassification").length
