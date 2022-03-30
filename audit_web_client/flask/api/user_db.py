@@ -41,8 +41,11 @@ def get_metadata():
     )
     Table('annotation_history', g.oidb_user_metadata,
         Column('history_id', Integer, primary_key=True, autoincrement=True),
+        Column('created_at', Integer, nullable=False),
         Column('last_updated', Integer, nullable=False),
         Column('user_token', Text(85), nullable=False),
+        Column('prediction_filter', Text, nullable=False),
+        Column('revert_filter', Text, nullable=False),
         Column('custom_name', Text, nullable=False),
         Column('filter_hash', Text, nullable=False),
         Column('total_annotated', Integer, nullable=False),
