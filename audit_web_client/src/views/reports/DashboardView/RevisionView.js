@@ -234,13 +234,20 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       }).catch(data => {
         setButtonSuccess(false)
       });
-      handleAnnotationHistoryRequest(
-        revisions.filter(revision => revision.correctness_type_data != null).length,
-        revisions.filter(revision => revision.correctness_type_data === "correct").length,
-        revisions.filter(revision => revision.correctness_type_data === "flag").length,
-        revisions.filter(revision => revision.correctness_type_data === "misclassification").length
-      )
     }
+
+    // update revision history whenever revisions changes
+    useEffect(() => {
+      const unannotated = revisions.filter(revision => revision.correctness_type_data != null).length
+      if (unannotated != 0) { 
+        handleAnnotationHistoryRequest(
+          unannotated,
+          revisions.filter(revision => revision.correctness_type_data === "correct").length,
+          revisions.filter(revision => revision.correctness_type_data === "flag").length,
+          revisions.filter(revision => revision.correctness_type_data === "misclassification").length
+        )
+      }
+    }, [revisions])
     
     const handleNoteSave = () => {
       fetch('/api/annotation/', {
