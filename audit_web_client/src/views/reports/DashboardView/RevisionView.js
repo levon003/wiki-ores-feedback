@@ -134,8 +134,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           }
     });
     setAnnotationData({
-      'correctness_type': revisions[currRevisionIdx].correctness_type_data,
-      'note': revisions[currRevisionIdx].note_data
+      'correctness_type': revision.correctness_type_data,
+      'note': revision.note_data
     })
   }, [revision]);
   

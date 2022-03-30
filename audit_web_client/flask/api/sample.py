@@ -402,7 +402,16 @@ def get_sample_revisions():
                 session.execute(rct.insert(), rev_cache_list)
         rev_ids = rev_ids_to_cache
     else:
-        rev_ids = list(set(cached_rev_ids))
+        # remove any duplicates in cached_rev_ids
+        if len(set(cached_rev_ids)) != len(cached_rev_ids):
+            # there is at least one duplicate rev_id!
+            logger.warn("Duplicate rev_ids detected; verify database integrity.")
+            rev_ids = []
+            for rev_id in cached_rev_ids:
+                if rev_id not in rev_ids:
+                    rev_ids.append(rev_id)
+        else:
+            rev_ids = cached_rev_ids
     logger.info(f"Retrieving full data for {len(rev_ids)} rev_ids.")
 
     # query the revision table for the specific rev_ids we need
@@ -417,7 +426,7 @@ def get_sample_revisions():
                 rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred, pt.c.page_title
             ).where(rt.c.rev_id.in_(rev_ids)).join(pt, (rt.c.page_id == pt.c.page_id))
             user_token = flask_session['username'] if 'username' in flask_session else None
-            if user_token is not None:
+            if user_token is not None and user_token != "":
                 # if the user is logged in, then retrieve annotations they may have done on these revisions
                 rat = user_db.get_rev_annotation_table()
 
@@ -469,6 +478,7 @@ def get_sample_revisions():
                 revision_list.append(row._asdict())
             if len(revision_list) != len(rev_ids):
                 logger.warning(f"Expected {len(rev_ids)} revisions; retrieved {len(revision_list)} instead.")
+            revision_list.sort(key=lambda rev: rev_ids.index(rev['rev_id']))
 
     logger.info(f"Returning {len(revision_list)} revisions.")
     counts = get_counts(filters, len(revision_list))

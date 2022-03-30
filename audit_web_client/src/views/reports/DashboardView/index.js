@@ -231,6 +231,7 @@ const Dashboard = () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        // NOTE: If you change the filter criteria, also need to add/remove them in RevisionView's POST request
         filters: {
           revision_filters: revisionFilter,
           minor_filters: minorFilter,

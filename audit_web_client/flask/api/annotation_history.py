@@ -30,10 +30,21 @@ def get_annotation_history(user_token):
 
 
 def add_new_annotation_history(request_json, user_token):
+    logger = logging.getLogger("annotation_history.add_new_annotation_history")
     filters = request_json['filters']
-    focus = request_json['focus']['focus_selected']
+    if 'focus' in request_json:
+        focus_selected = request_json['focus']['focus_selected']
+        filters['prediction_filter'] = focus_selected['prediction_filter']
+        assert filters['prediction_filter'] in ['very_likely_bad', 'very_likely_good', 'confusing', 'any']
+        filters['revert_filter'] = focus_selected['revert_filter']
+        assert filters['revert_filter'] in ['reverted', 'nonreverted', 'any']
+    else:
+        filters['prediction_filter'] = 'any'
+        filters['revert_filter'] = 'any'
+        logger.warn("No focus_selected key provided in the JSON body of this request; using defaults.")
+        raise ValueError("No focus_selected.")
+
     custom_name = request_json['custom_name']
-    total_annotated = request_json['total_annotated']
     filter_hash = sample.get_filter_hash(filters)
     timestamp = int(datetime.now().replace(tzinfo=pytz.UTC).timestamp())
     Session = db.get_oidb_session()
@@ -46,9 +57,12 @@ def add_new_annotation_history(request_json, user_token):
             if len(list(res)) == 0:
                 i = aht.insert().values(
                     user_token=user_token,
+                    created_at=timestamp,
                     last_updated=timestamp,
                     custom_name=custom_name,
                     filter_hash=filter_hash,
+                    prediction_filter=filters['prediction_filter'],
+                    revert_filter=filters['revert_filter'],
                     total_annotated=request_json['total_annotated'],
                     num_damaging=request_json['num_damaging'],
                     num_flagged=request_json['num_flagged'],
