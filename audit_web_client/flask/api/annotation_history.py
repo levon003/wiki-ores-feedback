@@ -22,7 +22,7 @@ def get_annotation_history(user_token):
     with Session() as session:
         with session.begin():
             aht = user_db.get_annotation_history_table()
-            s = select(aht.c.custom_name, aht.c.total_annotated, aht.c.num_damaging, aht.c.num_flagged, aht.c.num_not_damaging).where(aht.c.user_token == user_token)
+            s = select(aht.c.custom_name, aht.c.total_annotated, aht.c.num_damaging, aht.c.num_flagged, aht.c.num_not_damaging).where(aht.c.user_token == user_token).order_by(aht.c.last_updated.desc())
             for row in session.execute(s):
                 custom_name, total_annotated, num_damaging, num_flagged, num_not_damaging = row
                 annotation_history.append({'custom_name': custom_name, 'total_annotated': total_annotated, 'num_damaging': num_damaging, 'num_flagged': num_flagged, 'num_not_damaging': num_not_damaging})
@@ -71,11 +71,13 @@ def add_new_annotation_history(request_json, user_token):
                 session.execute(i)
             else:
                 u = update(aht).where(aht.c.user_token == user_token, aht.c.filter_hash == filter_hash).values(
+                    last_updated=timestamp,
                     total_annotated=request_json['total_annotated'],
                     num_damaging=request_json['num_damaging'],
                     num_flagged=request_json['num_flagged'],
                     num_not_damaging=request_json['num_not_damaging'],
                 )
+                session.execute(u)
     return get_annotation_history(user_token)
 
 
