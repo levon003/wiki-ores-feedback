@@ -478,9 +478,13 @@ def get_sample_revisions():
                 revision_list.append(row._asdict())
             if len(revision_list) != len(rev_ids):
                 logger.warning(f"Expected {len(rev_ids)} revisions; retrieved {len(revision_list)} instead.")
+            # sort the data according to their order in the rev_ids list
             revision_list.sort(key=lambda rev: rev_ids.index(rev['rev_id']))
 
-    logger.info(f"Returning {len(revision_list)} revisions.")
+    n_existing_note_annotations = sum([rev['note_data'] is not None for rev in revision_list])
+    n_existing_correctness_type_annotations = sum([rev['correctness_type_data'] is not None for rev in revision_list])
+    logger.info(f"Returning {len(revision_list)} revisions (that already have {n_existing_correctness_type_annotations} correctness annotations and {n_existing_note_annotations} note annotations).")
+
     counts = get_counts(filters, len(revision_list))
     logger.info(f"Computed counts: {counts}")
     return {'revisions': revision_list, 'counts': counts}

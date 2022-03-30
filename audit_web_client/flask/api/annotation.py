@@ -45,7 +45,6 @@ def set_revision_annotation(user_token):
         return {}, 404
     rev_id = data['rev_id']
     annotation_type = data['annotation_type']
-    logger.info(f"Setting annotation for rev {rev_id} of type '{annotation_type}'. (user='{user_token}')")
 
     annotation_data = None
     if annotation_type == 'correctness':
@@ -56,11 +55,13 @@ def set_revision_annotation(user_token):
         annotation_data = note_text if note_text is not None else ""
     else:
         raise ValueError(f"Annotation type {annotation_type} not yet implemented.")
+    logger.info(f"Setting annotation for rev {rev_id} of type '{annotation_type}'. (user='{user_token}'; data='{annotation_data}')")
 
     timestamp = int(datetime.now().replace(tzinfo=pytz.UTC).timestamp())
     set_annotation_data(user_token, rev_id, timestamp, annotation_type, annotation_data)
 
     # now that the new data is saved, retrieve the current annotation data for this revision
+    # (includes both the data that was just set as well as, possibly, the other type(s) of annotation data)
     return get_revision_annotation(user_token, rev_id)
 
 
@@ -94,11 +95,11 @@ def get_revision_annotation(user_token, rev_id):
                 timestamp, annotation_type, annotation_data = row
                 if annotation_type == 'correctness':
                     data['correctness_type_data'] = annotation_data if annotation_data != 'none' else None
-                    logger.info(f"Identified existing correctness annotation '{annotation_data}', originally made {datetime.utcfromtimestamp(timestamp)} ({timestamp}). (user='{user_token}')")
+                    logger.info(f"Identified existing correctness annotation '{annotation_data}' for rev {rev_id}, originally made {datetime.utcfromtimestamp(timestamp)} ({timestamp}). (user='{user_token}')")
                     existing_annotation_identified = True
                 elif annotation_type == 'note':
                     data['note_data'] = annotation_data
-                    logger.info(f"Identified existing note annotation with {len(annotation_data)} characters, originally made {datetime.utcfromtimestamp(timestamp).replace(tzinfo=pytz.UTC)} ({timestamp}). (user='{user_token}')")
+                    logger.info(f"Identified existing note annotation with {len(annotation_data)} characters for rev {rev_id}, originally made {datetime.utcfromtimestamp(timestamp).replace(tzinfo=pytz.UTC)} ({timestamp}). (user='{user_token}')")
                     existing_annotation_identified = True
                 else:
                     logger.warn(f"Annotation type {annotation_type} not yet implemented.")

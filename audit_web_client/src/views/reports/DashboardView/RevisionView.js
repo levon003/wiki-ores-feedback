@@ -222,7 +222,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     .then(data => {
       setButtonSuccess(true)
         // update the annotations with the new data (if it was not rejected)
-        // FIXME should this call setRevisions instead? (Should update exactly "revisions[currRevisionIdx].correctness_type_data = <new_data>")
         setAnnotationData({
           'correctness_type': data.correctness_type_data,
           'note': data.note_data,
