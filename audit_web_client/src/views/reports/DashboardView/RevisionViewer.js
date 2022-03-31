@@ -321,7 +321,9 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
             >
              {revisions.length !== 0 ? ( 
              <Box>
+               {/* Set the key to force an unmount when currRevisionIdx changes: https://stackoverflow.com/questions/71684884/avoiding-stale-state-in-double-useeffect */}
                 <RevisionView 
+                  key={revisions[currRevisionIdx].rev_id}
                   revisions={revisions}
                   setRevisions={setRevisions}
                   currRevisionIdx={currRevisionIdx}

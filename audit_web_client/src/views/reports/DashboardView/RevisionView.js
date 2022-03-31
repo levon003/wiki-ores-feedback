@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Link,
-  Card,
   Typography,
   TextField,
   useTheme
@@ -17,7 +16,6 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import "../../../../src/style.css"
 import moment from 'moment';
 import FlagIcon from '@material-ui/icons/Flag';
@@ -50,16 +48,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NotesLoadingIcon = ({ typing, firstTyped, noteSuccess }) => {
-  if (typing) {
-    return <Oval stroke="#000000" style={{height: 20, width: 20, marginTop: 20, marginLeft: 8}}/>
-  } else if (!typing && firstTyped && noteSuccess === true) {
-    return <CheckIcon style={{fill: "green", marginTop: 20, marginLeft: 8}}/>
-  } else if (!typing && firstTyped && noteSuccess === false) {
-    return <CloseIcon style={{fill: "red", marginTop: 20, marginLeft: 8}}/>
-  } else {
-    return null
-  }
+const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
+    if (typing || (userChangedNote && noteSuccess === null)) {
+      // user is typing OR the user has changed the note, and we don't yet know if the update was successful
+      return <Oval stroke="#000000" style={{height: 20, width: 20, marginTop: 20, marginLeft: 8}}/>
+    } else if (noteSuccess === true) {
+      return <CheckIcon style={{fill: "green", marginTop: 20, marginLeft: 8}}/>
+    } else if (noteSuccess === false) {
+      return <CloseIcon style={{fill: "red", marginTop: 20, marginLeft: 8}}/>
+    } else {
+      return null
+    }
 }
 
 const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected, ...rest }) => {
@@ -84,21 +83,27 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   });
   const [ correctnessType, setCorrectnessType ] = useState(revision.correctness_type_data)
   const [ note, setNote ] = useState(revision.note_data == null ? "" : revision.note_data)
-  const [ noteSuccess, setNoteSuccess ] = useState(null)
-  const [ typing, setTyping ] = useState(false)
-  const [ firstTyped, setFirstTyped ] = useState(false)
+
+  // state for controlling note
+  const [ noteSuccess, setNoteSuccess ] = useState(null)  // null if no POST pending, true if POST success, false if POST failure
+  const [ typing, setTyping ] = useState(false)  // true if user has typed and for 1 second afterwards
+  const [ unsentNoteUpdate, setUnsentNoteUpdate ] = useState(false)  // true if a user has typed something and we haven't POSTed that change yet
+  const [ userChangedNote, setUserChangedNote ] = useState(false)  // true if the user has ever changed the note
+  
+  // state for controlling buttons
   const [ buttonSuccess, setButtonSuccess ] = useState(null)
   
-  useEffect(() => {
-    //Whenever the revision changes, need to update the data
-    console.log("Resetting state values to defaults")
-    setCorrectnessType(revision.correctness_type_data)
-    setNote(revision.note_data == null ? "" : revision.note_data)
-    setNoteSuccess(null)
-    setTyping(false)
-    setFirstTyped(false)
-    setButtonSuccess(null)
+  useEffect( () => {
+    return () => {
+      // Executed only when component unmounts
+      // This approach is from: https://stackoverflow.com/a/68165678/4146714
+      let e = new Event("revisionViewComponentUnmount");
+      document.dispatchEvent(e);
+    }
+  }, []);
 
+  // Revision change useEffect
+  useEffect(() => {
     // When this component loads, make a request to generate the diff
     // Note this could be changed to only make the request once the diff is expanded
     let ignoreFetchResult = false
@@ -166,9 +171,27 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }
   }, [note])
   
-  // determines when to POST
+  // determines when to POST updated note
   useEffect(() => {
     let ignoreFetchResult = false
+
+    function doOnUnmount() {
+      // Runs when this RevisionView unmounts
+      ignoreFetchResult = true;
+      if (unsentNoteUpdate) {
+        // Sending note update as component unmounts
+        // note that ignoreFetchResult is already set to true
+        postNoteUpdate()
+      } else {
+        // Component unmount, with no unsaved note state.
+      }
+      if (revision.note_data !== note) {
+        // State mismatch between saved revision data and actual note data
+        // this might be unnecessary, but I think revision data won't necessarily be set correctly in the POST callback
+        revision.note_data = note
+      }
+    }
+    
     async function postNoteUpdate() {
       fetch('/api/annotation/', {
         method: 'POST',
@@ -183,27 +206,39 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         })
       }).then(res => res.json())
       .then(data => {
-        if (!ignoreFetchResult && data.rev_id === revision.rev_id) {
-          setNoteSuccess(true)
-          setNote(data.note_data == null ? "" : data.note_data)
-          // Will this trigger a revision update?
+        if (data.rev_id === revision.rev_id) {
+          if (!ignoreFetchResult) {
+            setNoteSuccess(true)
+          }
+          //setNote(data.note_data == null ? "" : data.note_data)
           revision.note_data = data.note_data == null ? "" : data.note_data
         } else {
-          // FIXME should update the appropriate entry in the revisions list based on data.rev_id
-          console.log("WARNING: revision note may not be updated in revisions list.")
+          console.log(`Current rev is ${revision.rev_id}, but just finished a POST request updating rev ${data.rev_id}'s note.`)
+          revisions.filter(rev => rev.rev_id === data.rev_id)[0].note_data = data.note_data == null ? "" : data.note_data
         }
       })
       .catch(data => {
-        setNoteSuccess(false)
+        if (!ignoreFetchResult) {
+          setNoteSuccess(false)
+        }
       })
     }
 
-    if (!typing && firstTyped) {
-      console.log(`POSTing note update: Typing ${typing}, firstTyped ${firstTyped}, revision.rev_id ${revision.rev_id}, revision.note_data ${revision.note_data}, note ${note}`)
+    if (!typing && unsentNoteUpdate) {
+      console.log(`POSTing note update: Typing ${typing}, unsentNoteUpdate ${unsentNoteUpdate}, revision.rev_id ${revision.rev_id}, revision.note_data ${revision.note_data}, note ${note}`)
+      //if (noteSuccess === null) {
+        // there is a POST request currently being processed
+        // TODO could cancel the previous request https://frontend-digest.com/cancelling-fetch-requests-in-react-applications-58a52a048e8e
+      //}
       postNoteUpdate()
+      setUnsentNoteUpdate(false)
     }
-    return () => { ignoreFetchResult = true }
-  }, [revision, typing, firstTyped, note])
+
+    document.addEventListener("revisionViewComponentUnmount", doOnUnmount);
+    return () => {
+        document.removeEventListener("revisionViewComponentUnmount", doOnUnmount);
+    }
+  }, [revision, typing, note, unsentNoteUpdate])
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
     setExpanded(!expanded);
@@ -591,19 +626,35 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }
   }
   useEffect(() => {
+    function isTextBox(element) {
+      // source: https://stackoverflow.com/a/38795917/4146714
+      // CC BY-SA 3.0
+      var tagName = element.tagName.toLowerCase();
+      if (tagName === 'textarea') return true;
+      if (tagName !== 'input') return false;
+      var type = element.getAttribute('type').toLowerCase(),
+          // if any of these input types is not supported by a browser, it will behave as input type text.
+          inputTypes = ['text', 'password', 'number', 'email', 'tel', 'url', 'search', 'date', 'datetime', 'datetime-local', 'time', 'month', 'week']
+      return inputTypes.indexOf(type) >= 0;
+    }
+
+    // FIXME Probably should use key instead https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
     document.onkeydown = (e) => {
-      if (e.keyCode === 37) {
-        handlePreviousClick()
-        handleLogging("User used keyboard shortcut to move to previous revision")
-      }
-      else if (e.keyCode === 39) {
-        handleNextClick()
-      }
-      else if (e.keyCode === 90) {
-        handlePreviousUnannotatedClick()
-      }
-      else if (e.keyCode === 88) {
-        handleNextUnannotatedClick()
+      const isUserInTextBox = isTextBox(document.activeElement)
+      if (!isUserInTextBox) {
+        if (e.keyCode === 37) {
+          handlePreviousClick()
+          handleLogging("User used keyboard shortcut to move to previous revision")
+        }
+        else if (e.keyCode === 39) {
+          handleNextClick()
+        }
+        else if (e.keyCode === 90) {
+          handlePreviousUnannotatedClick()
+        }
+        else if (e.keyCode === 88) {
+          handleNextUnannotatedClick()
+        }
       }
     }
   })
@@ -640,16 +691,19 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <Box display="flex" style={{paddingTop: "8px"}}>
                   <TextField
                   multiline
+                  name="noteTextField"
                   label="Notes" 
                   value={note} 
                   onChange={(event) => {
                     setNote(event.target.value)
+                    setUnsentNoteUpdate(true)
                     setTyping(true)
-                    setFirstTyped(true)
+                    setUserChangedNote(true)
+                    setNoteSuccess(null)
                   }} 
                   style={{width: "45vw"}}
                   />
-                    <NotesLoadingIcon typing={typing} firstTyped={firstTyped} noteSuccess={noteSuccess}/>
+                    <NotesLoadingIcon typing={typing} userChangedNote={userChangedNote} noteSuccess={noteSuccess}/>
               </Box>
           </Box>
 
