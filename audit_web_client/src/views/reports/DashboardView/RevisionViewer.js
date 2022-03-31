@@ -30,6 +30,8 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
   const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
   const numDamaging = revisions.filter(revision => revision.correctness_type_data === "correct").length
   const percentDisplay = numAnnotated === 0 ? 0 : Number(numDamaging / numAnnotated * 100).toFixed(2)
+
+  const [revisionAccordionExpanded, setRevisionAccordionExpanded] = useState(true)  // control accordion expansion in RevisionView
   
   const revisionFilterPrettyNames = {
     largeAdditions: "large additions",
@@ -328,6 +330,8 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   setRevisions={setRevisions}
                   currRevisionIdx={currRevisionIdx}
                   setCurrRevisionIdx={setCurrRevisionIdx}
+                  accordionExpanded={revisionAccordionExpanded}
+                  setAccordionExpanded={setRevisionAccordionExpanded}
                   filter_summary={getSummary()}
                   revisionFilter={revisionFilter}
                   minorFilter={minorFilter}

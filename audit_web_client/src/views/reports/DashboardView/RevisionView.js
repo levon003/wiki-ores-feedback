@@ -61,13 +61,12 @@ const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
     }
 }
 
-const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected, ...rest }) => {
+const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected, ...rest }) => {
   
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const handleLogging = useContext(LoggingContext)
-  const [revisionDiff, setRevisionDiff] = useState("Diff not loaded yet.");
-  const [expanded, setExpanded] = useState(false);
+  const [revisionDiff, setRevisionDiff] = useState("Loading revision diff from the Wikipedia Compare API");
   const [revisionMetadata, setRevisionMetadata] = useState({
     'from_user': '',
     'from_timestamp': '',
@@ -120,15 +119,14 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         .then(data => {
           if (data.hasOwnProperty("error")) {
             console.log(data.error.code, data.error.info)
-            if (data.error.code !== "nosuchrevid") {
+            if (data.error.code === "nosuchrevid" || data.error.code === "missingcontent") {
+              setRevisionDiff("Revision was revdeled (probably) after January 2020 or so. " + data.error.info + " (error code: " + data.error.code + ") You can try to <a href=\"https://en.wikipedia.org/w/index.php?diff=" + revision.rev_id.toString() + "\" target=\"_blank\" rel=\"noopener noreferrer\">view the revision on Wikipedia</a> for more info.")
+            } else {
               // We have never seen this error before
               // Panic
-              setRevisionDiff("Error loading revision: " + data.error.code + " " + data.error.info);
-            } else {
-              setRevisionDiff("Revision was revdeled (probably) after January 2020 or so.");
+              setRevisionDiff("Error loading revision: " + data.error.info + " (error code: " + data.error.code + ") You can try to <a href=\"https://en.wikipedia.org/w/index.php?diff=" + revision.rev_id.toString() + "\" target=\"_blank\" rel=\"noopener noreferrer\">view the revision on Wikipedia</a> for more info.")
             }
           } else {
-            //console.log(data);
             if (!ignoreFetchResult) {
               setRevisionDiff(data.compare['*']);
               setRevisionMetadata({
@@ -174,6 +172,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   // determines when to POST updated note
   useEffect(() => {
     let ignoreFetchResult = false
+    // note: ignoreFetchResult is used by the fetch callback to avoid setting RevisionView state
+    // importantly, that means the callback WILL call setRevisions, to set state in the parent
 
     function doOnUnmount() {
       // Runs when this RevisionView unmounts
@@ -252,7 +252,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   }, [revision, typing, note, unsentNoteUpdate])
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
-    setExpanded(!expanded);
+    setAccordionExpanded(!accordionExpanded);
   }
 
   const handleAnnotationHistoryRequest = (total_annotated,num_damaging, num_flagged, num_not_damaging) => {
@@ -411,7 +411,20 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       );
     } else {
       return (
-        <Typography>Still loading diff from the Wikipedia Compare API.</Typography>
+        <table className="diff diff-contentalign-left diff-editfont-monospace">
+          <colgroup>
+            <col className="diff-marker"/>
+            <col className="diff-content"/>
+            <col className="diff-marker"/>
+            <col className="diff-content"/>
+          </colgroup> 
+          <tbody>
+            <tr>
+              <td id= "edit" colSpan={4} dangerouslySetInnerHTML={{__html: revisionDiff}}>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       );
     }
   }
@@ -797,7 +810,12 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         </Box>
 
         {/* Difference between revision accordion */}
-        <Accordion style={{marginTop: "10px"}}>
+        <Accordion 
+          style={{marginTop: "10px"}}
+          defaultExpanded={true}
+          expanded={accordionExpanded}
+          onChange={handleAccordionExpansionToggle}
+        >
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
@@ -807,8 +825,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             </AccordionSummary>
         
             <Box
-                // todo: change height to size where we can still see buttons
-                  height="35vh"
+                  //height="35vh"
                   display="flex"
                   flexDirection="column"
                   flexWrap="nowrap"
