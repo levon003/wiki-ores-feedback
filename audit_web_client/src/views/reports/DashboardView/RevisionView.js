@@ -188,7 +188,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       if (revision.note_data !== note) {
         // State mismatch between saved revision data and actual note data
         // this might be unnecessary, but I think revision data won't necessarily be set correctly in the POST callback
-        revision.note_data = note
+        let copy = [...revisions]
+        copy[currRevisionIdx] = {...copy[currRevisionIdx], note_data: note}
+        setRevisions(copy)
       }
     }
     
@@ -210,11 +212,20 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           if (!ignoreFetchResult) {
             setNoteSuccess(true)
           }
-          //setNote(data.note_data == null ? "" : data.note_data)
-          revision.note_data = data.note_data == null ? "" : data.note_data
+          let copy = [...revisions]
+          copy[currRevisionIdx] = {...copy[currRevisionIdx], note_data: data.note_data == null ? "" : data.note_data}
+          setRevisions(copy)
         } else {
           console.log(`Current rev is ${revision.rev_id}, but just finished a POST request updating rev ${data.rev_id}'s note.`)
           revisions.filter(rev => rev.rev_id === data.rev_id)[0].note_data = data.note_data == null ? "" : data.note_data
+          let copy = [...revisions]
+          const revisionIdx = revisions.findIndex((rev) => rev.rev_id === data.rev_id)
+          if (revisionIdx !== -1) {
+            copy[revisionIdx] = {...copy[revisionIdx], note_data: data.note_data == null ? "" : data.note_data}
+            setRevisions(copy)
+          } else {
+            console.warn('Warning: POST request to update revision note completed, but no revision with that rev_id found in the current revisions list.')
+          }
         }
       })
       .catch(data => {
@@ -281,7 +292,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   
   const handleButtonClick = (button_type) => {
     const correctness_type = button_type
-    // TODO setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
+    // Setting the state value allows the visuals to update instantly... but can result in confusing state changes if many requests are made in quick succession.
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
     setButtonSuccess("loading")
@@ -307,7 +318,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         let copy = [...revisions]
         copy[currRevisionIdx] = {...copy[currRevisionIdx], correctness_type_data: data.correctness_type_data, note_data: data.note_data}
         setRevisions(copy)
-        // TODO The above might be unnecessary, and could potentially be replaced with: revision.correctness_type_data = data.correctness_type_data
       }).catch(data => {
         setButtonSuccess(false)
       });
