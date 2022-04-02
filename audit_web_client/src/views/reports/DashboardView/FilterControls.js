@@ -152,8 +152,8 @@ const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsern
     setUserTypeFilter(DefaultFilters.defaultUserFilters)
     setRevisionFilter(DefaultFilters.defaultRevisionFilters)
     setMinorFilter(DefaultFilters.defaultMinorFilters)
-    setPageValues([])
-    setLinkedFromValues(DefaultFilters.defaultLGBTHistoryFilters)
+    setPageValues(DefaultFilters.defaultLGBTHistoryFilters)
+    setLinkedFromValues([])
     setLinkedToValues([])
     setNameSpaceSelected(DefaultFilters.defaultNamespaceSelected)
   }
