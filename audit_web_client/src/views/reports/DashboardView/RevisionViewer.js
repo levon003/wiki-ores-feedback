@@ -294,8 +294,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                     style= {{ display: "inline-flex", float: "left"}}
                   >
                     <Box className="text-h3 subtitle">
-                      {/* todo: add correct updating text line, add number of revisions returned from the backend */}
-                      [Inspecting {counts?.all?.all ? formatNumber(counts?.all?.all) : 0} {getSummary()}]
+                      Inspecting {counts?.all?.all ? formatNumber(counts?.all?.all) : 0} {getSummary()}
                     </Box>
                 </Box>
 
@@ -305,7 +304,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   style= {{ display: "inline-flex", float: "right"}}
                 >
                     <Box className="text-h3 subtitle" style = {{ color: "#C7C7C7"}}>
-                      [{numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%)]
+                      {numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%)
                     </Box>
                 </Box>
             </Box>

@@ -1,3 +1,5 @@
+import LGBTHistory from 'src/views/reports/DashboardView/LGBTHistoryFilter';
+
 const defaultUserFilters = {
   unregistered: true,
   registered: false,
@@ -31,11 +33,7 @@ const defaultNewcomerUserFilters = {
   bots: false,
 }
 
-const defaultLGBTHistoryFilters = [{
-  page_id: 1421393,
-  primary_text: "LGBT history",
-  secondary_text: "73 edits"
-}] 
+const defaultLGBTHistoryFilters = LGBTHistory
 
 export default {
   defaultUserFilters,

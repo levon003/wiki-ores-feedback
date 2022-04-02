@@ -90,7 +90,14 @@ const TopBar = ({
               href="/auth/logout"
               style={{ color: 'white' }}
             >
-              <ExitToAppIcon/><Typography>Logout</Typography>
+              <Box
+                display="flex"
+                alignItems= "center"
+                marginLeft= "10px"
+              >
+                <ExitToAppIcon/><Typography>Logout</Typography>
+              </Box>
+              
             </Link>
           </Box>
 
@@ -103,8 +110,13 @@ const TopBar = ({
               href="/auth/login" 
               style={{ color: 'white' }}
             >
-              <PersonIcon/>
-              <Typography>Login</Typography>
+              <Box
+                display="flex"
+                alignItems= "center"
+              >
+                <PersonIcon/>
+                <Typography>Login</Typography>
+              </Box>
             </Link>
             
           </Box>
