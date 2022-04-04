@@ -484,7 +484,12 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const RevisionSummary = () => {
     return (
       <Box>
-        <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
+        <Box>
+          <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>
+            {revision.page_title}
+          </Link> (
+          <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&curid=" + revision.rev_id + "&diff=" + revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>diff</Link> | <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=history"}>hist</Link>)
+          </Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
           <Box 
