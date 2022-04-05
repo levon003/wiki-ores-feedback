@@ -558,9 +558,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
 
   const AnnotationButtons = () => {
     const theme = useTheme()
-    const flagButtonStyle = correctnessType === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const correctButtonStyle = correctnessType === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
-    const misclassButtonStyle = correctnessType === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
+    const flagButtonStyle = correctnessType === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {color: "black"}
+    const correctButtonStyle = correctnessType === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {color: "black", marginRight: "12px"}
+    const misclassButtonStyle = correctnessType === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {color: "black", marginRight: "12px"}
     return (
           <Box
           >
@@ -602,6 +602,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const RevisionAnnotationControls = () => {
     return (
         <Box
+          style={{color: "black"}}
           display="flex"
           flexDirection="row"
           alignItems="center"
@@ -764,7 +765,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     style={{cursor: 'pointer'}}
                     >
                       <Button disabled={currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1} className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
-                        <ArrowBackIosIcon style={{marginRight: "4px"}} className="text-h4"/>Previous Unannotated
+                        <ArrowBackIosIcon style={{marginRight: "4px", color: (currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1) ? "#BDBDBD" : "black"}} className="text-h4"/>Previous Unannotated
                       </Button>
                     </Box>
 
@@ -777,7 +778,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     style={{marginLeft: "5px", cursor: 'pointer'}}
                     >
                       <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousClick)}>
-                        <ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous
+                        <ArrowBackIcon style={{marginRight: "4px", color: (currRevisionIdx === 0) ? "#BDBDBD" : "black"}} className="text-h4"/>Previous
                       </Button>
                     </Box>
 
@@ -790,7 +791,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     title="Shortcut: <right arrow>"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
                       <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextClick)}>
-                        Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/>
+                        Next<ArrowForwardIcon style={{marginLeft: "4px", color: (currRevisionIdx === revisions.length - 1) ? "#BDBDBD" : "black"}} className="text-h4"/>
                       </Button>
                     </Box>
 
@@ -803,7 +804,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     title="Shortcut: x"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
                       <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextUnannotatedClick)}>
-                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px"}} className="text-h4"/>
+                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px", color: (currRevisionIdx === revisions.length - 1) ? "#BDBDBD" : "black"}} className="text-h4"/>
                       </Button>
                     </Box>
                   </Box>
@@ -814,7 +815,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
 
         {/* Difference between revision accordion */}
         <Accordion 
-          style={{marginTop: "10px"}}
+          style={{marginTop: "10px", color: "black"}}
           defaultExpanded={true}
           expanded={accordionExpanded}
           onChange={handleAccordionExpansionToggle}

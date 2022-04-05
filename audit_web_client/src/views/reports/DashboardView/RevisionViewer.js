@@ -303,7 +303,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   flexDirection="column"
                   style= {{ display: "inline-flex", float: "right"}}
                 >
-                    <Box className="text-h3 subtitle" style = {{ color: "#C7C7C7"}}>
+                    <Box className="text-h3 subtitle">
                       {numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%)
                     </Box>
                 </Box>
@@ -315,6 +315,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
 
             {/* revisions section */}
             <Box
+              style={{ color:"black" }}
               display="flex"
               flexDirection="column"
               flexWrap="nowrap"

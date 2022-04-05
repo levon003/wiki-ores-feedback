@@ -159,13 +159,13 @@ const FocusControls = ({className, data, counts, focusSelected, setFocusSelected
                 </Box>
 
             </Box>
-                <Accordion style={{marginTop: "10px"}}>
+                <Accordion style={{marginTop: "10px", color: "black"}}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
                         >
-                        <Typography>Misalignment Graph</Typography>
+                        <Typography style={{color:"black"}}>Misalignment Graph</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
 
