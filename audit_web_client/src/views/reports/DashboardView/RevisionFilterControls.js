@@ -134,6 +134,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
 
       </List>
       <Button
+        style={{ width:"100%" }}
         onClick={ () => {
           setRevisionFilter (DefaultFilters.defaultRevisionFilters)  
           setMinorFilter(DefaultFilters.defaultMinorFilters)

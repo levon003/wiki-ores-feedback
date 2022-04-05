@@ -13,7 +13,12 @@ import {
   Popover,
   TextField,
   Typography,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   IconButton,
+  Paper,
   useTheme
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -272,6 +277,46 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
           vertical: 'top',
           horizontal: 'center',
         }}>
+    <Paper variant='elevation'>
+
+    <List
+        component="nav"
+        aria-labelledby="user-type-list-subheader"
+        subheader={
+          <ListItem>
+            <ListItemText component="div" id="user-type-list-subheader">
+              Filter by Page Type
+            </ListItemText>
+          </ListItem>
+        }
+    />
+    <Autocomplete
+      multiple
+      id="namespace-filter"
+      value={namespaceSelected}
+      options={namespaces}
+      disableCloseOnSelect
+      getOptionLabel={(option) => option.namespace}
+      getOptionSelected={(option, value) => option.namespace === value.namespace}
+      onChange={(event, newValues) => {
+        setNameSpaceSelected(newValues)
+      }}
+      renderOption={(option, { selected }) => (
+        <React.Fragment>
+          <Checkbox
+            icon={checkboxIcon}
+            checkedIcon={checkboxCheckedIcon}
+            style={{ marginRight: 8 }}
+            checked={selected}
+          />
+          {option.namespace}
+        </React.Fragment>
+      )}
+      style={{ width: 500 }}
+      renderInput={(params) => (
+        <TextField {...params} variant="outlined" label="Namespaces" placeholder="Namespace" />
+      )}
+    />
     <Autocomplete
       multiple
       id="specific-site-filter"
@@ -341,33 +386,6 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
           </Grid>
         );
       }}
-    />
-    <Autocomplete
-      multiple
-      id="namespace-filter"
-      value={namespaceSelected}
-      options={namespaces}
-      disableCloseOnSelect
-      getOptionLabel={(option) => option.namespace}
-      getOptionSelected={(option, value) => option.namespace === value.namespace}
-      onChange={(event, newValues) => {
-        setNameSpaceSelected(newValues)
-      }}
-      renderOption={(option, { selected }) => (
-        <React.Fragment>
-          <Checkbox
-            icon={checkboxIcon}
-            checkedIcon={checkboxCheckedIcon}
-            style={{ marginRight: 8 }}
-            checked={selected}
-          />
-          {option.namespace}
-        </React.Fragment>
-      )}
-      style={{ width: 500 }}
-      renderInput={(params) => (
-        <TextField {...params} variant="outlined" label="Namespaces" placeholder="Namespace" />
-      )}
     />
     <Autocomplete
       multiple
@@ -510,10 +528,12 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
       }}
     />
     <Button
+      style={{ width:"100%" }}
       onClick={handlePageFilterReset}
     >
     Reset to default
     </Button>
+    </Paper>
     </Popover>
     </Box>
   );
