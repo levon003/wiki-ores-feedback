@@ -66,7 +66,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const handleLogging = useContext(LoggingContext)
-  const [revisionDiff, setRevisionDiff] = useState("Loading revision diff from the Wikipedia Compare API");
+  const [revisionDiff, setRevisionDiff] = useState("Loading revision diff from the Wikipedia Compare API...");
   const [revisionMetadata, setRevisionMetadata] = useState({
     'from_user': '',
     'from_timestamp': '',
@@ -420,7 +420,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           </colgroup> 
           <tbody>
             <tr>
-              <td id= "edit" colSpan={4} dangerouslySetInnerHTML={{__html: revisionDiff}}>
+              <td id= "edit" style={{height: 500}} colSpan={4} dangerouslySetInnerHTML={{__html: revisionDiff}}>
               </td>
             </tr>
           </tbody>
@@ -484,7 +484,12 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const RevisionSummary = () => {
     return (
       <Box>
-        <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
+        <Box>
+          <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>
+            {revision.page_title}
+          </Link> (
+          <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&curid=" + revision.rev_id + "&diff=" + revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>diff</Link> | <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=history"}>hist</Link>)
+          </Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
           <Box 
@@ -607,8 +612,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         </Box>  
     );
   }
-
-  const [previousUnannotatedLength, setPreviousUnannotatedLength] = useState(0)
 
   const handlePreviousClick = () => {
     setButtonSuccess(null)
@@ -837,11 +840,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                           flexDirection="column"
                         >
                             <DiffTable />
-                            {/* <Button
-                              onClick={handleAccordionExpansionToggle}
-                            >
-                                <ExpandLessIcon /> Collapse difference between revisions <ExpandLessIcon />
-                            </Button> */}
                         </Box>
                     </AccordionDetails>
                 </Box>
