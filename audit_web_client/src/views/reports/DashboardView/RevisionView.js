@@ -159,6 +159,14 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       prevUnannotatedDisabledCount--
     }
   }
+
+  let nextUnannotatedDisabledCount = currRevisionIdx + 1
+  if (currRevisionIdx !== revisions.length - 1) {
+    while ((nextUnannotatedDisabledCount <= revisions.length - 1) && revisions[nextUnannotatedDisabledCount].correctness_type_data !== null) {
+      nextUnannotatedDisabledCount++
+    }
+  }
+
   // this is for setting the typing state of the note field
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -803,8 +811,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     className="text-h4" 
                     title="Shortcut: x"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextUnannotatedClick)}>
-                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px", color: (currRevisionIdx === revisions.length - 1) ? "#BDBDBD" : "black"}} className="text-h4"/>
+                      <Button disabled={(currRevisionIdx === revisions.length - 1) || (nextUnannotatedDisabledCount === revisions.length)} className="text-h4" onClick={(handleNextUnannotatedClick)}>
+                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px", color: ((currRevisionIdx === revisions.length - 1) || (nextUnannotatedDisabledCount === revisions.length)) ? "#BDBDBD" : "black"}} className="text-h4"/>
                       </Button>
                     </Box>
                   </Box>
