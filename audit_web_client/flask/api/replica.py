@@ -14,7 +14,7 @@ def get_replica_engine():
     if 'replica_engine' in g:
         return g.replica_engine
     env = current_app.config['ENV']
-    if env == 'toolforge':
+    if env == 'production':
         # see: https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database#Connecting_to_the_database_replicas
         mariadb_url = "enwiki.web.db.svc.wikimedia.cloud"
         pool_size = 6

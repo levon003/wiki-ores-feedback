@@ -1,9 +1,14 @@
 #!/bin/bash
 # Temp deployment script
 
-REMOTE="levon003@login.toolforge.org:/data/project/ores-inspect/www/python/src"
+DEPLOYING_USERNAME="${1:-levon003}"
+echo "Deploying as user '${DEPLOYING_USERNAME}'."
+
+REMOTE="${DEPLOYING_USERNAME}@login.toolforge.org:/data/project/ores-inspect/www/python/src"
 CHMOD="--chmod=u+rwx,g+rwx,o+rx --perms"
+rsync ${CHMOD} replica.my.cnf ${REMOTE}
 rsync ${CHMOD} flask/app.py ${REMOTE}
+rsync ${CHMOD} flask/requirements.txt ${REMOTE}
 rsync ${CHMOD} flask/api/*.py ${REMOTE}/api
 rsync -r ${CHMOD} build/ ${REMOTE}/api/www
 echo "Finished syncing."
