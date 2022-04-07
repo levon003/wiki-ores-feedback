@@ -207,6 +207,7 @@ const Dashboard = () => {
 
   const handleStateUpdate = () => {
     setRevisions([])
+    setCurrRevisionIdx(0)
     setCounts({})
     // setGlobalFilterState(new_state);
     // TODO do a POST request to the backend with the new filters
