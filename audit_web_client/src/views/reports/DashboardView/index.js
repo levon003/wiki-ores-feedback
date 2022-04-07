@@ -403,7 +403,16 @@ const Dashboard = () => {
           {annotationHistory.length > 0 ? annotationHistory.map((history) => (
             <div key={history.custom_name + history.prediction_filter + history.revert_filter} >
               <ListItem button key={history.custom_name}>
-                <ListItemText><b className="text-h3">{history.custom_name}</b><br></br><div className="text-h5">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}<br></br>{history.total_annotated} Annotated<br></br>{history.num_not_damaging} Misclassifications<br></br>{history.num_flagged} Flagged<br></br>{history.num_damaging} Damaging</div></ListItemText>
+                <ListItemText>
+                  <b className="text-h2">{history.custom_name}</b><br></br>
+                  <b className="text-h2">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}</b><br></br>
+                  <div>
+                    {history.total_annotated} Annotated<br></br>
+                    {history.num_not_damaging} Misclassifications<br></br>
+                    {history.num_flagged} Flagged<br></br>
+                    {history.num_damaging} Damaging
+                  </div>
+                </ListItemText>
               </ListItem>
             </div>
           ))
