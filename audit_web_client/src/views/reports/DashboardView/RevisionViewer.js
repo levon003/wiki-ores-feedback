@@ -41,32 +41,28 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     largeRemovals: "large removals"
   }
 
-  const getPageFilterSummary = () => {
-    let pageSummaryString = ""
-    if (pageValues.length > 0) {
-      if (pageValues.length === 1) {
-        pageSummaryString += "on page "
-        pageSummaryString += `${pageValues[0].primary_text}, `
+  const getPageFilterSummaryHelper = (values, mainText, pageSummaryString) => {
+    if (values.length > 0) {
+      pageSummaryString += mainText
+      if (values.length <= 2) {
+        values.forEach(element => {
+          pageSummaryString += `${element.primary_text}, `
+        })
       }
       else {
-        pageSummaryString += "on pages "
-        pageSummaryString += `${pageValues[0].primary_text}, `
-        pageSummaryString += `${pageValues[1].primary_text}, `
-        pageSummaryString += `and ${pageValues.length - 2} more pages,`
+        pageSummaryString += `${values[0].primary_text}, `
+        pageSummaryString += `${values[1].primary_text}, `
+        pageSummaryString += `and ${values.length - 2} more pages, `
       }
     }
-    if (linkedFromValues.length > 0) {
-      pageSummaryString += "linked from "
-      pageSummaryString += `${linkedFromValues[0].primary_text}, `
-      pageSummaryString += `${linkedFromValues[1].primary_text}, `
-      pageSummaryString += `and ${linkedFromValues.length - 2} more pages,`
-    }
-    if (linkedToValues.length > 0) {
-      pageSummaryString += "linked to "
-      pageSummaryString += `${linkedToValues[0].primary_text}, `
-      pageSummaryString += `${linkedToValues[1].primary_text}, `
-      pageSummaryString += `and ${linkedToValues.length - 2} more pages,`
-    }
+    return pageSummaryString
+  }
+
+  const getPageFilterSummary = () => {
+    let pageSummaryString = ""
+    pageSummaryString = getPageFilterSummaryHelper(pageValues, "on pages ", pageSummaryString)
+    pageSummaryString = getPageFilterSummaryHelper(linkedFromValues, "linked from ", pageSummaryString)
+    pageSummaryString = getPageFilterSummaryHelper(linkedToValues, "linked to ", pageSummaryString)
     return pageSummaryString
   }
 
@@ -203,8 +199,8 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
       result = "LGBT History edits"
     }
     else {
-      result = "edits " + getPageFilterSummary() + getRevisionFilterSummary() + ", " + getUserFilterSummary()
-      result = `edits${pageValues.length === 0 ? "," : ` ${getPageFilterSummary()}`} ${getRevisionFilterSummary()}, ${getUserFilterSummary()}`
+      result = "edits, " + getPageFilterSummary() + getRevisionFilterSummary() + ", " + getUserFilterSummary()
+      // result = `edits${pageValues.length === 0 ? "," : ` ${getPageFilterSummary()}`} ${getRevisionFilterSummary()}, ${getUserFilterSummary()}`
     }
 
     return result
