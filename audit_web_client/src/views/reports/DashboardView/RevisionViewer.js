@@ -46,25 +46,26 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     if (pageValues.length > 0) {
       if (pageValues.length === 1) {
         pageSummaryString += "on page "
+        pageSummaryString += `${pageValues[0].primary_text}, `
       }
       else {
         pageSummaryString += "on pages "
+        pageSummaryString += `${pageValues[0].primary_text}, `
+        pageSummaryString += `${pageValues[1].primary_text}, `
+        pageSummaryString += `and ${pageValues.length - 2} more pages,`
       }
-      pageValues.forEach(element => {
-        pageSummaryString += `${element.primary_text}, `
-      });
     }
     if (linkedFromValues.length > 0) {
       pageSummaryString += "linked from "
-      linkedFromValues.forEach(element => {
-        pageSummaryString += `${element.primary_text}, `
-      });
+      pageSummaryString += `${linkedFromValues[0].primary_text}, `
+      pageSummaryString += `${linkedFromValues[1].primary_text}, `
+      pageSummaryString += `and ${linkedFromValues.length - 2} more pages,`
     }
     if (linkedToValues.length > 0) {
       pageSummaryString += "linked to "
-      linkedToValues.forEach(element => {
-        pageSummaryString += `${element.primary_text}, `
-      });
+      pageSummaryString += `${linkedToValues[0].primary_text}, `
+      pageSummaryString += `${linkedToValues[1].primary_text}, `
+      pageSummaryString += `and ${linkedToValues.length - 2} more pages,`
     }
     return pageSummaryString
   }
