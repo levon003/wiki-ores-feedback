@@ -348,13 +348,13 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     if (user_id === 0) {
       return (
         <Box display="inline" component="span">
-         <Link href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>{user_text}</Link> (<Link href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>)
+         <Link target="_blank" href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>{user_text}</Link> (<Link target="_blank" href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>)
         </Box>
       );
     } else {
       return (
         <Box display="inline" component="span">
-         <Link href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>&nbsp;|&nbsp;<Link href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
+         <Link target="_blank" href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link target="_blank" href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>&nbsp;|&nbsp;<Link target="_blank" href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
         </Box>
       );
     }
@@ -496,10 +496,10 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     return (
       <Box>
         <Box>
-          <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>
+          <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>
             {revision.page_title}
           </Link> (
-          <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&curid=" + revision.rev_id + "&diff=" + revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>diff</Link> | <Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=history"}>hist</Link>)
+          <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&curid=" + revision.rev_id + "&diff=" + revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>diff</Link> | <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=history"}>hist</Link>)
           </Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
@@ -510,9 +510,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             whiteSpace="normal"
           >
               (
-              <Link href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revision.rev_id}>cur</Link>
+              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revision.rev_id}>cur</Link>
               &nbsp;|&nbsp;
-              <Link href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
+              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
               ) 
               &nbsp;&nbsp;
               <Box display="inline" component="span">{formatEpochTimestamp(revision.rev_timestamp)}</Box>
@@ -522,7 +522,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <Box display="inline" component="span">({revision.curr_bytes.toLocaleString()} bytes)</Box> {getBytesDeltaDescriptor()}
               {' . . '}
               <Box display="inline" component="span">(<InlineDescription />)</Box>
-              &nbsp;(<Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=edit&undoafter=" + revision.prev_rev_id.toString() + "&undo=" + revision.rev_id.toString()}>undo</Link>)
+              &nbsp;(<Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=edit&undoafter=" + revision.prev_rev_id.toString() + "&undo=" + revision.rev_id.toString()}>undo</Link>)
           </Box>
         </Box>
       </Box>
