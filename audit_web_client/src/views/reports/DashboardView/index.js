@@ -17,6 +17,7 @@ import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronRight';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import DeleteIcon from '@material-ui/icons/Delete';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
@@ -301,6 +302,13 @@ const Dashboard = () => {
   const handleDrawerClose = () => {
     setDrawerOpen(false)
   }
+
+  const handleDeleteAnnotationHistory = (history_id) => {
+    fetch(`api/annotation_history/delete/${history_id}/`, { method: 'DELETE' })
+    .then(res => res.json())
+    .then(() => setAnnotationHistory(annotationHistory.filter(history => history.history_id !== history_id)))
+    .catch((err) => console.log(err))
+  }
     
   return (
     <div>
@@ -406,6 +414,7 @@ const Dashboard = () => {
                 <ListItemText>
                   <b className="text-h2">{history.custom_name}</b><br></br>
                   <b className="text-h2">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}</b><br></br>
+                  <DeleteIcon onClick={() => handleDeleteAnnotationHistory(history.history_id)}/>
                   <div>
                     {history.total_annotated} Annotated<br></br>
                     {history.num_not_damaging} Misclassifications<br></br>

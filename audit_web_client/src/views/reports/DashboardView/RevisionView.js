@@ -293,6 +293,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     })
     .then(res => res.json())
     .then(data => {
+      console.log(data.annotation_history)
       setAnnotationHistory(data.annotation_history)
     })
     .catch(err => console.log(err))
@@ -603,7 +604,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <FlagIcon 
                 style={{paddingRight: 5}}
               />
-              Flag
+              Unsure
             </Button>
             <br></br>
           </Box>
