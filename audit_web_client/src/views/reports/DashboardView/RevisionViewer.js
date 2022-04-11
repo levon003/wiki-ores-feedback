@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -7,8 +7,10 @@ import {
   Popover,
   IconButton,
   makeStyles,
-  Divider
+  Divider,
+  Button
 } from '@material-ui/core';
+import { DrawerContext } from 'src/App';
 import RevisionView from './RevisionView';
 
 import HelpIcon from '@material-ui/icons/Help';
@@ -30,6 +32,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
   const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
   const numDamaging = revisions.filter(revision => revision.correctness_type_data === "correct").length
   const percentDisplay = numAnnotated === 0 ? 0 : Number(numDamaging / numAnnotated * 100).toFixed(2)
+  const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
 
   const [revisionAccordionExpanded, setRevisionAccordionExpanded] = useState(true)  // control accordion expansion in RevisionView
   
@@ -41,31 +44,28 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     largeRemovals: "large removals"
   }
 
-  const getPageFilterSummary = () => {
-    let pageSummaryString = ""
-    if (pageValues.length > 0) {
-      if (pageValues.length === 1) {
-        pageSummaryString += "on page "
+  const getPageFilterSummaryHelper = (values, mainText, pageSummaryString) => {
+    if (values.length > 0) {
+      pageSummaryString += mainText
+      if (values.length <= 2) {
+        values.forEach(element => {
+          pageSummaryString += `${element.primary_text}, `
+        })
       }
       else {
-        pageSummaryString += "on pages "
+        pageSummaryString += `${values[0].primary_text}, `
+        pageSummaryString += `${values[1].primary_text}, `
+        pageSummaryString += `and ${values.length - 2} more pages, `
       }
-      pageValues.forEach(element => {
-        pageSummaryString += `${element.primary_text}, `
-      });
     }
-    if (linkedFromValues.length > 0) {
-      pageSummaryString += "linked from "
-      linkedFromValues.forEach(element => {
-        pageSummaryString += `${element.primary_text}, `
-      });
-    }
-    if (linkedToValues.length > 0) {
-      pageSummaryString += "linked to "
-      linkedToValues.forEach(element => {
-        pageSummaryString += `${element.primary_text}, `
-      });
-    }
+    return pageSummaryString
+  }
+
+  const getPageFilterSummary = () => {
+    let pageSummaryString = ""
+    pageSummaryString = getPageFilterSummaryHelper(pageValues, "on pages ", pageSummaryString)
+    pageSummaryString = getPageFilterSummaryHelper(linkedFromValues, "linked from ", pageSummaryString)
+    pageSummaryString = getPageFilterSummaryHelper(linkedToValues, "linked to ", pageSummaryString)
     return pageSummaryString
   }
 
@@ -202,8 +202,8 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
       result = "LGBT History edits"
     }
     else {
-      result = "edits " + getPageFilterSummary() + getRevisionFilterSummary() + ", " + getUserFilterSummary()
-      result = `edits${pageValues.length === 0 ? "," : ` ${getPageFilterSummary()}`} ${getRevisionFilterSummary()}, ${getUserFilterSummary()}`
+      result = "edits, " + getPageFilterSummary() + getRevisionFilterSummary() + ", " + getUserFilterSummary()
+      // result = `edits${pageValues.length === 0 ? "," : ` ${getPageFilterSummary()}`} ${getRevisionFilterSummary()}, ${getUserFilterSummary()}`
     }
 
     return result
@@ -303,8 +303,9 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   flexDirection="column"
                   style= {{ display: "inline-flex", float: "right"}}
                 >
-                    <Box className="text-h3 subtitle" style = {{ color: "#C7C7C7"}}>
-                      {numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%)
+                    <Box className="text-h3 subtitle">
+                      {/* {numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%) */}
+                      <Button onClick={() => setDrawerOpen(true)}>View annotation history</Button>
                     </Box>
                 </Box>
             </Box>
@@ -315,6 +316,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
 
             {/* revisions section */}
             <Box
+              style={{ color:"black" }}
               display="flex"
               flexDirection="column"
               flexWrap="nowrap"

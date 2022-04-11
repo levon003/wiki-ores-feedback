@@ -66,7 +66,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
   const handleLogging = useContext(LoggingContext)
-  const [revisionDiff, setRevisionDiff] = useState("Loading revision diff from the Wikipedia Compare API");
+  const [revisionDiff, setRevisionDiff] = useState("Loading revision diff from the Wikipedia Compare API...");
   const [revisionMetadata, setRevisionMetadata] = useState({
     'from_user': '',
     'from_timestamp': '',
@@ -159,6 +159,14 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       prevUnannotatedDisabledCount--
     }
   }
+
+  let nextUnannotatedDisabledCount = currRevisionIdx + 1
+  if (currRevisionIdx !== revisions.length - 1) {
+    while ((nextUnannotatedDisabledCount <= revisions.length - 1) && revisions[nextUnannotatedDisabledCount].correctness_type_data !== null) {
+      nextUnannotatedDisabledCount++
+    }
+  }
+
   // this is for setting the typing state of the note field
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -285,6 +293,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     })
     .then(res => res.json())
     .then(data => {
+      console.log(data.annotation_history)
       setAnnotationHistory(data.annotation_history)
     })
     .catch(err => console.log(err))
@@ -340,18 +349,21 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     if (user_id === 0) {
       return (
         <Box display="inline" component="span">
-         <Link href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>{user_text}</Link> (<Link href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>)
+         <Link target="_blank" href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>{user_text}</Link> (<Link target="_blank" href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>)
         </Box>
       );
     } else {
       return (
         <Box display="inline" component="span">
-         <Link href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>&nbsp;|&nbsp;<Link href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
+         <Link target="_blank" href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link target="_blank" href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>&nbsp;|&nbsp;<Link target="_blank" href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
         </Box>
       );
     }
   }
 
+  const formatEpochTimestamp = timestamp => {
+    return moment.unix(timestamp).format("HH:mm, DD MMMM YYYY");
+  }
   const formatTimestamp = timestamp => {
     return moment.utc(timestamp).utc().format("HH:mm, DD MMMM YYYY");
   }
@@ -380,17 +392,17 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           <tbody>
             <tr>
               <td id= "time" colSpan={2}>
-                <a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>
+                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>
                   Revision as of {formatTimestamp(revisionMetadata.from_timestamp)}</a> 
-                    (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.from_revid.toString()}>
+                    (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.from_revid.toString()}>
                     edit</a>)
               </td>
               <td id= "time" colSpan={2}>
-                <a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>
+                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>
                   Revision as of {formatTimestamp(revisionMetadata.to_timestamp)}
                 </a> 
-                (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()}>edit</a>) 
-                (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()}>undo</a>)
+                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()}>edit</a>) 
+                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()}>undo</a>)
               </td>
             </tr>
             <tr>
@@ -402,8 +414,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}/>
             </tr>
             <tr>
-              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}>← Previous edit</a></td>
-              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}>Next edit →</a></td>
+              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}>← Previous edit</a></td>
+              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}>Next edit →</a></td>
             </tr>
           </tbody>
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
@@ -420,7 +432,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           </colgroup> 
           <tbody>
             <tr>
-              <td id= "edit" colSpan={4} dangerouslySetInnerHTML={{__html: revisionDiff}}>
+              <td id= "edit" style={{height: 500}} colSpan={4} dangerouslySetInnerHTML={{__html: revisionDiff}}>
               </td>
             </tr>
           </tbody>
@@ -484,7 +496,12 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const RevisionSummary = () => {
     return (
       <Box>
-        <Box><Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>{revision.page_title}</Link></Box>
+        <Box>
+          <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>
+            {revision.page_title}
+          </Link> (
+          <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&curid=" + revision.rev_id + "&diff=" + revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>diff</Link> | <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=history"}>hist</Link>)
+          </Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
           <Box 
@@ -494,19 +511,19 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             whiteSpace="normal"
           >
               (
-              <Link href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revision.rev_id}>cur</Link>
+              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revision.rev_id}>cur</Link>
               &nbsp;|&nbsp;
-              <Link href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
+              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
               ) 
               &nbsp;&nbsp;
-              <Box display="inline" component="span">{formatTimestamp(revision.rev_timestamp)}</Box>
+              <Box display="inline" component="span">{formatEpochTimestamp(revision.rev_timestamp)}</Box>
               &nbsp;&nbsp;
               {getUserLink(revision.user_text, revision.user_id)}
               {' . . '}
               <Box display="inline" component="span">({revision.curr_bytes.toLocaleString()} bytes)</Box> {getBytesDeltaDescriptor()}
               {' . . '}
               <Box display="inline" component="span">(<InlineDescription />)</Box>
-              &nbsp;(<Link href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=edit&undoafter=" + revision.prev_rev_id.toString() + "&undo=" + revision.rev_id.toString()}>undo</Link>)
+              &nbsp;(<Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=edit&undoafter=" + revision.prev_rev_id.toString() + "&undo=" + revision.rev_id.toString()}>undo</Link>)
           </Box>
         </Box>
       </Box>
@@ -553,9 +570,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
 
   const AnnotationButtons = () => {
     const theme = useTheme()
-    const flagButtonStyle = correctnessType === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {}
-    const correctButtonStyle = correctnessType === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
-    const misclassButtonStyle = correctnessType === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {marginRight: "12px"}
+    const flagButtonStyle = correctnessType === 'flag' ? {backgroundColor: theme.palette.primary.main, color: 'white'} : {color: "black"}
+    const correctButtonStyle = correctnessType === 'correct' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {color: "black", marginRight: "12px"}
+    const misclassButtonStyle = correctnessType === 'misclassification' ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: "12px"} : {color: "black", marginRight: "12px"}
     return (
           <Box
           >
@@ -587,7 +604,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <FlagIcon 
                 style={{paddingRight: 5}}
               />
-              Flag
+              Unsure
             </Button>
             <br></br>
           </Box>
@@ -597,6 +614,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   const RevisionAnnotationControls = () => {
     return (
         <Box
+          style={{color: "black"}}
           display="flex"
           flexDirection="row"
           alignItems="center"
@@ -607,8 +625,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         </Box>  
     );
   }
-
-  const [previousUnannotatedLength, setPreviousUnannotatedLength] = useState(0)
 
   const handlePreviousClick = () => {
     setButtonSuccess(null)
@@ -738,17 +754,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                 justify-content="space-between"
                 style= {{float: "left", marginTop: "1.9em"}}
             >
-                  <Box style={{display: "inline-flex"}}>
-                    {/* _ of _ */}
-                    <Box
-                      display="flex"
-                      alignItems= "center"
-                      justifyContent = "center"
-                      className="text-h4" 
-                    >
-                      ARTICLE: {currRevisionIdx + 1} OF {revisions.length}
-                    </Box>
-                  </Box>
+                  {currRevisionIdx === revisions.length - 1 && (
+                    <Box>You've reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
+                  )}
 
                   {/* Buttons */}
                   <Box style={{display: "inline-flex", marginLeft: "auto"}}>
@@ -761,7 +769,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     style={{cursor: 'pointer'}}
                     >
                       <Button disabled={currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1} className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
-                        <ArrowBackIosIcon style={{marginRight: "4px"}} className="text-h4"/>Previous Unannotated
+                        <ArrowBackIosIcon style={{marginRight: "4px", color: (currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1) ? "#BDBDBD" : "black"}} className="text-h4"/>Previous Unannotated
                       </Button>
                     </Box>
 
@@ -774,7 +782,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     style={{marginLeft: "5px", cursor: 'pointer'}}
                     >
                       <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousClick)}>
-                        <ArrowBackIcon style={{marginRight: "4px"}} className="text-h4"/>Previous
+                        <ArrowBackIcon style={{marginRight: "4px", color: (currRevisionIdx === 0) ? "#BDBDBD" : "black"}} className="text-h4"/>Previous
                       </Button>
                     </Box>
 
@@ -787,7 +795,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     title="Shortcut: <right arrow>"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
                       <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextClick)}>
-                        Next<ArrowForwardIcon style={{marginLeft: "4px"}} className="text-h4"/>
+                        Next<ArrowForwardIcon style={{marginLeft: "4px", color: (currRevisionIdx === revisions.length - 1) ? "#BDBDBD" : "black"}} className="text-h4"/>
                       </Button>
                     </Box>
 
@@ -799,8 +807,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     className="text-h4" 
                     title="Shortcut: x"
                     style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextUnannotatedClick)}>
-                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px"}} className="text-h4"/>
+                      <Button disabled={(currRevisionIdx === revisions.length - 1) || (nextUnannotatedDisabledCount === revisions.length)} className="text-h4" onClick={(handleNextUnannotatedClick)}>
+                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px", color: ((currRevisionIdx === revisions.length - 1) || (nextUnannotatedDisabledCount === revisions.length)) ? "#BDBDBD" : "black"}} className="text-h4"/>
                       </Button>
                     </Box>
                   </Box>
@@ -811,7 +819,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
 
         {/* Difference between revision accordion */}
         <Accordion 
-          style={{marginTop: "10px"}}
+          style={{marginTop: "10px", color: "black"}}
           defaultExpanded={true}
           expanded={accordionExpanded}
           onChange={handleAccordionExpansionToggle}
@@ -837,11 +845,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                           flexDirection="column"
                         >
                             <DiffTable />
-                            {/* <Button
-                              onClick={handleAccordionExpansionToggle}
-                            >
-                                <ExpandLessIcon /> Collapse difference between revisions <ExpandLessIcon />
-                            </Button> */}
                         </Box>
                     </AccordionDetails>
                 </Box>

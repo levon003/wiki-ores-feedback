@@ -17,6 +17,7 @@ import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronRight';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import DeleteIcon from '@material-ui/icons/Delete';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
@@ -207,6 +208,7 @@ const Dashboard = () => {
 
   const handleStateUpdate = () => {
     setRevisions([])
+    setCurrRevisionIdx(0)
     setCounts({})
     // setGlobalFilterState(new_state);
     // TODO do a POST request to the backend with the new filters
@@ -299,6 +301,13 @@ const Dashboard = () => {
 
   const handleDrawerClose = () => {
     setDrawerOpen(false)
+  }
+
+  const handleDeleteAnnotationHistory = (history_id) => {
+    fetch(`api/annotation_history/delete/${history_id}/`, { method: 'DELETE' })
+    .then(res => res.json())
+    .then(() => setAnnotationHistory(annotationHistory.filter(history => history.history_id !== history_id)))
+    .catch((err) => console.log(err))
   }
     
   return (
@@ -399,10 +408,20 @@ const Dashboard = () => {
       </List>
       <div style={{'overflowY': 'scroll'}}>
         <List>
-          {annotationHistory.length > 0 ? annotationHistory.map((history) => (
-            <div key={history.custom_name + history.prediction_filter + history.revert_filter} >
+          {annotationHistory.length > 0 ? annotationHistory.map((history, index) => (
+            <div key={history.custom_name + history.prediction_filter + history.revert_filter + index} >
               <ListItem button key={history.custom_name}>
-                <ListItemText><b className="text-h3">{history.custom_name}</b><br></br><div className="text-h5">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}<br></br>{history.total_annotated} Annotated<br></br>{history.num_not_damaging} Misclassifications<br></br>{history.num_flagged} Flagged<br></br>{history.num_damaging} Damaging</div></ListItemText>
+                <ListItemText>
+                  <b className="text-h2">{history.custom_name}</b><br></br>
+                  <b className="text-h2">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}</b><br></br>
+                  <DeleteIcon onClick={() => handleDeleteAnnotationHistory(history.history_id)}/>
+                  <div>
+                    {history.total_annotated} Annotated<br></br>
+                    {history.num_not_damaging} Misclassifications<br></br>
+                    {history.num_flagged} Flagged<br></br>
+                    {history.num_damaging} Damaging
+                  </div>
+                </ListItemText>
               </ListItem>
             </div>
           ))

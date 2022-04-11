@@ -309,6 +309,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
             }}
           />
           <Button
+            style={{ width:"100%" }}
             onClick={handleUserFilterReset}
           >
           Reset to default

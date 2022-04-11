@@ -106,7 +106,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
         </ListItem>
         <ListItem>
           <ListItemText>
-            Is Minor
+            Minor or Major Edit
           </ListItemText>
         </ListItem>
         <ListItem key="isMinor" dense button onClick={handleMinorToggle("isMinor")}>
@@ -134,6 +134,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
 
       </List>
       <Button
+        style={{ width:"100%" }}
         onClick={ () => {
           setRevisionFilter (DefaultFilters.defaultRevisionFilters)  
           setMinorFilter(DefaultFilters.defaultMinorFilters)
