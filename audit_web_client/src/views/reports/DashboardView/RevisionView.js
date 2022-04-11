@@ -391,17 +391,17 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           <tbody>
             <tr>
               <td id= "time" colSpan={2}>
-                <a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>
+                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>
                   Revision as of {formatTimestamp(revisionMetadata.from_timestamp)}</a> 
-                    (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.from_revid.toString()}>
+                    (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.from_revid.toString()}>
                     edit</a>)
               </td>
               <td id= "time" colSpan={2}>
-                <a href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>
+                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>
                   Revision as of {formatTimestamp(revisionMetadata.to_timestamp)}
                 </a> 
-                (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()}>edit</a>) 
-                (<a href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()}>undo</a>)
+                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()}>edit</a>) 
+                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()}>undo</a>)
               </td>
             </tr>
             <tr>
@@ -413,8 +413,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}/>
             </tr>
             <tr>
-              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}>← Previous edit</a></td>
-              <td id= "edit" colSpan={2}> <a href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}>Next edit →</a></td>
+              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}>← Previous edit</a></td>
+              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}>Next edit →</a></td>
             </tr>
           </tbody>
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
