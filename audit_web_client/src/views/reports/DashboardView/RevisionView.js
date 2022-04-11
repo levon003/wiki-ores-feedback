@@ -360,6 +360,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }
   }
 
+  const formatEpochTimestamp = timestamp => {
+    return moment.unix(timestamp).format("HH:mm, DD MMMM YYYY");
+  }
   const formatTimestamp = timestamp => {
     return moment.utc(timestamp).utc().format("HH:mm, DD MMMM YYYY");
   }
@@ -512,7 +515,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <Link href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
               ) 
               &nbsp;&nbsp;
-              <Box display="inline" component="span">{formatTimestamp(revision.rev_timestamp)}</Box>
+              <Box display="inline" component="span">{formatEpochTimestamp(revision.rev_timestamp)}</Box>
               &nbsp;&nbsp;
               {getUserLink(revision.user_text, revision.user_id)}
               {' . . '}

@@ -400,8 +400,8 @@ const Dashboard = () => {
       </List>
       <div style={{'overflowY': 'scroll'}}>
         <List>
-          {annotationHistory.length > 0 ? annotationHistory.map((history) => (
-            <div key={history.custom_name + history.prediction_filter + history.revert_filter} >
+          {annotationHistory.length > 0 ? annotationHistory.map((history, index) => (
+            <div key={history.custom_name + history.prediction_filter + history.revert_filter + index} >
               <ListItem button key={history.custom_name}>
                 <ListItemText>
                   <b className="text-h2">{history.custom_name}</b><br></br>
