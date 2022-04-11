@@ -27,23 +27,23 @@ def create_app(test_config=None):
 	    REPLICA_DB_PORT=3308,
 	    TOOLS_DB_PORT=3307,
     )
+
+    from . import config
+    # from_mapping doesn't work for some reason, which is weird
+    #app.config.from_mapping(
+    #    mapping=config.get_secret_config(app.config['ENV'])
+    #)
+    app.config.update(config.get_secret_config(app.config['ENV']))
     
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        app.config.from_pyfile(os.path.join(app.root_path, 'config.py'), silent=False)
+        #app.config.from_pyfile(os.path.join(app.root_path, 'config.py'), silent=False)
 
         # check to see if port configuration has been provided
         port_config_filepath = os.path.join(app.root_path, 'port_config.py')
         if os.path.exists(port_config_filepath):
             app.config.from_pyfile(port_config_filepath, silent=False)
-
-        # use different OAuth consumers depending on dev vs prod
-        if app.config['ENV'] == 'development':
-            app.config['CONSUMER_KEY'] = app.config['DEV_CONSUMER_KEY']
-            app.config['CONSUMER_SECRET'] = app.config['DEV_CONSUMER_SECRET']
-        else:
-            app.config['CONSUMER_KEY'] = app.config['PROD_CONSUMER_KEY']
-            app.config['CONSUMER_SECRET'] = app.config['PROD_CONSUMER_SECRET']
+        
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
