@@ -753,18 +753,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                 justify-content="space-between"
                 style= {{float: "left", marginTop: "1.9em"}}
             >
-                  {/* delete so user can't see the technical limitation of only 500 revisions? */}
-                  {/* <Box style={{display: "inline-flex"}}>
-                    {/* _ of _ */}
-                    {/* <Box
-                      display="flex"
-                      alignItems= "center"
-                      justifyContent = "center"
-                      className="text-h4" 
-                    >
-                      ARTICLE: {currRevisionIdx + 1} OF {revisions.length}
-                    </Box>
-                  </Box> */} 
+                  {currRevisionIdx === revisions.length - 1 && (
+                    <Box>You've reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
+                  )}
 
                   {/* Buttons */}
                   <Box style={{display: "inline-flex", marginLeft: "auto"}}>
