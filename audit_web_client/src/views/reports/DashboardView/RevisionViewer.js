@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -7,8 +7,10 @@ import {
   Popover,
   IconButton,
   makeStyles,
-  Divider
+  Divider,
+  Button
 } from '@material-ui/core';
+import { DrawerContext } from 'src/App';
 import RevisionView from './RevisionView';
 
 import HelpIcon from '@material-ui/icons/Help';
@@ -30,6 +32,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
   const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
   const numDamaging = revisions.filter(revision => revision.correctness_type_data === "correct").length
   const percentDisplay = numAnnotated === 0 ? 0 : Number(numDamaging / numAnnotated * 100).toFixed(2)
+  const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
 
   const [revisionAccordionExpanded, setRevisionAccordionExpanded] = useState(true)  // control accordion expansion in RevisionView
   
@@ -301,7 +304,8 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   style= {{ display: "inline-flex", float: "right"}}
                 >
                     <Box className="text-h3 subtitle">
-                      {numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%)
+                      {/* {numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%) */}
+                      <Button onClick={() => setDrawerOpen(true)}>View annotation history</Button>
                     </Box>
                 </Box>
             </Box>

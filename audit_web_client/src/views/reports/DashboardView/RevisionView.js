@@ -753,9 +753,10 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                 justify-content="space-between"
                 style= {{float: "left", marginTop: "1.9em"}}
             >
-                  <Box style={{display: "inline-flex"}}>
+                  {/* delete so user can't see the technical limitation of only 500 revisions? */}
+                  {/* <Box style={{display: "inline-flex"}}>
                     {/* _ of _ */}
-                    <Box
+                    {/* <Box
                       display="flex"
                       alignItems= "center"
                       justifyContent = "center"
@@ -763,7 +764,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                     >
                       ARTICLE: {currRevisionIdx + 1} OF {revisions.length}
                     </Box>
-                  </Box>
+                  </Box> */} 
 
                   {/* Buttons */}
                   <Box style={{display: "inline-flex", marginLeft: "auto"}}>
