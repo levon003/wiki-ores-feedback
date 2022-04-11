@@ -43,6 +43,7 @@ def get_metadata():
         Column('history_id', Integer, primary_key=True, autoincrement=True),
         Column('created_at', Integer, nullable=False),
         Column('last_updated', Integer, nullable=False),
+        Column('deleted', Boolean, nullable=False),
         Column('user_token', Text(85), nullable=False),
         Column('prediction_filter', Text, nullable=False),
         Column('revert_filter', Text, nullable=False),
