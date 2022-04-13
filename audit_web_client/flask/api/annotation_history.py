@@ -22,10 +22,10 @@ def get_annotation_history(user_token):
     with Session() as session:
         with session.begin():
             aht = user_db.get_annotation_history_table()
-            s = select(aht.c.custom_name, aht.c.total_annotated, aht.c.num_damaging, aht.c.num_flagged, aht.c.num_not_damaging, aht.c.prediction_filter, aht.c.revert_filter).where(aht.c.user_token == user_token).order_by(aht.c.last_updated.desc())
+            s = select(aht.c.custom_name, aht.c.total_annotated, aht.c.num_damaging, aht.c.num_flagged, aht.c.num_not_damaging, aht.c.prediction_filter, aht.c.revert_filter, aht.c.history_id).where(aht.c.user_token == user_token, aht.c.deleted != True).order_by(aht.c.last_updated.desc())
             for row in session.execute(s):
-                custom_name, total_annotated, num_damaging, num_flagged, num_not_damaging, prediction_filter, revert_filter = row
-                annotation_history.append({'custom_name': custom_name, 'total_annotated': total_annotated, 'num_damaging': num_damaging, 'num_flagged': num_flagged, 'num_not_damaging': num_not_damaging, 'prediction_filter': prediction_filter, 'revert_filter': revert_filter})
+                custom_name, total_annotated, num_damaging, num_flagged, num_not_damaging, prediction_filter, revert_filter, history_id = row
+                annotation_history.append({'custom_name': custom_name, 'total_annotated': total_annotated, 'num_damaging': num_damaging, 'num_flagged': num_flagged, 'num_not_damaging': num_not_damaging, 'prediction_filter': prediction_filter, 'revert_filter': revert_filter, 'history_id': history_id})
     return {'annotation_history': annotation_history}
 
 
@@ -47,6 +47,7 @@ def add_new_annotation_history(request_json, user_token):
     custom_name = request_json['custom_name']
     filter_hash = sample.get_filter_hash(filters)
     timestamp = int(datetime.now().replace(tzinfo=pytz.UTC).timestamp())
+    logger.info(f"timestamp {timestamp}")
     Session = db.get_oidb_session()
     with Session() as session:
         with session.begin():
@@ -59,6 +60,7 @@ def add_new_annotation_history(request_json, user_token):
                     user_token=user_token,
                     created_at=timestamp,
                     last_updated=timestamp,
+                    deleted=False,
                     custom_name=custom_name,
                     filter_hash=filter_hash,
                     prediction_filter=filters['prediction_filter'],
@@ -80,6 +82,15 @@ def add_new_annotation_history(request_json, user_token):
                 session.execute(u)
     return get_annotation_history(user_token)
 
+def delete_annotation_history(history_id):
+    Session = db.get_oidb_session()
+    with Session() as session:
+        with session.begin():
+            aht = user_db.get_annotation_history_table()
+            u = update(aht).where(aht.c.history_id == history_id).values(
+                deleted=True
+            )
+
 
 @bp.route('/api/annotation_history/', methods=('GET', 'POST',))
 def handle_annotation_history_request():
@@ -95,3 +106,7 @@ def handle_annotation_history_request():
         return get_annotation_history(user_token)
     else:
         raise ValueError("Unexpected request method.")
+
+@bp.route('/api/annotation_history/delete/<history_id>', methods=('DELETE',))
+def handle_annotation_history_delete(history_id):
+    return delete_annotation_history(int(history_id))
