@@ -424,9 +424,9 @@ const Dashboard = () => {
                   </IconButton>
                   <div>
                     {history.total_annotated} Annotated<br></br>
-                    {history.num_not_damaging} Misclassifications<br></br>
-                    {history.num_flagged} Flagged<br></br>
-                    {history.num_damaging} Damaging
+                    {history.num_not_damaging} Not Damaging {history.prediction_filter === 'very_likely_bad' && `(${history.num_not_damaging} ORES Misclassifications)`}<br></br>
+                    {history.num_flagged} Unsure<br></br>
+                    {history.num_damaging} Damaging {history.prediction_filter === 'very_likely_good' && `(${history.num_damaging} ORES Misclassifications)`}
                   </div>
                 </ListItemText>
               </ListItem>
