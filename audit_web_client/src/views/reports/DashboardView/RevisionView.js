@@ -583,17 +583,17 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               variant="outlined"
               onClick={(event) => handleButtonClick('correct')}
             >
-              <CheckIcon 
+              <CloseIcon 
                 style={{paddingRight: 5}}
               />
-              Confirm damaging
+              Damaging
             </Button>
             <Button 
               style={misclassButtonStyle}
               variant="outlined"
               onClick={(event) => handleButtonClick('misclassification')}
-            >
-              <CloseIcon 
+            > 
+              <CheckIcon 
                 style={{paddingRight: 5}}
               />
               Not damaging
