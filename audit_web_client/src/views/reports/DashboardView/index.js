@@ -304,7 +304,7 @@ const Dashboard = () => {
   }
 
   const handleDeleteAnnotationHistory = (history_id) => {
-    fetch(`api/annotation_history/delete/${history_id}/`, { method: 'DELETE' })
+    fetch(`/api/annotation_history/delete/${history_id}`, { method: 'DELETE' })
     .then(res => res.json())
     .then(() => setAnnotationHistory(annotationHistory.filter(history => history.history_id !== history_id)))
     .catch((err) => console.log(err))
