@@ -7,9 +7,10 @@ import {
   Link,
   Typography,
   TextField,
-  useTheme
+  useTheme,
+  Tooltip
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -48,6 +49,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const HtmlTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 220,
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
+
 const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
     if (typing || (userChangedNote && noteSuccess === null)) {
       // user is typing OR the user has changed the note, and we don't yet know if the update was successful
@@ -61,7 +71,7 @@ const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
     }
 }
 
-const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected, ...rest }) => {
+const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected,userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria, ...rest }) => {
   
   const revision = revisions[currRevisionIdx]
   const classes = useStyles()
@@ -345,7 +355,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     })
     .then(res => res.json())
     .then(data => {
-      console.log(data.annotation_history)
       setAnnotationHistory(data.annotation_history)
     })
     .catch(err => console.log(err))
@@ -357,6 +366,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
     setButtonSuccess("loading")
+    if (!userHasAnnotatedWithinThisFilterCriteria) {
+      setUserHasAnnotatedWithinThisFilterCriteria(true)
+    }
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
       method: 'POST',
@@ -387,7 +399,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     // update revision history whenever revisions changes
     useEffect(() => {
       const annotated = revisions.filter(revision => revision.correctness_type_data != null).length
-      if (annotated != 0) { 
+      if (annotated != 0 && userHasAnnotatedWithinThisFilterCriteria) { 
         handleAnnotationHistoryRequest(
           annotated,
           revisions.filter(revision => revision.correctness_type_data === "correct").length,
@@ -676,9 +688,15 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     var pred = revision.damaging_pred;
     pred = pred.toFixed(3);
     return (
+      <HtmlTooltip title={
+        <React.Fragment>
+          <Typography>ORES Damaging Prediction</Typography>
+        </React.Fragment>
+      } >
       <div className ={PredColor()}>
         <div>{pred.toString()}</div>
-    </div>
+      </div>
+      </HtmlTooltip>
     );
   }
 
@@ -705,16 +723,31 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     return (
           <Box
           >
-            <Button 
-              style={correctButtonStyle}
-              variant="outlined"
-              onClick={(event) => handleButtonClick('correct')}
+            <HtmlTooltip
+              title={
+                <React.Fragment>
+                  <Typography color="inherit">{focusSelected.prediction_filter === 'very_likely_good' ? "ORES Incorrect/Revert Appropriate" : focusSelected.prediction_filter === 'very_likely_bad' ? "ORES Correct/Consensus Inappropriate" : ""}</Typography>
+                </React.Fragment>
+              }
             >
-              <CloseIcon 
-                style={{paddingRight: 5}}
-              />
-              Damaging
-            </Button>
+              <Button 
+                style={correctButtonStyle}
+                variant="outlined"
+                onClick={(event) => handleButtonClick('correct')}
+              >
+                <CloseIcon 
+                  style={{paddingRight: 5}}
+                />
+                Damaging
+              </Button>
+            </HtmlTooltip>
+            <HtmlTooltip
+              title={
+                <React.Fragment>
+                  <Typography color="inherit">{focusSelected.prediction_filter === 'very_likely_good' ? "ORES Correct/Revert Inappropriate" : focusSelected.prediction_filter === 'very_likely_bad' ? "ORES Incorrect/Consensus Appropriate" : ""}</Typography>
+                </React.Fragment>
+              }
+            >
             <Button 
               style={misclassButtonStyle}
               variant="outlined"
@@ -722,17 +755,18 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             > 
               <CheckIcon 
                 style={{paddingRight: 5}}
-              />
+                />
               Not damaging
             </Button>
+            </HtmlTooltip>
             <Button 
               style={flagButtonStyle}
               variant="outlined"
               onClick={(event) => handleButtonClick('flag')}
-            >
+              >
               <FlagIcon 
                 style={{paddingRight: 5}}
-              />
+                />
               Unsure
             </Button>
             <br></br>

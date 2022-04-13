@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, setAnnotationHistory, focusSelected, ...rest }) => {
+const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, setAnnotationHistory, focusSelected, userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
   // todo: this is not very efficient, but works. think of better way like useRef or something.
   const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
@@ -226,6 +226,24 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     return n.toString();
   }
 
+  const suffixDict = {
+    "1": "st",
+    "2": "nd",
+    "3": "rd",
+  }
+  const formatIndex = (idx) => {
+    const string = idx.toString()
+    const lastChar = string.slice(-1)
+    let res = string
+    if (lastChar in suffixDict) {
+      res += suffixDict[lastChar]
+    }
+    else {
+      res += "th"
+    }
+    return res
+  }
+
   const classes = useStyles();
   const [displayLimit, /*setDisplayLimit*/] = useState(20);  // TODO Probably want to remember this as a user setting
   const [statusDescription, setStatusDescription] = useState(defaultPreloadMessage);
@@ -294,7 +312,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                     style= {{ display: "inline-flex", float: "left"}}
                   >
                     <Box className="text-h3 subtitle">
-                      Inspecting {counts?.all?.all ? formatNumber(counts?.all?.all) : 0} {getSummary()}
+                      Inspecting {formatIndex(currRevisionIdx)} of {counts?.all?.all ? formatNumber(counts?.all?.all) : 0} {getSummary()}
                     </Box>
                 </Box>
 
@@ -322,7 +340,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
               flexWrap="nowrap"
               alignItems="center"
             >
-             {revisions.length !== 0 ? ( 
+             {revisions.length !== 0 || Object.keys(counts).length !== 0 ? ( 
              <Box>
                {/* Set the key to force an unmount when currRevisionIdx changes: https://stackoverflow.com/questions/71684884/avoiding-stale-state-in-double-useeffect */}
                 <RevisionView 
@@ -345,6 +363,8 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   linkedToValues={linkedToValues}
                   focusSelected={focusSelected}
                   setAnnotationHistory={setAnnotationHistory}
+                  userHasAnnotatedWithinThisFilterCriteria={userHasAnnotatedWithinThisFilterCriteria}
+                  setUserHasAnnotatedWithinThisFilterCriteria={setUserHasAnnotatedWithinThisFilterCriteria}
                 />
               </Box>
               ) : <Oval stroke="#000000"/>

@@ -111,6 +111,8 @@ const Dashboard = () => {
 
   const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
 
+  // This state is for the annotation history. userHasAnnotatedWithinThisFilterCriteria is used to determine if the user has made an annotation within this filter criteria yet. If they haven't, we don't want to add this filter criteria to the annotation history list. Set to true when the annotation buttons are clicked.
+  const [ userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria ] = useState(false)
   const [annotationHistory, setAnnotationHistory] = useState([])
 
   const usePrevious = (value) => {
@@ -127,6 +129,7 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
+    setUserHasAnnotatedWithinThisFilterCriteria(false)
     handleStateUpdate()
     if (prevFilters !== undefined) {
       if (prevFilters.revisionFilter !== revisionFilter) {
@@ -381,6 +384,8 @@ const Dashboard = () => {
                   linkedToValues={linkedToValues}
                   focusSelected={focusSelected}
                   setAnnotationHistory={setAnnotationHistory}
+                  userHasAnnotatedWithinThisFilterCriteria={userHasAnnotatedWithinThisFilterCriteria}
+                  setUserHasAnnotatedWithinThisFilterCriteria={setUserHasAnnotatedWithinThisFilterCriteria}
                 />
               </Grid>
             </Grid>
@@ -410,16 +415,18 @@ const Dashboard = () => {
         <List>
           {annotationHistory.length > 0 ? annotationHistory.map((history, index) => (
             <div key={history.custom_name + history.prediction_filter + history.revert_filter + index} >
-              <ListItem button key={history.custom_name}>
+              <ListItem key={history.custom_name}>
                 <ListItemText>
                   <b className="text-h2">{history.custom_name}</b><br></br>
                   <b className="text-h2">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}</b><br></br>
-                  <DeleteIcon onClick={() => handleDeleteAnnotationHistory(history.history_id)}/>
+                  <IconButton onClick={() => handleDeleteAnnotationHistory(history.history_id)} style={{padding: 0}}>
+                   <DeleteIcon/>
+                  </IconButton>
                   <div>
                     {history.total_annotated} Annotated<br></br>
-                    {history.num_not_damaging} Misclassifications<br></br>
-                    {history.num_flagged} Flagged<br></br>
-                    {history.num_damaging} Damaging
+                    {history.num_not_damaging} Not Damaging {history.prediction_filter === 'very_likely_bad' && `(${history.num_not_damaging} ORES Misclassifications)`}<br></br>
+                    {history.num_flagged} Unsure<br></br>
+                    {history.num_damaging} Damaging {history.prediction_filter === 'very_likely_good' && `(${history.num_damaging} ORES Misclassifications)`}
                   </div>
                 </ListItemText>
               </ListItem>
