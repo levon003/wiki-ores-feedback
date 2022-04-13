@@ -9,17 +9,18 @@ import {
     Card,
     Chip,
     Popover,
-    makeStyles,
     IconButton,
     Typography,
     useTheme,
     Accordion,
     AccordionDetails,
-    AccordionSummary
+    AccordionSummary,
+    Tooltip
   } from '@material-ui/core';
-  import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
-  import MisalignmentFilter from "./MisalignmentFilter";
-  import HelpIcon from '@material-ui/icons/Help';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
+import MisalignmentFilter from "./MisalignmentFilter";
+import HelpIcon from '@material-ui/icons/Help';
 
 const useStyles = makeStyles((theme) => ({
     root: {},
@@ -31,6 +32,15 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const HtmlTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 220,
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
+
 
 const FocusButton1 = ({style, setFocusSelected}) => {
     const onClick = () => {
@@ -41,7 +51,14 @@ const FocusButton1 = ({style, setFocusSelected}) => {
           })
     }
     return (
-      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED REVERTS</Button>
+            <HtmlTooltip
+              title={
+                <React.Fragment>
+                    <Typography>Edits that were reverted when ORES predicted them to be non-damaging.</Typography>
+                </React.Fragment>
+              }>
+                <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED REVERTS</Button>
+              </HtmlTooltip>
     )
 }
 const FocusButton2 = ({style, setFocusSelected}) => {
@@ -53,7 +70,14 @@ const FocusButton2 = ({style, setFocusSelected}) => {
           })
     }
     return (
-      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED CONSENSUS</Button>
+        <HtmlTooltip
+            title={
+            <React.Fragment>
+                <Typography>Edits that were not reverted when ORES predicted them to be damaging.</Typography>
+            </React.Fragment>
+            }>
+            <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED CONSENSUS</Button>
+        </HtmlTooltip>
     )
 }
 const FocusButton3 = ({style, setFocusSelected}) => {
@@ -65,7 +89,14 @@ const FocusButton3 = ({style, setFocusSelected}) => {
           })
     }
     return (
-      <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>
+        <HtmlTooltip
+        title={
+        <React.Fragment>
+            <Typography>Edits that ORES wasn't sure about.</Typography>
+        </React.Fragment>
+        }>
+            <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>
+      </HtmlTooltip>
     )
 }
 

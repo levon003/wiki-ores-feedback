@@ -7,9 +7,10 @@ import {
   Link,
   Typography,
   TextField,
-  useTheme
+  useTheme,
+  Tooltip
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -47,6 +48,15 @@ const useStyles = makeStyles((theme) => ({
     color: "#a2a9b1",
   },
 }));
+
+const HtmlTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 220,
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
 
 const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
     if (typing || (userChangedNote && noteSuccess === null)) {
@@ -549,9 +559,15 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     var pred = revision.damaging_pred;
     pred = pred.toFixed(3);
     return (
+      <HtmlTooltip title={
+        <React.Fragment>
+          <Typography>ORES Damaging Prediction</Typography>
+        </React.Fragment>
+      } >
       <div className ={PredColor()}>
         <div>{pred.toString()}</div>
-    </div>
+      </div>
+      </HtmlTooltip>
     );
   }
 
@@ -578,16 +594,31 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     return (
           <Box
           >
-            <Button 
-              style={correctButtonStyle}
-              variant="outlined"
-              onClick={(event) => handleButtonClick('correct')}
+            <HtmlTooltip
+              title={
+                <React.Fragment>
+                  <Typography color="inherit">{focusSelected.prediction_filter === 'very_likely_good' ? "ORES Incorrect/Revert Appropriate" : focusSelected.prediction_filter === 'very_likely_bad' ? "ORES Correct/Consensus Inappropriate" : ""}</Typography>
+                </React.Fragment>
+              }
             >
-              <CloseIcon 
-                style={{paddingRight: 5}}
-              />
-              Damaging
-            </Button>
+              <Button 
+                style={correctButtonStyle}
+                variant="outlined"
+                onClick={(event) => handleButtonClick('correct')}
+              >
+                <CloseIcon 
+                  style={{paddingRight: 5}}
+                />
+                Damaging
+              </Button>
+            </HtmlTooltip>
+            <HtmlTooltip
+              title={
+                <React.Fragment>
+                  <Typography color="inherit">{focusSelected.prediction_filter === 'very_likely_good' ? "ORES Correct/Revert Inappropriate" : focusSelected.prediction_filter === 'very_likely_bad' ? "ORES Incorrect/Consensus Appropriate" : ""}</Typography>
+                </React.Fragment>
+              }
+            >
             <Button 
               style={misclassButtonStyle}
               variant="outlined"
@@ -595,17 +626,18 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             > 
               <CheckIcon 
                 style={{paddingRight: 5}}
-              />
+                />
               Not damaging
             </Button>
+            </HtmlTooltip>
             <Button 
               style={flagButtonStyle}
               variant="outlined"
               onClick={(event) => handleButtonClick('flag')}
-            >
+              >
               <FlagIcon 
                 style={{paddingRight: 5}}
-              />
+                />
               Unsure
             </Button>
             <br></br>
