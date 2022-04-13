@@ -82,16 +82,24 @@ def add_new_annotation_history(request_json, user_token):
                 session.execute(u)
     return get_annotation_history(user_token)
 
-def delete_annotation_history(history_id):
+def delete_annotation_history(history_id, user_token):
     Session = db.get_oidb_session()
+    logger = logging.getLogger('annotation_history.delete_annotation_history')
     with Session() as session:
         with session.begin():
             aht = user_db.get_annotation_history_table()
-            u = update(aht).where(aht.c.history_id == history_id).values(
-                deleted=True
-            )
-            session.execute(u)
-    return {'success': 'history id deleted'}, 200
+            s = select(aht.c.user_token).where(aht.c.history_id == history_id)
+            res = list(session.execute(s))
+            if len(list(res)) == 0:
+                return {'error': 'History id not found.'}
+            elif res[0][0] != user_token:
+                return {'error': 'Cannot delete another user\'s history'}
+            else:
+                u = update(aht).where(aht.c.history_id == history_id).values(
+                    deleted=True
+                )
+                session.execute(u)
+                return {'success': f'history with id {history_id} deleted'}, 200
 
 
 @bp.route('/api/annotation_history/', methods=('GET', 'POST'))
@@ -112,4 +120,8 @@ def handle_annotation_history_request():
 @bp.route('/api/annotation_history/delete/<history_id>', methods=('DELETE',))
 def handle_annotation_history_delete(history_id):
     logger = logging.getLogger('annotation_history.handle_annotation_history_delete')
-    return delete_annotation_history(int(history_id))
+    user_token = flask_session['username'] if 'username' in flask_session else ""
+    if user_token == "":
+        logger.warn("User not logged in, so deleting this annotation history should be impossible.")
+        return {'error': 'No identified user token.'}, 403
+    return delete_annotation_history(int(history_id), user_token)
