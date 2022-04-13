@@ -61,7 +61,7 @@ const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
     }
 }
 
-const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected, ...rest }) => {
+const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected,userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria, ...rest }) => {
   
   const revision = revisions[currRevisionIdx]
   const classes = useStyles();
@@ -293,7 +293,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     })
     .then(res => res.json())
     .then(data => {
-      console.log(data.annotation_history)
       setAnnotationHistory(data.annotation_history)
     })
     .catch(err => console.log(err))
@@ -305,6 +304,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     // What should be done here? One option would be to make THIS change; but block further updates until this POST request is fully resolved. How might we do that?
     // Note the above strategy would be inappropriate for the note; one will need other approaches.
     setButtonSuccess("loading")
+    if (!userHasAnnotatedWithinThisFilterCriteria) {
+      setUserHasAnnotatedWithinThisFilterCriteria(true)
+    }
     console.log("Sending annotation to /api/annotation.");
     fetch('/api/annotation/' , {
       method: 'POST',
@@ -335,7 +337,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     // update revision history whenever revisions changes
     useEffect(() => {
       const annotated = revisions.filter(revision => revision.correctness_type_data != null).length
-      if (annotated != 0) { 
+      if (annotated != 0 && userHasAnnotatedWithinThisFilterCriteria) { 
         handleAnnotationHistoryRequest(
           annotated,
           revisions.filter(revision => revision.correctness_type_data === "correct").length,

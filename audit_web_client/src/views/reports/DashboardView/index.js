@@ -111,6 +111,8 @@ const Dashboard = () => {
 
   const [ currRevisionIdx, setCurrRevisionIdx ] = useState(0)
 
+  // This state is for the annotation history. userHasAnnotatedWithinThisFilterCriteria is used to determine if the user has made an annotation within this filter criteria yet. If they haven't, we don't want to add this filter criteria to the annotation history list. Set to true when the annotation buttons are clicked.
+  const [ userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria ] = useState(false)
   const [annotationHistory, setAnnotationHistory] = useState([])
 
   const usePrevious = (value) => {
@@ -127,6 +129,7 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
+    setUserHasAnnotatedWithinThisFilterCriteria(false)
     handleStateUpdate()
     if (prevFilters !== undefined) {
       if (prevFilters.revisionFilter !== revisionFilter) {
@@ -381,6 +384,8 @@ const Dashboard = () => {
                   linkedToValues={linkedToValues}
                   focusSelected={focusSelected}
                   setAnnotationHistory={setAnnotationHistory}
+                  userHasAnnotatedWithinThisFilterCriteria={userHasAnnotatedWithinThisFilterCriteria}
+                  setUserHasAnnotatedWithinThisFilterCriteria={setUserHasAnnotatedWithinThisFilterCriteria}
                 />
               </Grid>
             </Grid>
