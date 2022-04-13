@@ -423,7 +423,7 @@ def get_sample_revisions():
             pt = db.get_page_table()
             
             s = select(
-                rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred, pt.c.page_title
+                rt.c.rev_id, rt.c.prev_rev_id, rt.c.rev_timestamp, rt.c.user_text, rt.c.user_id, rt.c.curr_bytes, rt.c.delta_bytes, rt.c.is_minor, rt.c.has_edit_summary, rt.c.damaging_pred, pt.c.page_title, rt.c.revert_id, rt.c.revert_set_size, rt.c.is_self_reverted, rt.c.seconds_to_revert
             ).where(rt.c.rev_id.in_(rev_ids)).join(pt, (rt.c.page_id == pt.c.page_id))
             user_token = flask_session['username'] if 'username' in flask_session else None
             if user_token is not None and user_token != "":
