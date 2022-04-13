@@ -226,6 +226,24 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     return n.toString();
   }
 
+  const suffixDict = {
+    "1": "st",
+    "2": "nd",
+    "3": "rd",
+  }
+  const formatIndex = (idx) => {
+    const string = idx.toString()
+    const lastChar = string.slice(-1)
+    let res = string
+    if (lastChar in suffixDict) {
+      res += suffixDict[lastChar]
+    }
+    else {
+      res += "th"
+    }
+    return res
+  }
+
   const classes = useStyles();
   const [displayLimit, /*setDisplayLimit*/] = useState(20);  // TODO Probably want to remember this as a user setting
   const [statusDescription, setStatusDescription] = useState(defaultPreloadMessage);
@@ -294,7 +312,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                     style= {{ display: "inline-flex", float: "left"}}
                   >
                     <Box className="text-h3 subtitle">
-                      Inspecting {counts?.all?.all ? formatNumber(counts?.all?.all) : 0} {getSummary()}
+                      Inspecting {formatIndex(currRevisionIdx)} of {counts?.all?.all ? formatNumber(counts?.all?.all) : 0} {getSummary()}
                     </Box>
                 </Box>
 

@@ -415,16 +415,18 @@ const Dashboard = () => {
         <List>
           {annotationHistory.length > 0 ? annotationHistory.map((history, index) => (
             <div key={history.custom_name + history.prediction_filter + history.revert_filter + index} >
-              <ListItem button key={history.custom_name}>
+              <ListItem key={history.custom_name}>
                 <ListItemText>
                   <b className="text-h2">{history.custom_name}</b><br></br>
                   <b className="text-h2">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}</b><br></br>
-                  <DeleteIcon onClick={() => handleDeleteAnnotationHistory(history.history_id)}/>
+                  <IconButton onClick={() => handleDeleteAnnotationHistory(history.history_id)} style={{padding: 0}}>
+                   <DeleteIcon/>
+                  </IconButton>
                   <div>
                     {history.total_annotated} Annotated<br></br>
-                    {history.num_not_damaging} Misclassifications<br></br>
-                    {history.num_flagged} Flagged<br></br>
-                    {history.num_damaging} Damaging
+                    {history.num_not_damaging} Not Damaging {history.prediction_filter === 'very_likely_bad' && `(${history.num_not_damaging} ORES Misclassifications)`}<br></br>
+                    {history.num_flagged} Unsure<br></br>
+                    {history.num_damaging} Damaging {history.prediction_filter === 'very_likely_good' && `(${history.num_damaging} ORES Misclassifications)`}
                   </div>
                 </ListItemText>
               </ListItem>
