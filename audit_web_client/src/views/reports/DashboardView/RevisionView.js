@@ -64,9 +64,9 @@ const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
 const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected, ...rest }) => {
   
   const revision = revisions[currRevisionIdx]
-  const classes = useStyles();
+  const classes = useStyles()
   const handleLogging = useContext(LoggingContext)
-  const [revisionDiff, setRevisionDiff] = useState("Loading revision diff from the Wikipedia Compare API...");
+  const [revisionDiff, setRevisionDiff] = useState("Loading revision diff from the Wikipedia Compare API...")
   const [revisionMetadata, setRevisionMetadata] = useState({
     'from_user': '',
     'from_timestamp': '',
@@ -79,7 +79,22 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     'from_userid' :'',
     'to_userid' :'',
     'loaded': false,
-  });
+  })
+  const [revertMetadata, setRevertMetadata] = useState({
+    'has_revert': revision.revert_id !== null,
+    'revert_id': revision.revert_id,
+    'is_self_reverted': revision.is_self_reverted,
+    'seconds_to_revert': revision.seconds_to_revert,
+    'timestamp': revision.rev_timestamp + revision.seconds_to_revert,
+    'revert_set_size': revision.revert_set_size,
+    'has_edit_summary': true,  // until we learn it doesn't, assume it does have one
+    'edit_summary': '',
+    'revert_user': '',
+    'revert_userid': 0,
+    'curr_bytes': null,
+    'delta_bytes': null,
+    'loaded': false,
+  })
   const [ correctnessType, setCorrectnessType ] = useState(revision.correctness_type_data)
   const [ note, setNote ] = useState(revision.note_data == null ? "" : revision.note_data)
 
@@ -114,39 +129,76 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           headers: {'Content-Type': 'application/json',
                     'Origin': 'https://ores-inspect.toolforge.org'
                     },
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.hasOwnProperty("error")) {
+          console.log(data.error.code, data.error.info)
+          if (data.error.code === "nosuchrevid" || data.error.code === "missingcontent") {
+            setRevisionDiff("Revision was revdeled (probably) after January 2020 or so. " + data.error.info + " (error code: " + data.error.code + ") You can try to <a href=\"https://en.wikipedia.org/w/index.php?diff=" + revision.rev_id.toString() + "\" target=\"_blank\" rel=\"noopener noreferrer\">view the revision on Wikipedia</a> for more info.")
+          } else {
+            // We have never seen this error before
+            // Panic
+            setRevisionDiff("Error loading revision: " + data.error.info + " (error code: " + data.error.code + ") You can try to <a href=\"https://en.wikipedia.org/w/index.php?diff=" + revision.rev_id.toString() + "\" target=\"_blank\" rel=\"noopener noreferrer\">view the revision on Wikipedia</a> for more info.")
+          }
+        } else {
+          if (!ignoreFetchResult) {
+            setRevisionDiff(data.compare['*']);
+            setRevisionMetadata({
+              'from_user': data.compare['fromuser'],
+              'from_timestamp': data.compare['fromtimestamp'],
+              'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
+              'to_user': data.compare['touser'],
+              'to_timestamp': data.compare['totimestamp'],
+              'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
+              'from_revid': data.compare['fromrevid'],
+              'to_revid': data.compare['torevid'],
+              'to_userid': data.compare['touserid'],
+              'from_userid': data.compare['fromuserid'],
+              'loaded': true,
+            })
+          } else {
+            console.log("Skipping revision metadata result.")
+          }
+        }
+      });
+      if (revision.revert_id !== null) {
+        fetch('https://en.wikipedia.org/w/api.php?action=compare&fromrev=' + revision.rev_id.toString() + '&torev=' + revision.revert_id.toString() + '&format=json&prop=ids|user|comment|size|timestamp&origin=*', {
+          crossDomain: true,
+          method: 'GET',
+          headers: {'Content-Type': 'application/json',
+                    'Origin': 'https://ores-inspect.toolforge.org'
+                    },
         })
         .then(res => res.json())
         .then(data => {
           if (data.hasOwnProperty("error")) {
-            console.log(data.error.code, data.error.info)
-            if (data.error.code === "nosuchrevid" || data.error.code === "missingcontent") {
-              setRevisionDiff("Revision was revdeled (probably) after January 2020 or so. " + data.error.info + " (error code: " + data.error.code + ") You can try to <a href=\"https://en.wikipedia.org/w/index.php?diff=" + revision.rev_id.toString() + "\" target=\"_blank\" rel=\"noopener noreferrer\">view the revision on Wikipedia</a> for more info.")
-            } else {
-              // We have never seen this error before
-              // Panic
-              setRevisionDiff("Error loading revision: " + data.error.info + " (error code: " + data.error.code + ") You can try to <a href=\"https://en.wikipedia.org/w/index.php?diff=" + revision.rev_id.toString() + "\" target=\"_blank\" rel=\"noopener noreferrer\">view the revision on Wikipedia</a> for more info.")
-            }
+            console.log("revert", data.error.code, data.error.info)
+            setRevertMetadata({
+              ...revertMetadata,
+              'has_edit_summary': true,
+              'edit_summary': "Error loading revision: " + data.error.info + " (error code: " + data.error.code + ") You can try to <a href=\"https://en.wikipedia.org/w/index.php?diff=" + revision.rev_id.toString() + "\" target=\"_blank\" rel=\"noopener noreferrer\">view the revision on Wikipedia</a> for more info.",
+              'loaded': true,
+            })
           } else {
             if (!ignoreFetchResult) {
-              setRevisionDiff(data.compare['*']);
-              setRevisionMetadata({
-                'from_user': data.compare['fromuser'],
-                'from_timestamp': data.compare['fromtimestamp'],
-                'from_parsedcomment': convertRelativeLinks(data.compare['fromparsedcomment']),
-                'to_user': data.compare['touser'],
-                'to_timestamp': data.compare['totimestamp'],
-                'to_parsedcomment': convertRelativeLinks(data.compare['toparsedcomment']),
-                'from_revid': data.compare['fromrevid'],
-                'to_revid': data.compare['torevid'],
-                'to_userid': data.compare['touserid'],
-                'from_userid': data.compare['fromuserid'],
+              console.log(data)
+              setRevertMetadata({
+                ...revertMetadata,
+                'has_edit_summary': true,
+                'edit_summary': convertRelativeLinks(data.compare['toparsedcomment']),
                 'loaded': true,
+                'revert_user': data.compare['touser'],
+                'revert_userid': data.compare['touserid'],
+                'curr_bytes': data.compare['tosize'],
+                'delta_bytes': data.compare['tosize'] - data.compare['fromsize'],
               })
             } else {
-              console.log("Skipping revision metadata result.")
+              console.log("Skipping revert metadata result.")
             }
           }
-        });
+        })
+      }
     }
 
     fetchRevisionDiff()
@@ -346,6 +398,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }, [revisions])  
 
   const getUserLink = (user_text, user_id) => {
+    if (user_text === "") {
+      return ( <Box display="inline" component="span"></Box>)
+    }
     if (user_id === 0) {
       return (
         <Box display="inline" component="span">
@@ -441,10 +496,10 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }
   }
 
-  const InlineDescription = () => {
-    if (revision.has_edit_summary) {
-      if (revisionMetadata.loaded) {
-        return (<Box display="inline" component="span" fontStyle='italic' dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}></Box>);
+  const InlineDescription = ({ hasEditSummary, isSummaryLoaded, editSummary }) => {
+    if (hasEditSummary) {
+      if (isSummaryLoaded) {
+        return (<Box display="inline" component="span" fontStyle='italic' dangerouslySetInnerHTML={{__html: editSummary}}></Box>);
       } else {
         return (<Box display="inline" component="span" fontSize='10px'>loading</Box>);
       }
@@ -453,11 +508,11 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }
   }
 
-  const getBytesDeltaDescriptor = () => {
-    let delta_bytes = revision.delta_bytes;
+  const getBytesDeltaDescriptor = (rev_delta_bytes, rev_curr_bytes) => {
+    let delta_bytes = rev_delta_bytes;
     if (delta_bytes === null) {
       // assume this is a page creation
-      delta_bytes = revision.curr_bytes;
+      delta_bytes = rev_curr_bytes;
     }
 
     if (delta_bytes >= 500) {
@@ -481,17 +536,63 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     } else if (delta_bytes < 0) {
       return (
         <Box component="span" className={clsx(classes.mwPlusminusNeg)}>
-          (-{delta_bytes.toLocaleString()})
+          ({delta_bytes.toLocaleString()})
         </Box>
       );
     } else {
       return (
         <Box component="span" className={clsx(classes.mwPlusminusNeg)}>
-          <strong>(-{delta_bytes.toLocaleString()})</strong>
+          <strong>({delta_bytes.toLocaleString()})</strong>
         </Box>
       );
     }
   }
+
+  const getElapsedTimeSummary = (time_in_seconds) => {
+    let time = time_in_seconds
+    if (time < 60) {
+      return `${time} seconds`
+    }
+    time = time / 60
+    if (time < 60) {
+      return `${time.toFixed(0)} minutes`
+    }
+    time = time / 60
+    if (time < 48) {
+      return `${time.toFixed(0)} hours`
+    }
+    time = time / 24
+    if (time < 21) {
+      return `${time.toFixed(0)} days`
+    }
+    time = time / 7
+    if (time < 52) {
+      return `${time.toFixed(0)} weeks`
+    }
+    time = time_in_seconds / 31557600
+    return `${time.toFixed(1)} years`
+  }
+
+  const RevertUserSizeSummary = () => {
+    if (revertMetadata.loaded) {
+      return (
+        <Box display="inline" component="span">
+          &nbsp;&nbsp;
+          {getUserLink(revertMetadata.revert_user, revertMetadata.revert_userid)}
+          {' . . '}
+          <Box display="inline" component="span">({revertMetadata.curr_bytes.toLocaleString()} bytes)</Box> {getBytesDeltaDescriptor(revertMetadata.delta_bytes, revertMetadata.curr_bytes)}
+          {' . . '}
+        </Box>
+      )
+    } else {
+      return (
+        <Box display="inline" component="span">
+          {' . . '}
+        </Box>
+      )
+    }
+  }
+
 
   const RevisionSummary = () => {
     return (
@@ -501,7 +602,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             {revision.page_title}
           </Link> (
           <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&curid=" + revision.rev_id + "&diff=" + revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>diff</Link> | <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=history"}>hist</Link>)
-          </Box>
+        </Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
           <Box 
@@ -520,12 +621,40 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               &nbsp;&nbsp;
               {getUserLink(revision.user_text, revision.user_id)}
               {' . . '}
-              <Box display="inline" component="span">({revision.curr_bytes.toLocaleString()} bytes)</Box> {getBytesDeltaDescriptor()}
+              <Box display="inline" component="span">({revision.curr_bytes.toLocaleString()} bytes)</Box> {getBytesDeltaDescriptor(revision.delta_bytes, revision.curr_bytes)}
               {' . . '}
-              <Box display="inline" component="span">(<InlineDescription />)</Box>
+              <Box display="inline" component="span">(<InlineDescription hasEditSummary={revision.has_edit_summary} isSummaryLoaded={revisionMetadata.loaded} editSummary={revisionMetadata.to_parsedcomment} />)</Box>
               &nbsp;(<Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=edit&undoafter=" + revision.prev_rev_id.toString() + "&undo=" + revision.rev_id.toString()}>undo</Link>)
           </Box>
         </Box>
+        { revertMetadata.has_revert ? (
+          <Box>
+            Reverted after {getElapsedTimeSummary(revertMetadata.seconds_to_revert)} by:
+            <Box display="flex" flexDirection='row'>
+          <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
+          <Box 
+            pl={1} 
+            fontFamily="sans-serif" 
+            fontSize={14}
+            whiteSpace="normal"
+          >
+              (
+              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revertMetadata.revert_id}>cur</Link>
+              &nbsp;|&nbsp;
+              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff="+ revertMetadata.revert_id.toString() + "&oldid=" + revision.rev_id}>diff</Link>
+              ) 
+              &nbsp;&nbsp;
+              <Box display="inline" component="span">{formatEpochTimestamp(revertMetadata.timestamp)}</Box>
+              <RevertUserSizeSummary />
+              <Box display="inline" component="span">(
+                <InlineDescription 
+                  hasEditSummary={revertMetadata.has_edit_summary} 
+                  isSummaryLoaded={revertMetadata.loaded} 
+                  editSummary={revertMetadata.edit_summary}
+                />
+              )</Box>
+          </Box>
+        </Box> </Box> ) : null }
       </Box>
     );
   }
