@@ -1001,7 +1001,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                   flexDirection="column"
                   flexWrap="nowrap"
             >
-                <Box style={{'overflowY': 'scroll'}}>
+                <Box>
                     <AccordionDetails>
                         <Box
                           display="flex"
