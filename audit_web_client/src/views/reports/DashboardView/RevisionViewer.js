@@ -73,25 +73,25 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     if (filteredUsernames.length > 0) {
         // For now, explicit username filters overrule everything
         // i.e. show all revisions from specified usernames, even if they wouldn't meet the filter criteria
-        return "only these users: " + filteredUsernames.map(username => username.user_name).join(', ');
+        return "with only these users: " + filteredUsernames.map(username => username.user_name).join(', ');
     }
     
     const total_checked = userTypeFilter.unregistered + userTypeFilter.newcomers + userTypeFilter.learners + userTypeFilter.experienced + userTypeFilter.bots;
     if (total_checked === 0) {
-        return "no users";
+        return "with no users";
     } else if (userTypeFilter.unregistered && total_checked === 1) {
-        return "only unregistered users";
+        return "with only unregistered users";
     } else if (userTypeFilter.unregistered && userTypeFilter.bots && total_checked === 2) {
-        return "all unregistered and bot users";
+        return "with all unregistered and bot users";
     } else if (total_checked === 1) {
         if (userTypeFilter.newcomers) {
-            return "only newcomers";
+            return "with only newcomers";
         } else if (userTypeFilter.learners) {
-            return "only learners";
+            return "with only learners";
         } else if (userTypeFilter.experienced) {
-            return "only experienced users";
+            return "with only experienced users";
         } else if (userTypeFilter.bots) {
-            return "only bots";
+            return "with only bots";
         }
     } else {
         var bot_string = userTypeFilter.bots ? "" : "non-bot ";
@@ -115,27 +115,27 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
             }
         }
         
-        const summary_string = "all " + bot_string + registered_string + "users" + exception_string;
+        const summary_string = "with all " + bot_string + registered_string + "users" + exception_string;
         return summary_string;
     }
   };
   
   const getRevisionFilterSummary = () => {
     const total_checked = revisionFilter.largeAdditions + revisionFilter.smallAdditions + revisionFilter.neutral + revisionFilter.smallRemovals + revisionFilter.largeRemovals
-    let summaryString = "all edit sizes"
+    let summaryString = "with all edit sizes"
     if (total_checked === 0) {
-      summaryString = "no edit sizes selected"
+      summaryString = "with no edit sizes selected"
     } else if (total_checked === 1 || total_checked === 2 || total_checked === 3) {
       if (revisionFilter.largeAdditions && revisionFilter.largeRemovals && total_checked === 2) {
-        summaryString = "only large changes"
+        summaryString = "with only large changes"
       } else if (revisionFilter.smallAdditions && revisionFilter.smallRemovals && total_checked === 2) {
-        summaryString = "only small changes"
+        summaryString = "with only small changes"
       } else if (revisionFilter.smallAdditions && revisionFilter.largeAdditions && total_checked === 2) {
-        summaryString = "only additions"
+        summaryString = "with only additions"
       } else if (revisionFilter.largeRemovals && revisionFilter.smallRemovals && total_checked === 2) {
-        summaryString = "only removals"
+        summaryString = "with only removals"
       } else if (total_checked === 1 || total_checked === 2) {
-        summaryString = "only "
+        summaryString = "with only "
         let count = 0;
         for (let k in revisionFilter) {
           if (revisionFilter[k]) {
@@ -148,7 +148,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
           }
         }
       } else if (total_checked === 3) {
-        summaryString = "everything except "
+        summaryString = "with everything except "
         let count = 0;
         for (let k in revisionFilter) {
           if (!revisionFilter[k]) {
@@ -163,28 +163,28 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
       }
     } else if (total_checked === 4) {
       if (!revisionFilter.largeAdditions) {
-        summaryString = "everything except large additions"
+        summaryString = "with everything except large additions"
       } else if (!revisionFilter.smallAdditions) {
-        summaryString = "everything except small additions"
+        summaryString = "with everything except small additions"
       } else if (!revisionFilter.neutral) {
-        summaryString = "everything except near zero changes"
+        summaryString = "with everything except near zero changes"
       } else if (!revisionFilter.smallRemovals) {
-        summaryString = "everything except small removals"
+        summaryString = "with everything except small removals"
       } else if (!revisionFilter.largeRemovals) {
-        summaryString = "everything except large removals"
+        summaryString = "with everything except large removals"
       }
     }
     if (minorFilter.isMinor && !minorFilter.isMajor && summaryString !== "all edit sizes") {
       if (total_checked === 1 || total_checked === 2) {
-        summaryString = summaryString.slice(0, 5) + "minor " + summaryString.slice(5)
+        summaryString = summaryString.slice(0, 10) + "minor " + summaryString.slice(10)
       } else {
-        summaryString = summaryString.slice(0, 18) + "minor " + summaryString.slice(17)
+        summaryString = summaryString.slice(0, 23) + "minor " + summaryString.slice(22)
       }
     } else if (!minorFilter.isMinor && minorFilter.isMajor && summaryString !== "all edit sizes") {
       if (total_checked === 1 || total_checked === 2) {
-        summaryString = summaryString.slice(0, 5) + "major " + summaryString.slice(5)
+        summaryString = summaryString.slice(0, 10) + "major " + summaryString.slice(10)
       } else {
-        summaryString = summaryString.slice(0, 18) + "major " + summaryString.slice(17)
+        summaryString = summaryString.slice(0, 23) + "major " + summaryString.slice(22)
       }
     }
     return summaryString
@@ -202,7 +202,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
       result = "LGBT History edits"
     }
     else {
-      result = "edits, " + getPageFilterSummary() + getRevisionFilterSummary() + ", " + getUserFilterSummary()
+      result = "edits " + getPageFilterSummary() + getRevisionFilterSummary() + ", " + getUserFilterSummary()
       // result = `edits${pageValues.length === 0 ? "," : ` ${getPageFilterSummary()}`} ${getRevisionFilterSummary()}, ${getUserFilterSummary()}`
     }
 
