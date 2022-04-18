@@ -234,8 +234,9 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
   const formatIndex = (idx) => {
     const string = idx.toString()
     const lastChar = string.slice(-1)
+    const secondToLastChar = string.slice(-2)[0]
     let res = string
-    if (lastChar in suffixDict) {
+    if (lastChar in suffixDict && !(secondToLastChar === "1")) {
       res += suffixDict[lastChar]
     }
     else {
@@ -270,7 +271,14 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
   const handleIconClickClose = () => {
     setInvestigateControlsPopup(null)
   }
-    
+  
+  const getInvestigatingText = () => {
+    if (counts?.all?.all) {
+      return "Inspecting " + formatIndex(currRevisionIdx + 1) + " of " + formatNumber(counts?.all?.all) + " " + getSummary()
+    }
+    return "Loading..."
+  }
+
   return (
     <Card
       className={clsx(classes.root, className)}
@@ -312,7 +320,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                     style= {{ display: "inline-flex", float: "left"}}
                   >
                     <Box className="text-h3 subtitle">
-                      Inspecting {formatIndex(currRevisionIdx)} of {counts?.all?.all ? formatNumber(counts?.all?.all) : 0} {getSummary()}
+                      {getInvestigatingText()}
                     </Box>
                 </Box>
 
@@ -340,7 +348,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
               flexWrap="nowrap"
               alignItems="center"
             >
-             {revisions.length !== 0 || Object.keys(counts).length !== 0 ? ( 
+             {revisions.length !== 0 && Object.keys(counts).length !== 0 ? ( 
              <Box>
                {/* Set the key to force an unmount when currRevisionIdx changes: https://stackoverflow.com/questions/71684884/avoiding-stale-state-in-double-useeffect */}
                 <RevisionView 

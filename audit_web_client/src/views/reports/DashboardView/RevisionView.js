@@ -192,7 +192,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             })
           } else {
             if (!ignoreFetchResult) {
-              console.log(data)
               setRevertMetadata({
                 ...revertMetadata,
                 'has_edit_summary': true,
