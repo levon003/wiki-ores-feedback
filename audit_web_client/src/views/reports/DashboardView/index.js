@@ -4,7 +4,8 @@ import {
   Grid,
   makeStyles,
   useTheme,
-  Paper
+  Paper,
+  Box
 } from '@material-ui/core';
 import clsx from 'clsx';
 import Page from 'src/components/Page';

@@ -282,11 +282,17 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
   return (
     <Card
       className={clsx(classes.root, className)}
+      style={{'overflow': 'visible'} /*
+        We set "overflow: visible" here because the Card component's default CSS class (.MuiCard-root) sets "overflow: hidden", which borks internal sticky components.
+        Here's a blogpost describing some of the issues and a potential workaround: https://uxdesign.cc/position-stuck-96c9f55d9526
+        Fortunately, we can just override this default and force this card to use "overflow: visible" (the default) so that "position: sticky" can still work in child components.
+      */}
       {...rest}
     >
-
+      <Box style={{backgroundColor: "darkgray", paddingBottom: "20px", top: 0, position: "sticky", zIndex: 99}}>Annotation controls could go here</Box>
       <Box>
         <Box className='box'>
+
             <Box className="title text-h2">
                 Inspect
                 <IconButton className="tooltip-margin" style={{color:"#717281", height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>

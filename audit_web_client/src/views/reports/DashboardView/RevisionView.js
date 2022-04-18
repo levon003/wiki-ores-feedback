@@ -31,8 +31,12 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
   },
+  sticky: {
+    position: "-webkit-sticky",
+    position: "sticky",
+  },
   actions: {
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   heading: {
     flexShrink: 0,
@@ -904,7 +908,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                   }} 
                   style={{width: "45vw"}}
                   />
-                    <NotesLoadingIcon typing={typing} userChangedNote={userChangedNote} noteSuccess={noteSuccess}/>
+                  <NotesLoadingIcon typing={typing} userChangedNote={userChangedNote} noteSuccess={noteSuccess}/>
               </Box>
           </Box>
 
