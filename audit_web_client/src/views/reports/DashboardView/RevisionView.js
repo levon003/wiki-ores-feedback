@@ -868,156 +868,156 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   <Box
       className={clsx(classes.root, className)}
   >
-    <Box>
-        <RevisionSummary/>
-        
-        <Box 
+    <RevisionSummary/>
+    
+    {/* Sticky Box*/}
+    <Box
+      style={{position: "sticky", zIndex: 99, top: 0, backgroundColor: "#fcfafa", paddingTop: "5px"}}
+    >
+      <Box 
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          style={{marginTop: "5px"}}
+      >
+          <Box style={{marginRight: "8px"}}>
+              <RevisionAnnotationControls/>
+          </Box>
+          <ButtonLoadingIcon buttonSuccess={buttonSuccess}/>
+
+      </Box>
+
+      <Box 
+          style={{overflow: "auto", marginBottom: "5px"}}
+      >
+        {/* Notes */}
+        <Box
             display="flex"
             flexDirection="row"
-            alignItems="center"
-            style={{marginTop: "25px"}}
+            style= {{ display: "inline-flex", float: "left"}}
         >
-            <Box style={{marginRight: "8px"}}>
-                <RevisionAnnotationControls/>
-            </Box>
-            <ButtonLoadingIcon buttonSuccess={buttonSuccess}/>
-
-        </Box>
-
-        <Box 
-            style={{overflow: "auto", marginBottom: "10px"}}
-        >
-          {/* Notes */}
-          <Box
-                display="flex"
-                flexDirection="row"
-                style= {{ display: "inline-flex", float: "left"}}
-            >
-              <Box display="flex" style={{paddingTop: "8px"}}>
-                  <TextField
-                  multiline
-                  name="noteTextField"
-                  label="Notes" 
-                  value={note} 
-                  onChange={(event) => {
-                    setNote(event.target.value)
-                    setUnsentNoteUpdate(true)
-                    setTyping(true)
-                    setUserChangedNote(true)
-                    setNoteSuccess(null)
-                  }} 
-                  style={{width: "45vw"}}
-                  />
-                  <NotesLoadingIcon typing={typing} userChangedNote={userChangedNote} noteSuccess={noteSuccess}/>
-              </Box>
+          <Box display="flex" style={{paddingTop: "8px"}}>
+              <TextField
+              multiline
+              name="noteTextField"
+              label="Notes" 
+              value={note} 
+              onChange={(event) => {
+                setNote(event.target.value)
+                setUnsentNoteUpdate(true)
+                setTyping(true)
+                setUserChangedNote(true)
+                setNoteSuccess(null)
+              }} 
+              style={{width: "45vw"}}
+              />
+              <NotesLoadingIcon typing={typing} userChangedNote={userChangedNote} noteSuccess={noteSuccess}/>
           </Box>
-
-          {/* Article Number & Buttons */}
-          <Box
-                display="flex"
-                flexDirection="row"
-                width="100%" 
-                justify-content="space-between"
-                style= {{float: "left", marginTop: "1.9em"}}
-            >
-                  {currRevisionIdx === revisions.length - 1 && (
-                    <Box>You've reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
-                  )}
-
-                  {/* Buttons */}
-                  <Box style={{display: "inline-flex", marginLeft: "auto"}}>
-                    {/* Previous Unannotated */}
-                    <Box className="text-h4"
-                    display="flex"
-                    alignItems= "center"
-                    justifyContent= "center"
-                    title="Shortcut: z"
-                    style={{cursor: 'pointer'}}
-                    >
-                      <Button disabled={currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1} className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
-                        <ArrowBackIosIcon style={{marginRight: "4px", color: (currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1) ? "#BDBDBD" : "black"}} className="text-h4"/>Previous Unannotated
-                      </Button>
-                    </Box>
-
-                    {/* Previous */}
-                    <Box className="text-h4"
-                    display="flex"
-                    alignItems= "center"
-                    justifyContent= "center"
-                    title="Shortcut: <left arrow>"
-                    style={{marginLeft: "5px", cursor: 'pointer'}}
-                    >
-                      <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousClick)}>
-                        <ArrowBackIcon style={{marginRight: "4px", color: (currRevisionIdx === 0) ? "#BDBDBD" : "black"}} className="text-h4"/>Previous
-                      </Button>
-                    </Box>
-
-                    {/* Next */}
-                    <Box 
-                    display="flex"
-                    alignItems= "center"
-                    justifyContent= "center"
-                    className="text-h4" 
-                    title="Shortcut: <right arrow>"
-                    style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextClick)}>
-                        Next<ArrowForwardIcon style={{marginLeft: "4px", color: (currRevisionIdx === revisions.length - 1) ? "#BDBDBD" : "black"}} className="text-h4"/>
-                      </Button>
-                    </Box>
-
-                    {/* Next Unannotated */}
-                    <Box 
-                    display="flex"
-                    alignItems= "center"
-                    justifyContent= "center"
-                    className="text-h4" 
-                    title="Shortcut: x"
-                    style={{marginLeft: "5px", cursor: 'pointer'}}>
-                      <Button disabled={(currRevisionIdx === revisions.length - 1) || (nextUnannotatedDisabledCount === revisions.length)} className="text-h4" onClick={(handleNextUnannotatedClick)}>
-                          Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px", color: ((currRevisionIdx === revisions.length - 1) || (nextUnannotatedDisabledCount === revisions.length)) ? "#BDBDBD" : "black"}} className="text-h4"/>
-                      </Button>
-                    </Box>
-                  </Box>
-
-            </Box>
-
         </Box>
 
-        {/* Difference between revision accordion */}
-        <Accordion 
-          style={{marginTop: "10px", color: "black"}}
-          defaultExpanded={true}
-          expanded={accordionExpanded}
-          onChange={handleAccordionExpansionToggle}
+        {/* Article Number & Buttons */}
+        <Box
+            display="flex"
+            flexDirection="row"
+            width="100%" 
+            justify-content="space-between"
+            style= {{float: "left", marginTop: "5px"}}
         >
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-                >
-                <Typography>Difference Between Revisions</Typography>
-            </AccordionSummary>
-        
-            <Box
-                  //height="35vh"
-                  display="flex"
-                  flexDirection="column"
-                  flexWrap="nowrap"
+          {currRevisionIdx === revisions.length - 1 && (
+            <Box>You've reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
+          )}
+
+          {/* Buttons */}
+          <Box style={{display: "inline-flex", marginLeft: "auto"}}>
+            {/* Previous Unannotated */}
+            <Box className="text-h4"
+            display="flex"
+            alignItems= "center"
+            justifyContent= "center"
+            title="Shortcut: z"
+            style={{cursor: 'pointer'}}
             >
-                <Box>
-                    <AccordionDetails>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                        >
-                            <DiffTable />
-                        </Box>
-                    </AccordionDetails>
-                </Box>
+              <Button disabled={currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1} className="text-h4" onClick={(handlePreviousUnannotatedClick)}>
+                <ArrowBackIosIcon style={{marginRight: "4px", color: (currRevisionIdx === 0 || prevUnannotatedDisabledCount === -1) ? "#BDBDBD" : "black"}} className="text-h4"/>Previous Unannotated
+              </Button>
             </Box>
-        </Accordion>
-                
+
+            {/* Previous */}
+            <Box className="text-h4"
+            display="flex"
+            alignItems= "center"
+            justifyContent= "center"
+            title="Shortcut: <left arrow>"
+            style={{marginLeft: "5px", cursor: 'pointer'}}
+            >
+              <Button disabled={currRevisionIdx === 0} className="text-h4" onClick={(handlePreviousClick)}>
+                <ArrowBackIcon style={{marginRight: "4px", color: (currRevisionIdx === 0) ? "#BDBDBD" : "black"}} className="text-h4"/>Previous
+              </Button>
+            </Box>
+
+            {/* Next */}
+            <Box 
+            display="flex"
+            alignItems= "center"
+            justifyContent= "center"
+            className="text-h4" 
+            title="Shortcut: <right arrow>"
+            style={{marginLeft: "5px", cursor: 'pointer'}}>
+              <Button disabled={currRevisionIdx === revisions.length - 1} className="text-h4" onClick={(handleNextClick)}>
+                Next<ArrowForwardIcon style={{marginLeft: "4px", color: (currRevisionIdx === revisions.length - 1) ? "#BDBDBD" : "black"}} className="text-h4"/>
+              </Button>
+            </Box>
+
+            {/* Next Unannotated */}
+            <Box 
+            display="flex"
+            alignItems= "center"
+            justifyContent= "center"
+            className="text-h4" 
+            title="Shortcut: x"
+            style={{marginLeft: "5px", cursor: 'pointer'}}>
+              <Button disabled={(currRevisionIdx === revisions.length - 1) || (nextUnannotatedDisabledCount === revisions.length)} className="text-h4" onClick={(handleNextUnannotatedClick)}>
+                  Next Unannotated<ArrowForwardIosIcon style={{marginLeft: "4px", color: ((currRevisionIdx === revisions.length - 1) || (nextUnannotatedDisabledCount === revisions.length)) ? "#BDBDBD" : "black"}} className="text-h4"/>
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
     </Box>
+
+    {/* Difference between revision accordion */}
+    <Accordion 
+      style={{marginTop: "10px", color: "black"}}
+      defaultExpanded={true}
+      expanded={accordionExpanded}
+      onChange={handleAccordionExpansionToggle}
+    >
+        <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+            >
+            <Typography>Difference Between Revisions</Typography>
+        </AccordionSummary>
+    
+        <Box
+              //height="35vh"
+              display="flex"
+              flexDirection="column"
+              flexWrap="nowrap"
+        >
+            <Box>
+                <AccordionDetails>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                    >
+                        <DiffTable />
+                    </Box>
+                </AccordionDetails>
+            </Box>
+        </Box>
+    </Accordion>
   </Box>
 
   );

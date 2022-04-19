@@ -289,7 +289,6 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
       */}
       {...rest}
     >
-      <Box style={{backgroundColor: "darkgray", paddingBottom: "20px", top: 0, position: "sticky", zIndex: 99}}>Annotation controls could go here</Box>
       <Box>
         <Box className='box'>
 
@@ -313,7 +312,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                     }}
                     >
                     <p style={{margin: 5, fontSize: 12}}>
-                        Investigate Popover Placeholder Text
+                        Inspect Popover Placeholder Text
                     </p>
                 </Popover>
             </Box>
