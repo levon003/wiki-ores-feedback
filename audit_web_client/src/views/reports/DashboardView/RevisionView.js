@@ -872,7 +872,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     
     {/* Sticky Box*/}
     <Box
-      style={{position: "sticky", zIndex: 99, top: 0, backgroundColor: "#fcfafa", paddingTop: "5px"}}
+      style={{position: "sticky", zIndex: 99, top: 0, backgroundColor: "white", paddingTop: "5px"}}
     >
       <Box 
           display="flex"

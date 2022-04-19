@@ -290,10 +290,10 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
       {...rest}
     >
       <Box>
-        <Box className='box'>
+        <Box className='box' style={{marginTop: "-0.01%"}}>
 
             <Box className="title text-h2">
-                Inspect
+                <br></br>Inspect
                 <IconButton className="tooltip-margin" style={{color:"#717281", height:"24px", width:"24px"}} size="small" onClick={handleIconClick}>
                     <HelpIcon style={{height:"20px"}}/>
                 </IconButton>
