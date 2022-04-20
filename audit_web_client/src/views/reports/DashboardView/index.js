@@ -314,6 +314,26 @@ const Dashboard = () => {
     .then(() => setAnnotationHistory(annotationHistory.filter(history => history.history_id !== history_id)))
     .catch((err) => console.log(err))
   }
+
+  const handleGetAnnotationHistoryFilters = (history_id) => {
+    fetch(`/api/annotation_history/filter_get/${history_id}`)
+    .then(res => res.json())
+    .then((data) => {
+      const filters = data.filters
+      setFilteredUsernames(filters.filtered_usernames)
+      setLinkedFromValues(filters.linked_from_values)
+      setLinkedToValues(filters.linked_to_values)
+      setMinorFilter(filters.minor_filters)
+      setNameSpaceSelected(filters.namespace_selected)
+      setPageValues(filters.page_values)
+      setFocusSelected({
+        'prediction_filter': data.prediction_filter,
+        'revert_filter': data.revert_filter
+      })
+      setUserTypeFilter(filters.user_type_filter)
+    })
+    .catch((err) => console.log(err))
+  }
     
   return (
     <div>
@@ -417,7 +437,7 @@ const Dashboard = () => {
         <List>
           {annotationHistory.length > 0 ? annotationHistory.map((history, index) => (
             <div key={history.custom_name + history.prediction_filter + history.revert_filter + index} >
-              <ListItem key={history.custom_name}>
+              <ListItem button onClick={() => handleGetAnnotationHistoryFilters(history.history_id)} key={history.custom_name}>
                 <ListItemText>
                   <b className="text-h2">{history.custom_name}</b><br></br>
                   <b className="text-h2">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}</b><br></br>
@@ -435,7 +455,7 @@ const Dashboard = () => {
             </div>
           ))
           :
-          <div style={{textAlign: 'center'}}>No annotations yet.</div>}
+          <div style={{textAlign: 'center'}}>No annotation history.</div>}
         </List>
         <footer><Paper style={{position: "fixed", bottom: 0, right: 0, fontSize: 10}} elevation={3}>ORES-Inspect v0.0.2 <a href="https://github.com/levon003/wiki-ores-feedback/releases">(on GitHub)</a></Paper></footer>
       </div>
