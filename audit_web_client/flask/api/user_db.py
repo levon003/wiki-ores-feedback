@@ -5,7 +5,8 @@ from flask.cli import with_appcontext
 import sqlalchemy as sa
 from sqlalchemy import create_engine, Table, Column, Integer, SmallInteger, String, MetaData, ForeignKey, Text, Boolean, Float, Index, bindparam
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.dialects.mysql import TINYINT
+from sqlalchemy.dialects.mysql import TINYINT, MEDIUMTEXT
+from sqlalchemy.types import VARCHAR
 
 import os
 import json
@@ -48,12 +49,17 @@ def get_metadata():
         Column('prediction_filter', Text, nullable=False),
         Column('revert_filter', Text, nullable=False),
         Column('custom_name', Text, nullable=False),
-        Column('filter_hash', Text, nullable=False),
+        Column('filter_hash', VARCHAR(length=32), nullable=False),
         Column('total_annotated', Integer, nullable=False),
         Column('num_damaging', Integer, nullable=False),
         Column('num_flagged', Integer, nullable=False),
         Column('num_not_damaging', Integer, nullable=False),
         Index('history_annotation_idx', 'user_token')
+    )
+    Table('filters', g.oidb_user_metadata,
+        Column('filter_id', Integer, primary_key=True, autoincrement=True),
+        Column('filter_hash', VARCHAR(32), nullable=False),
+        Column('filters', MEDIUMTEXT, nullable=False)
     )
     return g.oidb_user_metadata
 
@@ -71,6 +77,9 @@ def get_rev_annotation_table():
 
 def get_annotation_history_table():
     return get_table('annotation_history')
+
+def get_filters_table():
+    return get_table('filters')
 
 def create_tables(engine):
     metadata = get_metadata()

@@ -5,6 +5,7 @@ from flask.cli import with_appcontext
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import insert, select, update
 import sqlalchemy.sql.functions
+import json
 
 import logging
 from datetime import datetime
@@ -51,6 +52,7 @@ def add_new_annotation_history(request_json, user_token):
     with Session() as session:
         with session.begin():
             aht = user_db.get_annotation_history_table()
+            ft = user_db.get_filters_table()
             # let's check if this filter criteria is already in the user's annotation history.
             s = select(aht.c.total_annotated, aht.c.num_damaging, aht.c.num_flagged, aht.c.num_not_damaging).where(aht.c.user_token == user_token, aht.c.filter_hash == filter_hash)
             res = session.execute(s)
@@ -70,6 +72,11 @@ def add_new_annotation_history(request_json, user_token):
                     num_not_damaging=request_json['num_not_damaging']
                 )
                 session.execute(i)
+                fi = ft.insert().values(
+                    filter_hash=filter_hash,
+                    filters=json.dumps(filters)
+                )
+                session.execute(fi)
             else:
                 u = update(aht).where(aht.c.user_token == user_token, aht.c.filter_hash == filter_hash).values(
                     last_updated=timestamp,
@@ -91,15 +98,37 @@ def delete_annotation_history(history_id, user_token):
             s = select(aht.c.user_token).where(aht.c.history_id == history_id)
             res = list(session.execute(s))
             if len(list(res)) == 0:
-                return {'error': 'History id not found.'}
+                return {'error': 'History id not found.'}, 400
             elif res[0][0] != user_token:
-                return {'error': 'Cannot delete another user\'s history'}
+                return {'error': 'Cannot delete another user\'s history'}, 403
             else:
                 u = update(aht).where(aht.c.history_id == history_id).values(
                     deleted=True
                 )
                 session.execute(u)
                 return {'success': f'history with id {history_id} deleted'}, 200
+
+def get_annotation_history_filters(history_id, user_token):
+    Session = db.get_oidb_session()
+    logger = logging.getLogger('annotation_history.delete_annotation_history')
+    with Session() as session:
+        with session.begin():
+            aht = user_db.get_annotation_history_table()
+            ft = user_db.get_filters_table()
+            s = select(aht.c.user_token).where(aht.c.history_id == history_id)
+            res = list(session.execute(s))
+            if len(list(res)) == 0:
+                return {'error': 'History id not found.'}, 400
+            elif res[0][0] != user_token:
+                return {'error': 'Cannot get another user\'s filters'}, 403
+            else:
+                s = select(aht.c.prediction_filter, aht.c.revert_filter, ft.c.filters).join(ft, (aht.c.filter_hash == ft.c.filter_hash))
+                for row in session.execute(s):
+                    prediction_filter, revert_filter, filters = row
+                    filters = json.loads(filters)
+                    return {'prediction_filter': prediction_filter, 'revert_filter': revert_filter, 'filters': filters}
+    return {'error': "Something went wrong"}, 400
+    
 
 
 @bp.route('/api/annotation_history/', methods=('GET', 'POST'))
@@ -117,11 +146,20 @@ def handle_annotation_history_request():
     else:
         raise ValueError("Unexpected request method.")
 
-@bp.route('/api/annotation_history/delete/<history_id>', methods=('DELETE',))
+@bp.route('/api/annotation_history/delete/<int:history_id>', methods=('DELETE',))
 def handle_annotation_history_delete(history_id):
     logger = logging.getLogger('annotation_history.handle_annotation_history_delete')
     user_token = flask_session['username'] if 'username' in flask_session else ""
     if user_token == "":
         logger.warn("User not logged in, so deleting this annotation history should be impossible.")
         return {'error': 'No identified user token.'}, 403
-    return delete_annotation_history(int(history_id), user_token)
+    return delete_annotation_history(history_id, user_token)
+
+@bp.route('/api/annotation_history/filter_get/<int:history_id>', methods=('GET',))
+def handle_filter_get(history_id):
+    user_token = flask_session['username'] if 'username' in flask_session else ""
+    if user_token == "":
+        logger.warn("User not logged in, so deleting this annotation history should be impossible.")
+        return {'error': 'No identified user token.'}, 403
+    return get_annotation_history_filters(history_id, user_token)
+
