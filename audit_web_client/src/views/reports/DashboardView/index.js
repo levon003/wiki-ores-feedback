@@ -457,7 +457,7 @@ const Dashboard = () => {
           :
           <div style={{textAlign: 'center'}}>No annotation history.</div>}
         </List>
-        <footer><Paper style={{position: "fixed", bottom: 0, right: 0, fontSize: 10}} elevation={3}>ORES-Inspect v0.0.2 <a href="https://github.com/levon003/wiki-ores-feedback/releases">(on GitHub)</a></Paper></footer>
+        <footer><Paper style={{position: "fixed", bottom: 0, right: 0, fontSize: 10}} elevation={3}>ORES-Inspect v0.2.1 <a href="https://github.com/levon003/wiki-ores-feedback/releases">(on GitHub)</a></Paper></footer>
       </div>
     </Drawer>
   </div>
