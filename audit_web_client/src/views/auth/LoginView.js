@@ -117,7 +117,7 @@ const LoginView = () => {
                   <br/>
 
                   <Box style={{marginBottom:"10px"}}>&#9726; What personal data is stored by this tool?</Box>
-                  We store your username in a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">cookie</a> so that you can stay logged in; this cookie is deleted when you log out.  
+                  We store your username (and a <a href="https://en.wikipedia.org/wiki/JSON_Web_Token">JWT</a>) in a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">cookie</a> so that you can stay logged in; this cookie is deleted when you log out.  
                   The revision labels and notes you make while using the tool are stored 
                   in a <a href="https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database#User_databases">Toolforge database </a> 
                   accessible only to maintainers of this project.
