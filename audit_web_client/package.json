@@ -49,7 +49,7 @@
     "history": "^5.0.0",
     "http-proxy-middleware": "^0.19.1",
     "lodash": "^4.17.21",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "nprogress": "^0.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
