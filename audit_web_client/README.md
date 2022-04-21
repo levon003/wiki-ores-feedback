@@ -6,7 +6,7 @@ A web application for auditing ORES predictions.
 The deployed version is available at: https://ores-inspect.toolforge.org/
 
 The web interface is built using a React front-end and a Flask back-end.
-The Flask back-end uses SQLite as its database.
+The Flask back-end uses Toolforge's MariaDB as its database.
 The React front-end is based directly on the [Devias Kit - React Admin Dashboard](https://material-ui.com/store/items/devias-kit/) code.
 
 ## Prepare for local development
@@ -39,6 +39,11 @@ To start the development backend: `yarn start-flask`
 
 To start the development frontend: `yarn start`
 
+#### Developing remotely
+
+If you're running the backend on another server, you can use whatever port you want to run that server, just make sure to port forward to port 5000 e.g. `ssh -L 5000:localhost:5001 {iuser}@{server_name}`.  This is necessary because the development OAuth consumer will redirect to the URL `https://localhost:5000`.
+
+#### Directory structure
 
 Directories:
  - `flask`: Code for the Flask back-end.
@@ -95,5 +100,17 @@ In the instructions below, replace `{deploying_username}` with your WikiTech use
  - React tutorial: https://reactjs.org/docs/hello-world.html
  - React Hooks tutorial: https://reactjs.org/docs/hooks-intro.html
  - Material-UI: https://material-ui.com/getting-started/usage/
+ 
+ ### FAQ
+ 
+ #### What ports are in use?
+ 
+ The Flask server runs on port 5000 by default, while the Node development server runs on port 3000 by default.
+ 
+ `flask/api/port_config.py` specifies the ports expected for the Tools and Replica DBs. (likely 4000 and 4001) These parameters should be passed to the `db_tunnel.sh` script.
+ 
+ #### How can I run the backend on an M1/Silicon Mac?
+ 
+ Installing mysqlclient will be a bit of a pain: https://github.com/PyMySQL/mysqlclient/issues/496
  
  
