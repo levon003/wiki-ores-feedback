@@ -274,7 +274,24 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
   
   const getInvestigatingText = () => {
     if (counts?.all?.all) {
-      return "Inspecting " + formatIndex(currRevisionIdx + 1) + " of " + formatNumber(counts?.all?.all) + " " + getSummary()
+      console.log(counts)
+      let prediction_key = focusSelected.prediction_filter
+      if (!prediction_key in counts) { 
+        console.warn("Unknown prediction key.")
+      }
+
+      let revert_key = focusSelected.revert_filter
+      if (revert_key === "reverted") {
+        revert_key = "reverted_damaging"
+      } else if (revert_key === "any") {
+        revert_key = "all"
+      } else if (!revert_key in counts[prediction_key]) {
+        console.warn("Unknown revert key.")
+      }
+
+      const selected_count = counts[prediction_key][revert_key]
+      //const selected_count = counts?.all?.all  // original, which produces the total number that meet the filter condition
+      return "Inspecting " + formatIndex(currRevisionIdx + 1) + " of " + formatNumber(selected_count) + " " + getSummary()
     }
     return "Loading..."
   }
