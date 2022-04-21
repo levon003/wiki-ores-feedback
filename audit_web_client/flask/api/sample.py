@@ -389,17 +389,20 @@ def get_sample_revisions():
                 for row in session.execute(s):
                     revision_list.append(row._asdict())
                 logger.info(f"Retrieved {len(revision_list)} revisions from revision table.")
-                rct = db.get_rev_cache_table()
-                rev_ids_to_cache = [rev['rev_id'] for rev in revision_list]
-                filter_hash = get_filter_hash(filters)
-                logger.info(f"Caching {len(rev_ids_to_cache)} revisions under filter hash '{filter_hash}'.")
-                rev_cache_list = []
-                for rev_id in rev_ids_to_cache:
-                    rev_cache_list.append({
-                        'rev_id': rev_id,
-                        'filter_hash': filter_hash,
-                    })
-                session.execute(rct.insert(), rev_cache_list)
+                if len(revision_list) > 0:
+                    rct = db.get_rev_cache_table()
+                    rev_ids_to_cache = [rev['rev_id'] for rev in revision_list]
+                    filter_hash = get_filter_hash(filters)
+                    logger.info(f"Caching {len(rev_ids_to_cache)} revisions under filter hash '{filter_hash}'.")
+                    rev_cache_list = []
+                    for rev_id in rev_ids_to_cache:
+                        rev_cache_list.append({
+                            'rev_id': rev_id,
+                            'filter_hash': filter_hash,
+                        })
+                    session.execute(rct.insert(), rev_cache_list)
+                else:
+                    rev_ids_to_cache = []
         rev_ids = rev_ids_to_cache
     else:
         # remove any duplicates in cached_rev_ids
@@ -412,6 +415,12 @@ def get_sample_revisions():
                     rev_ids.append(rev_id)
         else:
             rev_ids = cached_rev_ids
+
+    if len(rev_ids) == 0:
+        counts = get_counts(filters, 0)
+        logger.info(f"Computed zero counts: {counts}")
+        return {'revisions': [], 'counts': counts}
+
     logger.info(f"Retrieving full data for {len(rev_ids)} rev_ids.")
 
     # query the revision table for the specific rev_ids we need

@@ -10,7 +10,7 @@ rsync ${CHMOD} replica.my.cnf ${REMOTE}
 rsync ${CHMOD} flask/app.py ${REMOTE}
 rsync ${CHMOD} flask/requirements.txt ${REMOTE}
 rsync ${CHMOD} flask/api/*.py ${REMOTE}/api
-rsync -v -r ${CHMOD} build/ ${REMOTE}/api/www
+rsync --delete -v -r ${CHMOD} build/ ${REMOTE}/api/www
 echo "Finished syncing."
 
 #scp flask/app.py ${REMOTE}
