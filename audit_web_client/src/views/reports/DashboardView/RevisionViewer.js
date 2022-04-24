@@ -236,6 +236,10 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     const lastChar = string.slice(-1)
     const secondToLastChar = string.slice(-2)[0]
     let res = string
+    if (string == '1') {
+      res += 'st'
+      return res
+    }
     if (lastChar in suffixDict && !(secondToLastChar === "1")) {
       res += suffixDict[lastChar]
     }
