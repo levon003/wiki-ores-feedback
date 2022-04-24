@@ -341,7 +341,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                     flexDirection="column"
                     style= {{ display: "inline-flex", float: "left"}}
                   >
-                    <Box className="text-h3 subtitle">
+                    <Box style={{ fontSize: "16px", color: "black" }}>
                       {getInvestigatingText()}
                     </Box>
                 </Box>
@@ -351,9 +351,9 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
                   flexDirection="column"
                   style= {{ display: "inline-flex", float: "right"}}
                 >
-                    <Box className="text-h3 subtitle">
+                    <Box className="text-h3">
                       {/* {numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%) */}
-                      <Button onClick={() => setDrawerOpen(true)}>View annotation history</Button>
+                      <Button style={{ color: "black", marginTop: "-4.5%" }} onClick={() => setDrawerOpen(true)}>View annotation history</Button>
                     </Box>
                 </Box>
             </Box>

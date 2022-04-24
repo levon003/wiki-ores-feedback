@@ -913,7 +913,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               </Box>
             </Box>
           </Box>
-          
+
           <Box style={{marginLeft: "auto"}}>
             {/* Previous/Next Buttons */}
             <Box style={{display: "inline-flex"}}>
@@ -986,7 +986,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             style= {{float: "left", marginTop: "5px"}}
         >
           {currRevisionIdx === revisions.length - 1 && (
-            <Box>You've reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
+            <Box style={{color: "red"}}>You've reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
           )}
         </Box>
       </Box>
