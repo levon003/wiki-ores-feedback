@@ -311,7 +311,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
       {...rest}
     >
       <Box>
-        <Box className='box' style={{marginTop: "-0.01%"}}>
+        <Box className='box' style={{marginTop: "0%", paddingBottom: "1.5%"}}>
 
             <Box className="title text-h2">
                 <br></br>Inspect
