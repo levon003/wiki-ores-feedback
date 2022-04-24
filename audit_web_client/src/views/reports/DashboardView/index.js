@@ -22,6 +22,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { isEqual } from 'lodash'
 
 const drawerWidth = 240
 
@@ -167,19 +168,24 @@ const Dashboard = () => {
     }
   }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected])
 
-  useEffect(() => {
-    if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
-      // all article edits
+  const checkFocusSelectedEquality = (rf, mf, utf, fu, pv, ns, ltv, lfv) => {
+    if (isEqual(rf, DefaultFilters.defaultRevisionFilters) && isEqual(mf, DefaultFilters.defaultMinorFilters) && isEqual(utf, DefaultFilters.defaultUserFilters) && fu.length === 0 && pv.length === 0 && isEqual(ns, DefaultFilters.defaultNamespaceSelected) && ltv.length === 0 && lfv.length === 0) {
+      console.log("hi")
       setPreDefinedSelected(1)
-    } else if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultNewcomerUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
-      // newcomer
+    }
+    else if (isEqual(rf, DefaultFilters.defaultRevisionFilters) && isEqual(mf, DefaultFilters.defaultMinorFilters) && isEqual(utf, DefaultFilters.defaultNewcomerUserFilters) && fu.length === 0 && pv.length === 0 && isEqual(ns, DefaultFilters.defaultNamespaceSelected) && ltv.length === 0 && lfv.length === 0) {
       setPreDefinedSelected(2)
-    } else if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues === DefaultFilters.defaultLGBTHistoryFilters && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
-      // lgbt history
+    }
+    else if (isEqual(rf, DefaultFilters.defaultRevisionFilters) && isEqual(mf, DefaultFilters.defaultMinorFilters) && isEqual(utf, DefaultFilters.defaultNewcomerUserFilters) && fu.length === 0 && isEqual(pv, DefaultFilters.defaultLGBTHistoryFilters) && isEqual(ns, DefaultFilters.defaultNamespaceSelected) && ltv.length === 0 && lfv.length === 0) {
       setPreDefinedSelected(3)
-    } else {
+    }
+    else {
       setPreDefinedSelected(null)
     }
+  }
+
+  useEffect(() => {
+    checkFocusSelectedEquality(revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues)
   })
   
   const handleMisalignmentFilterChange = (new_filter) => {
@@ -315,11 +321,14 @@ const Dashboard = () => {
     .catch((err) => console.log(err))
   }
 
-  const handleGetAnnotationHistoryFilters = (history_id) => {
+  const handleGetAnnotationHistoryFilters = (history_id, prediction_filter, revert_filter) => {
+    console.log(history_id)
     fetch(`/api/annotation_history/filter_get/${history_id}`)
     .then(res => res.json())
     .then((data) => {
       const filters = data.filters
+      console.log(filters)
+      checkFocusSelectedEquality(filters.revision_filters, filters.minor_filters, filters.user_type_filter, filters.filtered_usernames, filters.page_values, filters.namespace_selected, filters.linked_to_values, filters.linked_from_values)
       setFilteredUsernames(filters.filtered_usernames)
       setLinkedFromValues(filters.linked_from_values)
       setLinkedToValues(filters.linked_to_values)
@@ -327,10 +336,11 @@ const Dashboard = () => {
       setNameSpaceSelected(filters.namespace_selected)
       setPageValues(filters.page_values)
       setFocusSelected({
-        'prediction_filter': data.prediction_filter,
-        'revert_filter': data.revert_filter
+        'prediction_filter': prediction_filter,
+        'revert_filter': revert_filter
       })
       setUserTypeFilter(filters.user_type_filter)
+      setRevisionFilter(filters.revision_filters)
     })
     .catch((err) => console.log(err))
   }
@@ -437,7 +447,7 @@ const Dashboard = () => {
         <List>
           {annotationHistory.length > 0 ? annotationHistory.map((history, index) => (
             <div key={history.custom_name + history.prediction_filter + history.revert_filter + index} >
-              <ListItem button onClick={() => handleGetAnnotationHistoryFilters(history.history_id)} key={history.custom_name}>
+              <ListItem button onClick={() => handleGetAnnotationHistoryFilters(history.history_id, history.prediction_filter, history.revert_filter)} key={history.custom_name}>
                 <ListItemText>
                   <b className="text-h2">{history.custom_name}</b><br></br>
                   <b className="text-h2">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}</b><br></br>
