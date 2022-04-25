@@ -81,6 +81,7 @@ const Dashboard = () => {
 
   const [revisions, setRevisions] = useState([]);
   const [counts, setCounts] = useState({}) 
+  const [revisionsLoading, setRevisionsLoading] = useState(false)
 
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
   
@@ -221,6 +222,7 @@ const Dashboard = () => {
     setRevisions([])
     setCurrRevisionIdx(0)
     setCounts({})
+    setRevisionsLoading(true)
     // setGlobalFilterState(new_state);
     // TODO do a POST request to the backend with the new filters
     // Get the new revisions and save them
@@ -262,9 +264,10 @@ const Dashboard = () => {
       .then(data => {
         //console.log("data: ", data)
         console.log("retrieved revisions from backend, n =", data.revisions.length)
-        setRevisions(data.revisions);
+        setRevisions(data.revisions)
         setCounts(data.counts)
-        let i = 0;
+        setRevisionsLoading(false)
+        let i = 0
         while (data.revisions[i].correctness_type_data !== null) {
           i++
         }
@@ -403,6 +406,7 @@ const Dashboard = () => {
                   revisions={revisions}
                   setRevisions={setRevisions}
                   counts={counts}
+                  revisionsLoading={revisionsLoading}
                   currRevisionIdx={currRevisionIdx}
                   setCurrRevisionIdx={setCurrRevisionIdx}
                   revisionFilter={revisionFilter}
