@@ -741,7 +741,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
                 <CloseIcon 
                   style={{paddingRight: 5}}
                 />
-                Damaging
+                Edit is damaging
               </Button>
             </HtmlTooltip>
             <HtmlTooltip
@@ -759,7 +759,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <CheckIcon 
                 style={{paddingRight: 5}}
                 />
-              Not damaging
+              Edit is not damaging
             </Button>
             </HtmlTooltip>
             <Button 
