@@ -105,8 +105,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     'edit_summary': '',
     'revert_user': '',
     'revert_userid': 0,
-    'curr_bytes': null,
-    'delta_bytes': null,
+    'curr_bytes': 0,
+    'delta_bytes': 0,
     'loaded': false,
   })
   const [ correctnessType, setCorrectnessType ] = useState(revision.correctness_type_data)
@@ -502,7 +502,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           </colgroup> 
           <tbody>
             <tr>
-              <td id= "edit" style={{height: 500}} colSpan={4} dangerouslySetInnerHTML={{__html: revisionDiff}}>
+              <td id= "edit" style={{height: 500, verticalAlign: "top"}} colSpan={4} dangerouslySetInnerHTML={{__html: revisionDiff}}>
               </td>
             </tr>
           </tbody>
