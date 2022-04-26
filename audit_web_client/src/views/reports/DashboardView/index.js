@@ -171,14 +171,14 @@ const Dashboard = () => {
   }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected])
 
   const checkFocusSelectedEquality = (rf, mf, utf, fu, pv, ns, ltv, lfv) => {
+    console.log(isEqual(pv, DefaultFilters.defaultLGBTHistoryFilters))
     if (isEqual(rf, DefaultFilters.defaultRevisionFilters) && isEqual(mf, DefaultFilters.defaultMinorFilters) && isEqual(utf, DefaultFilters.defaultUserFilters) && fu.length === 0 && pv.length === 0 && isEqual(ns, DefaultFilters.defaultNamespaceSelected) && ltv.length === 0 && lfv.length === 0) {
-      console.log("hi")
       setPreDefinedSelected(1)
     }
     else if (isEqual(rf, DefaultFilters.defaultRevisionFilters) && isEqual(mf, DefaultFilters.defaultMinorFilters) && isEqual(utf, DefaultFilters.defaultNewcomerUserFilters) && fu.length === 0 && pv.length === 0 && isEqual(ns, DefaultFilters.defaultNamespaceSelected) && ltv.length === 0 && lfv.length === 0) {
       setPreDefinedSelected(2)
     }
-    else if (isEqual(rf, DefaultFilters.defaultRevisionFilters) && isEqual(mf, DefaultFilters.defaultMinorFilters) && isEqual(utf, DefaultFilters.defaultNewcomerUserFilters) && fu.length === 0 && isEqual(pv, DefaultFilters.defaultLGBTHistoryFilters) && isEqual(ns, DefaultFilters.defaultNamespaceSelected) && ltv.length === 0 && lfv.length === 0) {
+    else if (isEqual(rf, DefaultFilters.defaultRevisionFilters) && isEqual(mf, DefaultFilters.defaultMinorFilters) && isEqual(utf, DefaultFilters.defaultUserFilters) && fu.length === 0 && isEqual(pv, DefaultFilters.defaultLGBTHistoryFilters) && isEqual(ns, DefaultFilters.defaultNamespaceSelected) && ltv.length === 0 && lfv.length === 0) {
       setPreDefinedSelected(3)
     }
     else {

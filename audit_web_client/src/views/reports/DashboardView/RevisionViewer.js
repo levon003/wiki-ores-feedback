@@ -284,7 +284,6 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionsL
   
   const getInvestigatingText = () => {
     if (counts?.all?.all) {
-      console.log(counts)
       let prediction_key = focusSelected.prediction_filter
       if (!prediction_key in counts) { 
         console.warn("Unknown prediction key.")
