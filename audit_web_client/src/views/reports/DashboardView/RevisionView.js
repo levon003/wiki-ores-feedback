@@ -985,7 +985,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             justify-content="space-between"
             style= {{float: "left", marginTop: "5px"}}
         >
-          {currRevisionIdx === revisions.length - 1 && (
+          {(currRevisionIdx === revisions.length - 1) && (revisions.length === 500) && (
             <Box style={{color: "red"}}>You've reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
           )}
         </Box>

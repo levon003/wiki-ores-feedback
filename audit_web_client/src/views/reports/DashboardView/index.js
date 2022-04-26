@@ -171,7 +171,6 @@ const Dashboard = () => {
   }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected])
 
   const checkFocusSelectedEquality = (rf, mf, utf, fu, pv, ns, ltv, lfv) => {
-    console.log(isEqual(pv, DefaultFilters.defaultLGBTHistoryFilters))
     if (isEqual(rf, DefaultFilters.defaultRevisionFilters) && isEqual(mf, DefaultFilters.defaultMinorFilters) && isEqual(utf, DefaultFilters.defaultUserFilters) && fu.length === 0 && pv.length === 0 && isEqual(ns, DefaultFilters.defaultNamespaceSelected) && ltv.length === 0 && lfv.length === 0) {
       setPreDefinedSelected(1)
     }
@@ -268,11 +267,13 @@ const Dashboard = () => {
         setRevisions(data.revisions)
         setCounts(data.counts)
         setRevisionsLoading(false)
-        let i = 0
-        while (data.revisions[i].correctness_type_data !== null) {
-          i++
+        if (data.revisions.length !== 0) {
+          let i = 0
+          while (data.revisions[i].correctness_type_data !== null) {
+            i++
+          }
+          setCurrRevisionIdx(i)
         }
-        setCurrRevisionIdx(i)
     })
     .catch(err => {
       console.log(err)
