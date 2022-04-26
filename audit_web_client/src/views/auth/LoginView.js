@@ -41,6 +41,11 @@ const LoginView = () => {
       >
         <Box>
           <Box className='box'>
+            {/* https://stackoverflow.com/a/34162696
+            small devices detected at 991 pixels by bootstrap */}
+            {window.innerWidth < 991 && (
+            <Typography style={{marginBottom: 10}}>Thanks for checking out ORES-Inspect! ORES-Inspect is best viewed on larger screens.</Typography>
+          )}
           <Typography
               variant="h2"
               style={{marginBottom:"10px", color:"black"}}
