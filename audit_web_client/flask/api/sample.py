@@ -221,6 +221,7 @@ def add_focus_filter_clauses(filters, rt, s):
     
     revert_filter = filters['revert_filter']
     if revert_filter == 'any':
+        # TODO figure out why this is only returning reverted revisions
         s = s.where(rt.c.reverted_filter_mask.in_([0, 1, 3, 5, 7]))
         s = s.where(rt.c.reverted_within_filter.in_([None, 0, 1, 2, 3, 4, 5]))
         s = s.where(rt.c.reverted_after_filter.in_([None, 0, 1, 2, 3, 4, 5]))

@@ -13,6 +13,7 @@ import RevisionViewer from './RevisionViewer';
 import FilterControls from './FilterControls';
 import DefaultFilters from './DefaultFilters';
 import FocusControls from './FocusControls';
+import TutorialCard from './TutorialCard';
 import { DrawerContext } from 'src/App';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -364,6 +365,13 @@ const Dashboard = () => {
               direction="column"
               spacing={1}
             >
+              <Grid
+                item
+                xs={12}
+              >
+                <TutorialCard />
+              </Grid>
+
               <Grid
                 item
                 xs={12}
