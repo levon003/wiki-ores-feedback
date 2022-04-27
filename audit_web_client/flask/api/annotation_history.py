@@ -44,7 +44,6 @@ def add_new_annotation_history(request_json, user_token):
         filters['revert_filter'] = 'any'
         logger.warn("No focus_selected key provided in the JSON body of this request; using defaults.")
         raise ValueError("No focus_selected.")
-    print(filters)
 
     custom_name = request_json['custom_name']
     filter_hash = sample.get_filter_hash(filters)
@@ -127,7 +126,6 @@ def get_annotation_history_filters(history_id, user_token):
                 for row in session.execute(s):
                     prediction_filter, revert_filter, filters = row
                     filters = json.loads(filters)
-                    print(filters)
                     return {'prediction_filter': prediction_filter, 'revert_filter': revert_filter, 'filters': filters}
     return {'error': "Something went wrong"}, 400
     
