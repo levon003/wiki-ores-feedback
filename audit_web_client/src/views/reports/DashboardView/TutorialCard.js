@@ -34,7 +34,8 @@ const TutorialCard = () => {
     <Card
       className={clsx(classes.root)}
     >
-      <CardActions disableSpacing>
+      <Box position="relative">
+      <Box position="absolute" top="5px" right="5px" zIndex={9}>
         <IconButton
           className={clsx(classes.closeButton)}
           onClick={handleClose}
@@ -42,16 +43,27 @@ const TutorialCard = () => {
         >
           <CloseIcon />
         </IconButton>
-      </CardActions>
+      </Box>
       <CardContent>
-        <Typography variant="h2" color="textPrimary" component="h2">
-          Header.
+        <Typography variant="h2" color="textPrimary" component="h2" display="inline">
+          ORES finds vandalism.
         </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
-          Text test.
+        <Typography variant="body1" color="textPrimary" component="div">
+        ORES is a machine learning model that scores every edit on Wikipedia from 0 (least likely to be damaging) to 1 (most likely to be damaging). 
         </Typography>
+        <Typography variant="body1" color="textPrimary" component="div">
+          ORES-Inspect helps you see what ORES predicts and to determine if its predictions are accurate.
+        </Typography>
+        <Typography variant="h3" color="textPrimary" component="div">
+          Audit ORES in 3 steps:
+        </Typography>
+        <Box display="flex" flexDirection="row" justifyContent="space-evenly">
+          <Box>Test1</Box>
+          <Box>Test2</Box>
+        </Box>
         
       </CardContent>
+      </Box>
     </Card>
   );
 };

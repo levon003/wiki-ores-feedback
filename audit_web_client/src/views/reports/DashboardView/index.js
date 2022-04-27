@@ -195,7 +195,7 @@ const Dashboard = () => {
     console.log("new_filter");
     console.log(new_filter);
     // notify the backend that a new misalignment filter is set
-    fetch('/api/activity_log', {
+    fetch('/api/activity_log/', {
       method: 'POST', 
       headers: {
         'Accept': 'application/json',
@@ -203,8 +203,10 @@ const Dashboard = () => {
       },
       body: JSON.stringify({
         activity_type: 'misalignment_filter_update',
-        revert_filter: new_filter.revert_filter,
-        prediction_filter: new_filter.prediction_filter,
+        new_state: {
+          revert_filter: new_filter.revert_filter,
+          prediction_filter: new_filter.prediction_filter,
+        }
       })
     })
     .then(res => {
@@ -294,13 +296,16 @@ const Dashboard = () => {
   }
 
   const handleLogging = (change) => {
-     fetch('/api/activity_log', {
+     fetch('/api/activity_log/', {
       method: 'POST', 
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(change)
+      body: JSON.stringify({
+        activity_type: 'test',
+        new_state: change,
+      })
     })
     .then(res => {
       if (res.ok) {

@@ -15,13 +15,16 @@ export const DrawerContext = createContext({
 export const LoggingContext = createContext()
 
 const handleLogging = (change) => {
-    fetch('/api/activity_log', {
+    fetch('/api/activity_log/', {
     method: 'POST', 
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(change)
+    body: JSON.stringify({
+      activity_type: 'test',
+      new_state: change,
+    })
   })
   .then(res => {
     if (res.ok) {
