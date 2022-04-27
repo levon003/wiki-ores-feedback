@@ -872,7 +872,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     
     {/* Sticky Box*/}
     <Box
-      style={{position: "sticky", zIndex: 99, top: 0, backgroundColor: "white", paddingTop: "5px"}}
+      style={{position: "sticky", zIndex: 99, top: 0, backgroundColor: "white", paddingTop: "5px", borderBottom: "1px solid #E0E0E0"}}
     >
       <Box 
           display="flex"
@@ -883,40 +883,40 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           <Box style={{marginRight: "8px"}}>
               <RevisionAnnotationControls/>
           </Box>
-
-          <Box>
-            {/* Notes */}
-            <Box
-                display="flex"
-                flexDirection="row"
-                style= {{ marginLeft: "24px" }}
-            >
-              <Box 
-                display="flex" 
-                style={{paddingTop: "8px", paddingBottom: "12%"}}
-              >
-                  <TextField
-                  multiline
-                  name="noteTextField"
-                  label="Notes" 
-                  value={note} 
-                  onChange={(event) => {
-                    setNote(event.target.value)
-                    setUnsentNoteUpdate(true)
-                    setTyping(true)
-                    setUserChangedNote(true)
-                    setNoteSuccess(null)
-                  }} 
-                  style={{width: "100%"}}
-                  />
-                  <NotesLoadingIcon typing={typing} userChangedNote={userChangedNote} noteSuccess={noteSuccess}/>
-              </Box>
-            </Box>
-          </Box>
+          <ButtonLoadingIcon buttonSuccess={buttonSuccess}/>
 
           <Box style={{marginLeft: "auto"}}>
-            {/* Previous/Next Buttons */}
+            {/* Notes & Previous/Next Buttons */}
             <Box style={{display: "inline-flex"}}>
+            <Box>
+                {/* Notes */}
+                <Box
+                    display="flex"
+                    flexDirection="row"
+                    style= {{ marginRight: "5%" }}
+                >
+                  <Box 
+                    display="flex" 
+                    style={{paddingTop: "8px", paddingBottom: "12%"}}
+                  >
+                      <TextField
+                      multiline
+                      name="noteTextField"
+                      label="Notes" 
+                      value={note} 
+                      onChange={(event) => {
+                        setNote(event.target.value)
+                        setUnsentNoteUpdate(true)
+                        setTyping(true)
+                        setUserChangedNote(true)
+                        setNoteSuccess(null)
+                      }} 
+                      style={{width: "100%"}}
+                      />
+                      <NotesLoadingIcon typing={typing} userChangedNote={userChangedNote} noteSuccess={noteSuccess}/>
+                  </Box>
+                </Box>
+              </Box>
               {/* Previous Unannotated */}
               <Box className="text-h4"
               display="flex"
@@ -970,7 +970,6 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               </Box>
             </Box>
           </Box>
-          <ButtonLoadingIcon buttonSuccess={buttonSuccess}/>
 
       </Box>
 
