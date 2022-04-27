@@ -51,5 +51,9 @@ def handle_logging():
     line = json.dumps(log_entry) + "\n"
 
     logging_filepath = get_logging_filepath()
+    logger.info(f"Logging '{activity_type}' update to '{logging_filepath}'.")
     with open(logging_filepath, 'a') as outfile:
         outfile.write(line)
+        outfile.flush()
+    return make_response("Logging successful.", 200)
+
