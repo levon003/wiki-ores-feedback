@@ -86,6 +86,8 @@ def create_app(test_config=None):
 
     from . import autocomplete
     app.register_blueprint(autocomplete.bp)
+    from . import activity_log
+    app.register_blueprint(activity_log.bp)
 
     logging.info(app.url_map)
     logging.debug('Loaded configuration mapping:')

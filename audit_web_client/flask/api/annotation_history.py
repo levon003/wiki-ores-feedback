@@ -44,6 +44,7 @@ def add_new_annotation_history(request_json, user_token):
         filters['revert_filter'] = 'any'
         logger.warn("No focus_selected key provided in the JSON body of this request; using defaults.")
         raise ValueError("No focus_selected.")
+    print(filters)
 
     custom_name = request_json['custom_name']
     filter_hash = sample.get_filter_hash(filters)
@@ -122,10 +123,11 @@ def get_annotation_history_filters(history_id, user_token):
             elif res[0][0] != user_token:
                 return {'error': 'Cannot get another user\'s filters'}, 403
             else:
-                s = select(aht.c.prediction_filter, aht.c.revert_filter, ft.c.filters).join(ft, (aht.c.filter_hash == ft.c.filter_hash))
+                s = select(aht.c.prediction_filter, aht.c.revert_filter, ft.c.filters).join(ft, (aht.c.filter_hash == ft.c.filter_hash)).where(aht.c.history_id == history_id)
                 for row in session.execute(s):
                     prediction_filter, revert_filter, filters = row
                     filters = json.loads(filters)
+                    print(filters)
                     return {'prediction_filter': prediction_filter, 'revert_filter': revert_filter, 'filters': filters}
     return {'error': "Something went wrong"}, 400
     
@@ -159,7 +161,7 @@ def handle_annotation_history_delete(history_id):
 def handle_filter_get(history_id):
     user_token = flask_session['username'] if 'username' in flask_session else ""
     if user_token == "":
-        logger.warn("User not logged in, so deleting this annotation history should be impossible.")
+        logger.warn("User not logged in, so gett this annotation history filter set should be impossible.")
         return {'error': 'No identified user token.'}, 403
     return get_annotation_history_filters(history_id, user_token)
 
