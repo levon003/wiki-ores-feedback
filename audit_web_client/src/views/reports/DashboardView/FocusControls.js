@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -21,6 +21,7 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
 import MisalignmentFilter from "./MisalignmentFilter";
 import HelpIcon from '@material-ui/icons/Help';
+import { LoggingContext } from 'src/App';
 
 const useStyles = makeStyles((theme) => ({
     root: {},
@@ -44,7 +45,6 @@ const HtmlTooltip = withStyles((theme) => ({
 
 const FocusButton1 = ({style, setFocusSelected}) => {
     const onClick = () => {
-        //todo: add later?
         setFocusSelected({
             'prediction_filter': 'very_likely_good',
             'revert_filter': 'reverted',
@@ -63,7 +63,6 @@ const FocusButton1 = ({style, setFocusSelected}) => {
 }
 const FocusButton2 = ({style, setFocusSelected}) => {
     const onClick = () => {
-        //todo: add later?
         setFocusSelected({
             'prediction_filter': 'very_likely_bad',
             'revert_filter': 'nonreverted',
@@ -82,7 +81,6 @@ const FocusButton2 = ({style, setFocusSelected}) => {
 }
 const FocusButton3 = ({style, setFocusSelected}) => {
     const onClick = () => {
-        //todo: add later?
         setFocusSelected({
             'prediction_filter': 'confusing',
             'revert_filter': 'any',
@@ -102,6 +100,7 @@ const FocusButton3 = ({style, setFocusSelected}) => {
 
 const FocusControls = ({className, data, counts, focusSelected, setFocusSelected, ...rest}) => {
     const theme = useTheme()
+    const handleLogging = useContext(LoggingContext)
 
     const selectedStyle = {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'}
     const unselectedStyle = {marginRight: '12px'}
@@ -116,8 +115,6 @@ const FocusControls = ({className, data, counts, focusSelected, setFocusSelected
     const focusButton3Style = (focusSelected.prediction_filter === 'confusing' & focusSelected.revert_filter === 'any') ? 
         selectedStyle : 
         unselectedStyle
-    //const focusButton2Style = focusSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
-    //const focusButton3Style = focusSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
 
     const classes = useStyles();
 
@@ -190,7 +187,7 @@ const FocusControls = ({className, data, counts, focusSelected, setFocusSelected
                 </Box>
 
             </Box>
-                <Accordion style={{marginTop: "10px", color: "black"}}>
+                <Accordion onClick={() => handleLogging('user opened/closed misalignment graph', null)} style={{marginTop: "10px", color: "black"}}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"

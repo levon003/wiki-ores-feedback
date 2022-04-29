@@ -320,7 +320,6 @@ const Dashboard = () => {
     .then(res => res.json())
     .then((data) => {
       const filters = data.filters
-      console.log(filters)
       checkFocusSelectedEquality(filters.revision_filters, filters.minor_filters, filters.user_type_filter, filters.filtered_usernames, filters.page_values, filters.namespace_selected, filters.linked_to_values, filters.linked_from_values)
       setFilteredUsernames(filters.filtered_usernames)
       setLinkedFromValues(filters.linked_from_values)

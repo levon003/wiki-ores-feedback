@@ -268,6 +268,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     }
     
     async function postNoteUpdate() {
+      handleLogging('user added note', note)
       fetch('/api/annotation/', {
         method: 'POST',
         headers: {
@@ -325,6 +326,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   }, [revision, typing, note, unsentNoteUpdate])
   
   const handleAccordionExpansionToggle = (event, isExpanded) => {
+    handleLogging("user opened/closed diff view accordion", null)
     setAccordionExpanded(!accordionExpanded);
   }
 
@@ -419,13 +421,13 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     if (user_id === 0) {
       return (
         <Box display="inline" component="span">
-         <Link target="_blank" href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>{user_text}</Link> (<Link target="_blank" href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>)
+         <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>{user_text}</Link> (<Link onClick={handleWikipediaLinkClick} target="_blank" href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>)
         </Box>
       );
     } else {
       return (
         <Box display="inline" component="span">
-         <Link target="_blank" href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link target="_blank" href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>&nbsp;|&nbsp;<Link target="_blank" href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
+         <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/wiki/User:" + user_text.toString()}>{user_text}</Link> (<Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/wiki/User_talk:" + user_text.toString()}>talk</Link>&nbsp;|&nbsp;<Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/wiki/Special:Contributions/" + user_text.toString()}>contribs</Link>)
         </Box>
       );
     }
@@ -448,6 +450,10 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     return doc.body.innerHTML;
   }
 
+  const handleWikipediaLinkClick = () => {
+    handleLogging("external wikipedia link clicked", null)
+  }
+
 
   const DiffTable = () => {
     if (revisionMetadata.loaded) {
@@ -462,17 +468,17 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           <tbody>
             <tr>
               <td id= "time" colSpan={2}>
-                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>
+                <a target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>
                   Revision as of {formatTimestamp(revisionMetadata.from_timestamp)}</a> 
                     (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.from_revid.toString()}>
                     edit</a>)
               </td>
               <td id= "time" colSpan={2}>
-                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>
+                <a target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>
                   Revision as of {formatTimestamp(revisionMetadata.to_timestamp)}
                 </a> 
-                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()}>edit</a>) 
-                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()}>undo</a>)
+                (<a target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()}>edit</a>) 
+                (<a target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()}>undo</a>)
               </td>
             </tr>
             <tr>
@@ -484,8 +490,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}/>
             </tr>
             <tr>
-              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}>← Previous edit</a></td>
-              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}>Next edit →</a></td>
+              <td id= "edit" colSpan={2}> <a target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}>← Previous edit</a></td>
+              <td id= "edit" colSpan={2}> <a target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}>Next edit →</a></td>
             </tr>
           </tbody>
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
@@ -613,10 +619,10 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     return (
       <Box>
         <Box>
-          <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>
+          <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title}>
             {revision.page_title}
           </Link> (
-          <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&curid=" + revision.rev_id + "&diff=" + revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>diff</Link> | <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=history"}>hist</Link>)
+          <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&curid=" + revision.rev_id + "&diff=" + revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>diff</Link> | <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=history"}>hist</Link>)
         </Box>
         <Box display="flex" flexDirection='row'>
           <Box pl={1}><Typography>{'\u2022'}</Typography></Box>
@@ -627,9 +633,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             whiteSpace="normal"
           >
               (
-              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revision.rev_id}>cur</Link>
+              <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revision.rev_id}>cur</Link>
               &nbsp;|&nbsp;
-              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
+              <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?diff="+ revision.rev_id.toString() + "&oldid=" + revision.prev_rev_id}>prev</Link>
               ) 
               &nbsp;&nbsp;
               <Box display="inline" component="span">{formatEpochTimestamp(revision.rev_timestamp)}</Box>
@@ -639,7 +645,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <Box display="inline" component="span">({revision.curr_bytes.toLocaleString()} bytes)</Box> {getBytesDeltaDescriptor(revision.delta_bytes, revision.curr_bytes)}
               {' . . '}
               <Box display="inline" component="span">(<InlineDescription hasEditSummary={revision.has_edit_summary} isSummaryLoaded={revisionMetadata.loaded} editSummary={revisionMetadata.to_parsedcomment} />)</Box>
-              &nbsp;(<Link target="_blank" href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=edit&undoafter=" + revision.prev_rev_id.toString() + "&undo=" + revision.rev_id.toString()}>undo</Link>)
+              &nbsp;(<Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?title=" + revision.page_title + "&action=edit&undoafter=" + revision.prev_rev_id.toString() + "&undo=" + revision.rev_id.toString()}>undo</Link>)
           </Box>
         </Box>
         { revertMetadata.has_revert ? (
@@ -654,9 +660,9 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             whiteSpace="normal"
           >
               (
-              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revertMetadata.revert_id}>cur</Link>
+              <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?diff=0&oldid=" + revertMetadata.revert_id}>cur</Link>
               &nbsp;|&nbsp;
-              <Link target="_blank" href={"https://en.wikipedia.org/w/index.php?diff="+ revertMetadata.revert_id.toString() + "&oldid=" + revision.rev_id}>diff</Link>
+              <Link target="_blank" onClick={handleWikipediaLinkClick} href={"https://en.wikipedia.org/w/index.php?diff="+ revertMetadata.revert_id.toString() + "&oldid=" + revision.rev_id}>diff</Link>
               ) 
               &nbsp;&nbsp;
               <Box display="inline" component="span">{formatEpochTimestamp(revertMetadata.timestamp)}</Box>
@@ -793,6 +799,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   }
 
   const handlePreviousClick = () => {
+    handleLogging("user went to previous revision with button click", null)
     setButtonSuccess(null)
     if (currRevisionIdx > 0) {
       setCurrRevisionIdx(currRevisionIdx - 1)
@@ -800,6 +807,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   }
 
   const handleNextClick = () => {
+    handleLogging("user went to next revision with button click", null)
     setButtonSuccess(null)
     if (currRevisionIdx < revisions.length - 1) {
       setCurrRevisionIdx(currRevisionIdx + 1)
@@ -807,6 +815,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
   }
 
   const handlePreviousUnannotatedClick = () => {
+    handleLogging("user went to previous unannotated revision with button click", null)
     setButtonSuccess(null)
     let revPtr = currRevisionIdx - 1
     while (revPtr > 0) {
@@ -820,6 +829,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
 
 
   const handleNextUnannotatedClick = () => {
+    handleLogging("user went to next unannotated revision with button click", null)
     setButtonSuccess(null)
     let revPtr = currRevisionIdx + 1
     while (revPtr < revisions.length) {
@@ -849,16 +859,19 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       if (!isUserInTextBox) {
         if (e.keyCode === 37) {
           handlePreviousClick()
-          handleLogging("User used keyboard shortcut to move to previous revision", null)
+          handleLogging("user used keyboard shortcut to move to previous revision", null)
         }
         else if (e.keyCode === 39) {
           handleNextClick()
+          handleLogging("user used keyboard shortcut to move to next revision", null)
         }
         else if (e.keyCode === 90) {
           handlePreviousUnannotatedClick()
+          handleLogging("user used keyboard shortcut to move to previous unannotated revision", null)
         }
         else if (e.keyCode === 88) {
           handleNextUnannotatedClick()
+          handleLogging("user used keyboard shortcut to move to next unannotated revision", null)
         }
       }
     }
