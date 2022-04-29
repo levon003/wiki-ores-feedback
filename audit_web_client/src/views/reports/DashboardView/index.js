@@ -303,6 +303,7 @@ const Dashboard = () => {
 
   const handleDrawerClose = () => {
     setDrawerOpen(false)
+    handleLogging('annotation history drawer closed', null)
   }
 
   const handleDeleteAnnotationHistory = (history_id) => {
@@ -310,10 +311,11 @@ const Dashboard = () => {
     .then(res => res.json())
     .then(() => setAnnotationHistory(annotationHistory.filter(history => history.history_id !== history_id)))
     .catch((err) => console.log(err))
+    handleLogging("user deleted annotation history", null)
   }
 
   const handleGetAnnotationHistoryFilters = (history_id, prediction_filter, revert_filter) => {
-    console.log(history_id)
+    handleLogging("user changed filters by clicking on an annotation history", null)
     fetch(`/api/annotation_history/filter_get/${history_id}`)
     .then(res => res.json())
     .then((data) => {

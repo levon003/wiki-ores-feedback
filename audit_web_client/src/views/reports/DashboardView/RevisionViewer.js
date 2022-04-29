@@ -11,6 +11,7 @@ import {
   Button
 } from '@material-ui/core';
 import { DrawerContext } from 'src/App';
+import { LoggingContext } from 'src/App';
 import RevisionView from './RevisionView';
 
 import HelpIcon from '@material-ui/icons/Help';
@@ -33,6 +34,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionsL
   const numDamaging = revisions.filter(revision => revision.correctness_type_data === "correct").length
   const percentDisplay = numAnnotated === 0 ? 0 : Number(numDamaging / numAnnotated * 100).toFixed(2)
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
+  const handleLogging = useContext(LoggingContext)
 
   const [revisionAccordionExpanded, setRevisionAccordionExpanded] = useState(true)  // control accordion expansion in RevisionView
   
@@ -362,7 +364,10 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionsL
                 >
                     <Box className="text-h3">
                       {/* {numAnnotated} out of {revisions.length} annotated, {numDamaging} damaging ({percentDisplay}%) */}
-                      <Button style={{ color: "black", marginTop: "-4.5%" }} onClick={() => setDrawerOpen(true)}>View annotation history</Button>
+                      <Button style={{ color: "black", marginTop: "-4.5%" }} onClick={() => {
+                          setDrawerOpen(true)
+                          handleLogging("view annotation history button pressed", null)
+                        }}>View annotation history</Button>
                     </Box>
                 </Box>
             </Box>

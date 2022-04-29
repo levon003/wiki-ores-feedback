@@ -15,9 +15,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import PersonIcon from '@material-ui/icons/Person';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { DrawerContext } from 'src/App';
-// import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
-// import InputIcon from '@material-ui/icons/Input';
-// import Logo from 'src/components/Logo';
+import { LoggingContext } from 'src/App';
 
 
 const drawerWidth = 240;
@@ -55,6 +53,7 @@ const TopBar = ({
 }) => {
   const classes = useStyles();
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
+  const handleLogging = useContext(LoggingContext)
   const location = useLocation();
 
   const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1")
@@ -65,6 +64,7 @@ const TopBar = ({
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true)
+    handleLogging("annotation history menu opened with hamburger menu icon", null)
   }
   return (
     <AppBar
