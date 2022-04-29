@@ -849,7 +849,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       if (!isUserInTextBox) {
         if (e.keyCode === 37) {
           handlePreviousClick()
-          handleLogging("User used keyboard shortcut to move to previous revision")
+          handleLogging("User used keyboard shortcut to move to previous revision", null)
         }
         else if (e.keyCode === 39) {
           handleNextClick()

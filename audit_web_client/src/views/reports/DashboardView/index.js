@@ -24,6 +24,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { isEqual } from 'lodash'
+import { LoggingContext } from '../../../App'
 
 const drawerWidth = 240
 
@@ -70,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes = useStyles();
   const theme = useTheme()
+  const handleLogging = useContext(LoggingContext)
   // Temporary data here: 
   const [data, /*setData*/] =  useState({
     vlhp_r : 1000,
@@ -138,34 +140,34 @@ const Dashboard = () => {
     handleStateUpdate()
     if (prevFilters !== undefined) {
       if (prevFilters.revisionFilter !== revisionFilter) {
-        handleLogging(revisionFilter)
+        handleLogging('revision filter change', revisionFilter)
       }
       else if (prevFilters.minorFilter !== minorFilter) {
-        handleLogging(minorFilter)
+        handleLogging('minor filter change', minorFilter)
       }
       else if (prevFilters.userTypeFilter !== userTypeFilter) {
-        handleLogging(userTypeFilter)
+        handleLogging('user type filter change', userTypeFilter)
       }
       else if (prevFilters.filteredUsernames !== filteredUsernames) {
-        handleLogging(filteredUsernames)
+        handleLogging('filtered usernames change', filteredUsernames)
       }
       else if (prevFilters.pageValues !== pageValues) {
-        handleLogging(pageValues)
+        handleLogging('page value change', pageValues)
       }
       else if (prevFilters.namespaceSelected !== namespaceSelected) {
-        handleLogging(namespaceSelected)
+        handleLogging('namespace selected change', namespaceSelected)
       }
       else if (prevFilters.linkedToValues !== linkedToValues) {
-        handleLogging(linkedToValues)
+        handleLogging('linked to value change', linkedToValues)
       }
       else if (prevFilters.linkedFromValues !== linkedFromValues) {
-        handleLogging(linkedFromValues)
+        handleLogging('linked from value change', linkedFromValues)
       }
       else if (prevFilters.preDefinedSelected !== preDefinedSelected) {
-        handleLogging(preDefinedSelected)
+        handleLogging('predefined selected change', preDefinedSelected)
       }
       else if (prevFilters.focusSelected !== focusSelected) {
-        handleLogging(focusSelected)
+        handleLogging('focus selected change', focusSelected)
       }
     }
   }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected])
@@ -293,27 +295,6 @@ const Dashboard = () => {
     .then(res => res.json())
     .then(data => setAnnotationHistory(data.annotation_history))
     .catch(err => console.log(err))
-  }
-
-  const handleLogging = (change) => {
-     fetch('/api/activity_log/', {
-      method: 'POST', 
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        activity_type: 'test',
-        new_state: change,
-      })
-    })
-    .then(res => {
-      if (res.ok) {
-        console.log("Logged change.");
-      } else {
-        console.warn("Failed to log :(.");
-      }
-    });
   }
 
   useEffect(() => {
