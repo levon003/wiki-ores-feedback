@@ -239,6 +239,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionsL
     } else if (revisions.length === 0) {
       return '0'
     }
+    return idx.toString() // TODO Make a final determination on including integer suffixes
 
     const string = idx.toString()
     const lastChar = string.slice(-1)

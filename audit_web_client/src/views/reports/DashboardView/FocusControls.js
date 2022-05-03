@@ -42,62 +42,6 @@ const HtmlTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-
-const FocusButton1 = ({style, setFocusSelected}) => {
-    const onClick = () => {
-        setFocusSelected({
-            'prediction_filter': 'very_likely_good',
-            'revert_filter': 'reverted',
-          })
-    }
-    return (
-            <HtmlTooltip
-              title={
-                <React.Fragment>
-                    <Typography>Edits that were reverted when ORES predicted them to be non-damaging.</Typography>
-                </React.Fragment>
-              }>
-                <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED REVERTS</Button>
-              </HtmlTooltip>
-    )
-}
-const FocusButton2 = ({style, setFocusSelected}) => {
-    const onClick = () => {
-        setFocusSelected({
-            'prediction_filter': 'very_likely_bad',
-            'revert_filter': 'nonreverted',
-          })
-    }
-    return (
-        <HtmlTooltip
-            title={
-            <React.Fragment>
-                <Typography>Edits that were not reverted when ORES predicted them to be damaging.</Typography>
-            </React.Fragment>
-            }>
-            <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED CONSENSUS</Button>
-        </HtmlTooltip>
-    )
-}
-const FocusButton3 = ({style, setFocusSelected}) => {
-    const onClick = () => {
-        setFocusSelected({
-            'prediction_filter': 'confusing',
-            'revert_filter': 'any',
-          })
-    }
-    return (
-        <HtmlTooltip
-        title={
-        <React.Fragment>
-            <Typography>Edits that ORES wasn't sure about.</Typography>
-        </React.Fragment>
-        }>
-            <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>
-      </HtmlTooltip>
-    )
-}
-
 const FocusControls = ({className, data, counts, focusSelected, setFocusSelected, ...rest}) => {
     const theme = useTheme()
     const handleLogging = useContext(LoggingContext)
@@ -124,6 +68,69 @@ const FocusControls = ({className, data, counts, focusSelected, setFocusSelected
     const focusControlsOpen = Boolean(focusControlsPopup);
     const focusID = focusControlsOpen ? 'simple-popover' : undefined;
 
+    const getFocusCounts = (prediction_filter, revert_filter) => {
+        if (counts?.all?.all) {
+            return "(" + formatNumber(counts[prediction_filter][revert_filter]) + " edits)"
+        } else {
+            return ""
+        }
+    }
+
+    const FocusButton1 = ({style, setFocusSelected}) => {
+        const onClick = () => {
+            setFocusSelected({
+                'prediction_filter': 'very_likely_good',
+                'revert_filter': 'reverted',
+              })
+        }
+        return (
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                        <Typography>Edits that were reverted when ORES predicted them to be non-damaging. {getFocusCounts('very_likely_good', 'reverted_damaging')}</Typography>
+                    </React.Fragment>
+                  }>
+                    <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED REVERTS</Button>
+                  </HtmlTooltip>
+        )
+    }
+    const FocusButton2 = ({style, setFocusSelected}) => {
+        const onClick = () => {
+            setFocusSelected({
+                'prediction_filter': 'very_likely_bad',
+                'revert_filter': 'nonreverted',
+              })
+        }
+        return (
+            <HtmlTooltip
+                title={
+                <React.Fragment>
+                    <Typography>Edits that were not reverted when ORES predicted them to be damaging. {getFocusCounts('very_likely_bad', 'nonreverted')}</Typography>
+                </React.Fragment>
+                }>
+                <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>UNEXPECTED CONSENSUS</Button>
+            </HtmlTooltip>
+        )
+    }
+    const FocusButton3 = ({style, setFocusSelected}) => {
+        const onClick = () => {
+            setFocusSelected({
+                'prediction_filter': 'confusing',
+                'revert_filter': 'any',
+              })
+        }
+        return (
+            <HtmlTooltip
+            title={
+            <React.Fragment>
+                <Typography>Edits that ORES wasn't sure about. {getFocusCounts('confusing', 'all')}</Typography>
+            </React.Fragment>
+            }>
+                <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>
+          </HtmlTooltip>
+        )
+    }
+
     const handleIconClick = (event) => {
         setFocusControlsPopup(event.currentTarget)
     }
@@ -132,6 +139,29 @@ const FocusControls = ({className, data, counts, focusSelected, setFocusSelected
         setFocusControlsPopup(null)
     }
 
+    var ranges = [
+        { divider: 1e18 , suffix: 'E' },
+        { divider: 1e15 , suffix: 'P' },
+        { divider: 1e12 , suffix: 'T' },
+        { divider: 1e9 , suffix: 'G' },
+        { divider: 1e6 , suffix: 'M' },
+        { divider: 1e3 , suffix: 'k' }
+    ];
+    const formatNumber = (n) => {
+    for (var i = 0; i < ranges.length; i++) {
+        if (n >= ranges[i].divider) {
+        return (n / ranges[i].divider).toFixed(1).toString() + ranges[i].suffix;
+        }
+    }
+    return n.toString();
+    }
+    const getTotal = () => {
+        if (counts?.all?.all) {
+            return formatNumber(counts.all.all) + " edits from 2019"
+        } else {
+            return  ""
+        }
+    }
  
     return (
     <Card
@@ -172,7 +202,7 @@ const FocusControls = ({className, data, counts, focusSelected, setFocusSelected
                         style= {{ display: "inline-flex", float: "left"}}
                     >
                     <Box className="text-h3 subtitle">
-                        Investigate
+                        Investigate {getTotal()}
                     </Box>
 
                     <Box
