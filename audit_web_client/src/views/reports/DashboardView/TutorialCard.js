@@ -20,17 +20,20 @@ const useStyles = makeStyles((theme) => ({
   closeButton: {
     marginLeft: 'auto',
   },
+  stepCard: {
+    maxWidth: "300px",
+    padding: "5px",
+    margin: "2px",
+  },
 }));
 
 const TutorialStep = ({stepHeader, stepNum, children}) => {
+  const classes = useStyles();
+
   return (
-  <Box 
-    border="2px solid" 
-    borderColor="#5d5d61" 
-    borderRadius="5px" 
-    maxWidth="300px"
-    padding="5px"
-    margin="2px"
+  <Card
+    className={classes.stepCard}
+    variant="outlined"
   >
     <Typography variant="h2" color="textPrimary" component="div">
       <strong>{stepNum}</strong> {stepHeader}
@@ -38,7 +41,7 @@ const TutorialStep = ({stepHeader, stepNum, children}) => {
     <Typography variant="body1" color="textPrimary" component="div">
       {children}
     </Typography>
-  </Box>
+  </Card>
   )
 }
 

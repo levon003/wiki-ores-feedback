@@ -69,6 +69,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Dashboard = () => {
+  const releaseVersion = "v0.2.2"
+
   const classes = useStyles();
   const theme = useTheme()
   const handleLogging = useContext(LoggingContext)
@@ -467,7 +469,7 @@ const Dashboard = () => {
           :
           <div style={{textAlign: 'center'}}>No annotation history.</div>}
         </List>
-        <footer><Paper style={{position: "fixed", bottom: 0, right: 0, fontSize: 10}} elevation={3}>ORES-Inspect v0.2.2 <a href="https://github.com/levon003/wiki-ores-feedback/releases">(on GitHub)</a></Paper></footer>
+        <footer><Paper style={{position: "fixed", bottom: 0, right: 0, fontSize: 10}} elevation={3}>ORES-Inspect {releaseVersion} <a href="https://github.com/levon003/wiki-ores-feedback/releases">(on GitHub)</a></Paper></footer>
       </div>
     </Drawer>
   </div>
