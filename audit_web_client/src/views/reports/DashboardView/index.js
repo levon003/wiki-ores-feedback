@@ -268,7 +268,10 @@ const Dashboard = () => {
     })
       .then(res => res.json())
       .then(data => {
-        //console.log("data: ", data)
+        if (("error" in data) || !("revisions" in data)) {
+          console.log(data)
+          throw "No revisions returned in JSON response."
+        }
         console.log("retrieved revisions from backend, n =", data.revisions.length)
         setRevisions(data.revisions)
         setCounts(data.counts)
