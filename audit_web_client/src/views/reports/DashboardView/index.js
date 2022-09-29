@@ -270,6 +270,12 @@ const Dashboard = () => {
       .then(data => {
         if (("error" in data) || !("revisions" in data)) {
           console.log(data)
+          if (("error" in data) && data.error === "No identified user token.") {
+            // force a logout
+            console.log("Forcing a logout; likely an expired login or other app update.")
+            window.location.href = "/auth/logout"
+            return
+          }
           throw "No revisions returned in JSON response."
         }
         console.log("retrieved revisions from backend, n =", data.revisions.length)
