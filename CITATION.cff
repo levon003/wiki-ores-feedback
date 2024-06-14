@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper as below."
+authors:
+  - family-names: Levonian
+    given-names: Zachary
+    orcid: https://orcid.org/0000-0002-8932-1489
+  - family-names: Hagen
+    given-names: Lauren
+  - family-names: Li
+    given-names: Lu
+  - family-names: Lilleboe
+    given-names: Jada
+  - family-names: Wastvedt
+    given-names: Solvejg
+  - family-names: Halfaker
+    given-names: Aaron
+  - family-names: Terveen
+    given-names: Loren
+date-released: 2024-06-12
+repository-code: "https://github.com/levon003/wiki-ores-feedback"
+preferred-citation:
+  type: conference-paper
+  title: "ORES-Inspect: A technology probe for machine learning audits on enwiki"
+  abstract: "Auditing the machine learning (ML) models used on Wikipedia is important for ensuring that vandalism-detection processes remain fair and effective. However, conducting audits is challenging because stakeholders have diverse priorities and assembling evidence for a model's [in]efficacy is technically complex. We designed an interface to enable editors to learn about and audit the performance of the ORES edit quality model. ORES-Inspect is an open-source web tool and a provocative technology probe for researching how editors think about auditing the many ML models used on Wikipedia. We describe the design of ORES-Inspect and our plans for further research with this system."
+  doi: 10.48550/arXiv.2406.08453
+  year: 2024
+  conference:
+      name: "Wiki Workshop 2024"
+      date-start: "2024-06-20"
+      date-end: "2024-06-20"
+  authors:
+  - family-names: Levonian
+    given-names: Zachary
+    orcid: https://orcid.org/0000-0002-8932-1489
+  - family-names: Hagen
+    given-names: Lauren
+  - family-names: Li
+    given-names: Lu
+  - family-names: Lilleboe
+    given-names: Jada
+  - family-names: Wastvedt
+    given-names: Solvejg
+  - family-names: Halfaker
+    given-names: Aaron
+  - family-names: Terveen
+    given-names: Loren
