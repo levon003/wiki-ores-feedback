@@ -3,8 +3,9 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2406.08453-b31b1b.svg)](https://arxiv.org/abs/2406.08453)
 [![License](https://img.shields.io/github/license/levon003/wiki-ores-feedback)](https://github.com/levon003/wiki-ores-feedback/blob/master/LICENSE)
 
-
 Try ORES-Inspect on [Toolforge](https://wikitech.wikimedia.org/wiki/Portal:Toolforge): https://ores-inspect.toolforge.org/
+
+Read our summary paper, presented at [Wiki Workshop 2024](https://wikiworkshop.org/2024): https://arxiv.org/abs/2406.08453
 
 Repository containing code for auditing the [ORES](https://www.mediawiki.org/wiki/ORES) edit quality models, including the [ORES-Inspect](https://toolsadmin.wikimedia.org/tools/id/ores-inspect) tool.
 
@@ -22,7 +23,9 @@ Read more about this project and leave feedback at [Research:ORES Inspect: A tec
 
 ### Timeline
 
-An initial version of this project started in January 2020.  A revised version of this project, and development of ORES Inspect, started in January 2021. ORES-Inspect was presented at the [Wiki Workshop](https://wikiworkshop.org/) in June 2024.
+An initial version of this project started in January 2020.  A revised version of this project, and development of ORES-Inspect, started in January 2021. ORES-Inspect was presented at the [Wiki Workshop](https://wikiworkshop.org/) in June 2024.
+
+### Citation
 
 To cite this work, cite our Wiki Workshop 2024 paper:
 
