@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-Guidance for working in this repository.
-
 ## What this is
 
 **ORES-Inspect**: a web app for auditing [ORES](https://www.mediawiki.org/wiki/ORES) edit-quality
@@ -29,12 +27,8 @@ Run from `audit_web_client/`:
 - **Hardcoded paths are broken.** ~80 files hardcode `/export/scratch2/levon003/...`, pointing at a
   decommissioned server. Treat these as "a path into this repo or a downloaded Wikipedia dump";
   they will not resolve as-is. Don't assume code that references them runs.
-- **The stack is old** (React 16 + CRA, Material-UI v4, react-router beta, unpinned Flask deps) and
+- **The stack is old, although parts have been modernized** and
   ORES itself is being decommissioned by Wikimedia in favor of Lift Wing. Check DEVELOPMENT.md's
   TODOs before assuming a dependency or external service is current.
 - **No tests or CI.** There's nothing automated to run; verify changes manually.
 
-## Conventions
-
-- Feature Branch Workflow; branch names like `feature/<name>` (or `chore/<name>`).
-- Use `git mv` for moves so history is preserved.
