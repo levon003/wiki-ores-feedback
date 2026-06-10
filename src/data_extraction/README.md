@@ -1,5 +1,10 @@
 For scripts and code to extract info from flat files, i.e. XML wikipedia dumps.
 
+> **Note:** the absolute `/export/scratch2/levon003/...` paths below point at a decommissioned
+> server and will not resolve as-is. Read them as "a path into this repo or a downloaded Wikipedia
+> dump" and substitute your own data directory. See the repository's
+> [`DEVELOPMENT.md`](../../DEVELOPMENT.md#modernization-todos).
+
 ## Creating the OIDB database for Ores-Inspect
 
 Steps:
