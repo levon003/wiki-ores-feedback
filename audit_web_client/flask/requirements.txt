@@ -12,5 +12,5 @@ numpy==1.26.4
 pytz==2024.2
 SQLAlchemy==1.4.54
 mysqlclient==2.2.8
-pyOpenSSL==24.2.1
+pyOpenSSL==26.2.0
 mwoauth==0.4.0
