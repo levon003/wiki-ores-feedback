@@ -33,9 +33,9 @@ Toolforge's MariaDB as its database. The React front-end is based directly on th
 ### Prepare for local development
 
  - Install a current `node` (the build is tested on Node 20+).
- - From the `audit_web_client` directory, run `npm install --legacy-peer-deps`. The flag is
-   currently required by one unmaintained transitive dependency (`react-svg-tooltip`, which still
-   peers on React 16); see the Modernization TODOs.
+ - From the `audit_web_client` directory, run `npm install`. (A committed `.npmrc` sets
+   `legacy-peer-deps=true`, required by one unmaintained transitive dependency,
+   `react-svg-tooltip`, which still peers on React 16; see the Modernization TODOs.)
  - We use the [Feature Branch Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow),
    generally speaking. No specific naming guidance for the branches, but `feature/<feature_name>`
    is a good choice.
@@ -223,8 +223,8 @@ front-end stack and the folder layout are the highest-leverage cleanups.
       kept (the prediction Sankey). `react-helmet` → `react-helmet-async`.
 - [x] **Dependency vulnerabilities:** `npm install` now reports **0** (was 120 on the old tree).
 - [ ] **Drop `react-svg-tooltip`.** It's the one remaining unmaintained dep (peers on React ^16),
-      which is why `npm install` needs `--legacy-peer-deps`. Used in a single file; replace with an
-      MUI `Tooltip` or a small custom component, then drop the flag.
+      which is why `.npmrc` sets `legacy-peer-deps=true`. Used in a single file; replace with an
+      MUI `Tooltip` or a small custom component, then drop the dep and the `.npmrc` setting.
 - [ ] **Burn down the ESLint warning backlog.** `npm run lint` passes (0 errors) but ~90 pre-existing
       warnings remain (unused vars, `react-hooks/exhaustive-deps`, unescaped entities, stray DOM
       props such as `inputprops`). A few rules are temporarily set to `warn` in `eslint.config.js`;
@@ -257,11 +257,16 @@ front-end stack and the folder layout are the highest-leverage cleanups.
 
 ### Repository-wide
 
-- [ ] **Add CI.** No automated tests run on push/PR. Wire up GitHub Actions to run `npm run lint`
-      and `npm run build` for `audit_web_client` (both are green today and make a good first gate).
+- [x] **Added CI** (`.github/workflows/ci.yml`): runs `npm ci`, `npm run lint`, and `npm run build`
+      for `audit_web_client` on every PR and on pushes to `master`. (No test job yet — there are no
+      tests.)
 - [x] **Modernized the lint setup.** Replaced CRA's `eslint-config-react-app` with a flat
-      `eslint.config.js` (ESLint 9). `npm run lint` runs clean (0 errors). Still needs a pre-commit
-      hook / CI step to be *enforced* (folded into the CI item above).
+      `eslint.config.js` (ESLint 9). `npm run lint` runs clean (0 errors) and is now enforced by CI.
+- [x] **Configured Dependabot** (`.github/dependabot.yml`) for the npm, pip, and github-actions
+      ecosystems, with minor/patch updates grouped to cut PR noise. A `dependabot-auto-merge.yml`
+      workflow enables auto-merge for patch & minor bumps **once CI passes** — this requires two
+      one-time repo settings: enabling "Allow auto-merge" and a branch-protection rule on `master`
+      that requires the CI check. Major bumps stay manual.
 - [ ] **Package the Python pipeline.** Add a `pyproject.toml` (and a single dependency declaration)
       for the `src/` pipeline.
 - [ ] **Parameterize hardcoded paths.** ~80 files (across `src/`, `experiments/`, and even
