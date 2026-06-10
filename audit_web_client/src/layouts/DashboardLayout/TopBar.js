@@ -2,27 +2,20 @@ import React, { useContext } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {
-  AppBar,
-  Box,
-  Typography,
-  Toolbar,
-  makeStyles,
-  IconButton,
-  Link
-} from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import PersonIcon from '@material-ui/icons/Person';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { AppBar, Box, Typography, Toolbar, IconButton, Link } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
+import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { DrawerContext } from 'src/App';
-// import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
-// import InputIcon from '@material-ui/icons/Input';
+// import NotificationsIcon from '@mui/icons-material/NotificationsOutlined';
+// import InputIcon from '@mui/icons-material/Input';
 // import Logo from 'src/components/Logo';
 
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     display: 'flex',
   },
@@ -48,16 +41,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TopBar = ({
-  className,
-  onMobileNavOpen,
-  ...rest
-}) => {
-  const classes = useStyles();
+const TopBar = () => {
+  const { classes } = useStyles();
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
   const location = useLocation();
 
-  const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+  const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*=\s*([^;]*).*$)|^.*$/, "$1")
   const loggedIn = username !== ""
 
   // a bit hacky: only display the drawer button in the DashboardView
@@ -123,12 +112,12 @@ const TopBar = ({
         }
         {displayDrawerButton ?
         <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="end"
-            onClick={handleDrawerOpen}
-            className={clsx(drawerOpen && classes.hide)}
-          >
+          color="inherit"
+          aria-label="open drawer"
+          edge="end"
+          onClick={handleDrawerOpen}
+          className={clsx(drawerOpen && classes.hide)}
+          size="large">
             <MenuIcon />
           </IconButton>
           : null }

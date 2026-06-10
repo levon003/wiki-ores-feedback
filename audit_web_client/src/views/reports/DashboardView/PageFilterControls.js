@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import throttle from 'lodash/throttle';
@@ -20,17 +20,17 @@ import {
   IconButton,
   Paper,
   useTheme
-} from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import HelpIcon from '@material-ui/icons/Help'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import HelpIcon from '@mui/icons-material/Help'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
 
-const PageFilterControls = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected, ...rest }) => {
+const PageFilterControls = ({ pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected }) => {
   const theme = useTheme()
 
   const pageButtonStyle = (pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
@@ -54,8 +54,6 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
   const [linkedFromOpen, setLinkedFromOpen] = useState(false);
   const [linkedFromActiveQuery, setLinkedFromActiveQuery] = useState(false);
   const linkedFromLoading = linkedFromOpen && linkedFromActiveQuery;
-
-  const [pageHelpPopup, setPageHelpPopup] = useState();
 
   const pageFilterOpen = Boolean(pageAnchorEl);
   const id = pageFilterOpen ? 'simple-popover' : undefined;
@@ -91,7 +89,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
     setPageAnchorEl(null)
   }
 
-  const handlePageFilterReset = (event) => {
+  const handlePageFilterReset = () => {
     setNameSpaceSelected (DefaultFilters.defaultNamespaceSelected); 
     setPageValues([])
     setLinkedToValues([])
@@ -297,7 +295,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
       options={namespaces}
       disableCloseOnSelect
       getOptionLabel={(option) => option.namespace}
-      getOptionSelected={(option, value) => option.namespace === value.namespace}
+      isOptionEqualToValue={(option, value) => option.namespace === value.namespace}
       onChange={(event, newValues) => {
         setNameSpaceSelected(newValues)
       }}
@@ -359,9 +357,10 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
           />
       )}
       renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
+        value.map((option, index) => {
+          const { key, ...tagProps } = getTagProps({ index });
+          return <Chip key={key} label={option.primary_text} {...tagProps} />;
+        })
       }
       renderOption={(option) => {
         const matches = match(option.primary_text, pageInputValue);
@@ -372,7 +371,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
 
         return (
           <Grid container alignItems="center">
-            <Grid item xs>
+            <Grid size="grow">
               {parts.map((part, index) => (
                 <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                   {part.text}
@@ -429,9 +428,10 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
           />
       )}
       renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
+        value.map((option, index) => {
+          const { key, ...tagProps } = getTagProps({ index });
+          return <Chip key={key} label={option.primary_text} {...tagProps} />;
+        })
       }
       renderOption={(option) => {
         const matches = match(option.primary_text, linkedToInputValue);
@@ -442,7 +442,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
 
         return (
           <Grid container alignItems="center">
-            <Grid item xs>
+            <Grid size="grow">
               {parts.map((part, index) => (
                 <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                   {part.text}
@@ -499,9 +499,10 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
           />
       )}
       renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
+        value.map((option, index) => {
+          const { key, ...tagProps } = getTagProps({ index });
+          return <Chip key={key} label={option.primary_text} {...tagProps} />;
+        })
       }
       renderOption={(option) => {
         const matches = match(option.primary_text, linkedFromInputValue);
@@ -512,7 +513,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
 
         return (
           <Grid container alignItems="center">
-            <Grid item xs>
+            <Grid size="grow">
               {parts.map((part, index) => (
                 <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                   {part.text}

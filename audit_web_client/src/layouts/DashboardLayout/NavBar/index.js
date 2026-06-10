@@ -1,17 +1,8 @@
 import React, { useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  Drawer,
-  Hidden,
-  List,
-  Typography,
-  makeStyles
-} from '@material-ui/core';
+import { Avatar, Box, Button, Divider, Drawer, List, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import {
   AlertCircle as AlertCircleIcon,
   BarChart as BarChartIcon,
@@ -68,7 +59,7 @@ const items = [
   }
 ];
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   mobileDrawer: {
     width: 256
   },
@@ -85,7 +76,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const NavBar = ({ onMobileClose, openMobile }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const location = useLocation();
 
   useEffect(() => {
@@ -120,7 +111,8 @@ const NavBar = ({ onMobileClose, openMobile }) => {
 
   return (
     <>
-      <Hidden lgUp>
+      {/* Replaces v4 <Hidden lgUp>: visible below the lg breakpoint. */}
+      <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
         <Drawer
           anchor="left"
           classes={{ paper: classes.mobileDrawer }}
@@ -130,8 +122,9 @@ const NavBar = ({ onMobileClose, openMobile }) => {
         >
           {content}
         </Drawer>
-      </Hidden>
-      <Hidden mdDown>
+      </Box>
+      {/* Replaces v4 <Hidden lgDown>: visible at xl and up (matches the old behavior). */}
+      <Box sx={{ display: { xs: 'none', xl: 'block' } }}>
         <Drawer
           anchor="left"
           classes={{ paper: classes.desktopDrawer }}
@@ -140,7 +133,7 @@ const NavBar = ({ onMobileClose, openMobile }) => {
         >
           {content}
         </Drawer>
-      </Hidden>
+      </Box>
     </>
   );
 };

@@ -7,7 +7,7 @@ import NotFoundView from 'src/views/errors/NotFoundView';
 import LoginView from 'src/views/auth/LoginView';
 
 // this is a bit horrifying. Could be unified with the log-in check in TopBar.
-const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*=\s*([^;]*).*$)|^.*$/, "$1")
 const loggedIn = username !== ""
 
 const routes = [

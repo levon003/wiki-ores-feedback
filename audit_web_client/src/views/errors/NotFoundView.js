@@ -1,13 +1,9 @@
 import React from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  makeStyles
-} from '@material-ui/core';
+import { Box, Container, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import Page from 'src/components/Page';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
     height: '100%',
@@ -23,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NotFoundView = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <Page

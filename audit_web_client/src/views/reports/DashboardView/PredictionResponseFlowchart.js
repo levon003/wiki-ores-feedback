@@ -1,7 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import moment from 'moment';
-import { v4 as uuid } from 'uuid';
+import React from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PropTypes from 'prop-types';
 import {
@@ -21,12 +18,11 @@ import {
   TextField,
   Tooltip,
   Paper,
-  makeStyles
-} from '@material-ui/core';
+} from '@mui/material';
 import { ResponsiveLine } from '@nivo/line';
 import { ResponsiveSankey } from '@nivo/sankey'
 import { ResponsiveBar } from '@nivo/bar'
-        
+
 const PredictionResponseFlowchart = ( { data } ) => {
 
   const handleClick = (source, target) => {
@@ -57,7 +53,7 @@ const PredictionResponseFlowchart = ( { data } ) => {
       labelPadding={16}
       labelTextColor={{ from: 'color', modifiers: [ [ 'darker', '1' ] ] }}
       animate={false}
-      onClick={(data, event) => {
+      onClick={(data) => {
                 if ("source" in data) {
                   // this is a link click, since it has a source attribute
                   handleClick(data.source, data.target);

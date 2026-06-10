@@ -2,13 +2,15 @@ import React from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  ListItem,
-  makeStyles
-} from '@material-ui/core';
+import { Button, ListItem } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
+import { makeStyles } from 'tss-react/mui';
+
+// react-router v6+ NavLink applies an `active` class automatically when the
+// link matches (replacing the removed `activeClassName` prop), so we style
+// `&.active` here. `classes` lets us reference sibling rules (the v4 `$ref`
+// JSS syntax is not supported by MUI v5+'s emotion engine).
+const useStyles = makeStyles()((theme, _params, classes) => ({
   item: {
     display: 'flex',
     paddingTop: 0,
@@ -21,22 +23,22 @@ const useStyles = makeStyles((theme) => ({
     letterSpacing: 0,
     padding: '10px 8px',
     textTransform: 'none',
-    width: '100%'
+    width: '100%',
+    '&.active': {
+      color: theme.palette.primary.main,
+      [`& .${classes.title}`]: {
+        fontWeight: theme.typography.fontWeightMedium
+      },
+      [`& .${classes.icon}`]: {
+        color: theme.palette.primary.main
+      }
+    }
   },
   icon: {
     marginRight: theme.spacing(1)
   },
   title: {
     marginRight: 'auto'
-  },
-  active: {
-    color: theme.palette.primary.main,
-    '& $title': {
-      fontWeight: theme.typography.fontWeightMedium
-    },
-    '& $icon': {
-      color: theme.palette.primary.main
-    }
   }
 }));
 
@@ -47,7 +49,7 @@ const NavItem = ({
   title,
   ...rest
 }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <ListItem
@@ -56,7 +58,6 @@ const NavItem = ({
       {...rest}
     >
       <Button
-        activeClassName={classes.active}
         className={classes.button}
         component={RouterLink}
         to={href}

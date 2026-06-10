@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo} from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import throttle from 'lodash/throttle';
@@ -11,6 +11,7 @@ import {
   Chip,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Paper,
@@ -18,14 +19,14 @@ import {
   TextField,
   IconButton,
   useTheme
-} from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import HelpIcon from '@material-ui/icons/Help'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import HelpIcon from '@mui/icons-material/Help'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 import Typography from 'src/theme/typography';
 
-const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, preDefinedSelected, ...rest}) => {
+const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, preDefinedSelected}) => {
   const classes = useStyles();
 
   const theme = useTheme()
@@ -133,28 +134,11 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
     setUserTypeAnchorEl(event.currentTarget);
   };
     
-  const handleClose = (event) => {
+  const handleClose = () => {
     setUserTypeAnchorEl(null);
   };
 
-  const [pageHelpPopup, setPageHelpPopup] = useState();
-
-  const pageHelpOpen = Boolean(pageHelpPopup);
-  const helpID = pageHelpOpen ? 'simple-popover' : undefined;
-
-  const handleIconClick = (event) => {
-    setPageHelpPopup(event.currentTarget)
-  }
-
-  const handleIconClickClose = () => {
-    setPageHelpPopup(null)
-  }
-    
-  const handleUsernameFilterChange = (event, value, reason) => {
-    setFilteredUsernames(value);
-  };
-    
-  const handleUserFilterReset = (event) => {
+  const handleUserFilterReset = () => {
     setFilteredUsernames([]);
     setUserTypeFilter(DefaultFilters.defaultUserFilters);
   };
@@ -196,7 +180,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
             }
             className={classes.root}
           >
-            <ListItem key="unregistered" role={undefined} dense button onClick={handleToggle("unregistered")}>
+            <ListItemButton key="unregistered" role={undefined} dense onClick={handleToggle("unregistered")}>
               <ListItemIcon>
                 <Checkbox
                   edge="start"
@@ -207,8 +191,8 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
                 />
               </ListItemIcon>
               <ListItemText id="user-type-unregistered-desc" primary="Unregistered" />
-            </ListItem>
-            <ListItem key="registered" role={undefined} dense button onClick={handleToggle("registered")}>
+            </ListItemButton>
+            <ListItemButton key="registered" role={undefined} dense onClick={handleToggle("registered")}>
               <ListItemIcon>
                 <Checkbox
                   edge="start"
@@ -219,12 +203,12 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
                 />
               </ListItemIcon>
               <ListItemText id="user-type-registered-desc" primary="Registered" />
-            </ListItem>
+            </ListItemButton>
             <List component="div" disablePadding>
               {['newcomers', 'learners', 'experienced', 'bots'].map((value) => {
                   
                 return (
-                  <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)} className={classes.nestedList}>
+                  <ListItemButton key={value} role={undefined} dense onClick={handleToggle(value)} className={classes.nestedList}>
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
@@ -235,7 +219,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
                       />
                     </ListItemIcon>
                     <ListItemText id={"user-type-" + value + "-desc"} primary={userTypePrettyNames[value]} />
-                  </ListItem>
+                  </ListItemButton>
                 );
               })}
               
@@ -283,9 +267,10 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
                 />
             )}
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip label={option.user_name} {...getTagProps({ index })} />
-              ))
+              value.map((option, index) => {
+                const { key, ...tagProps } = getTagProps({ index });
+                return <Chip key={key} label={option.user_name} {...tagProps} />;
+              })
             }
             renderOption={(option) => {
               const matches = match(option.user_name, filteredUsernamesInputValue);
@@ -296,7 +281,7 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
 
               return (
                 <Grid container alignItems="center">
-                  <Grid item xs>
+                  <Grid size="grow">
                     {parts.map((part, index) => (
                       <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                         {part.text}

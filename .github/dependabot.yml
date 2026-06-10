@@ -1,0 +1,37 @@
+version: 2
+updates:
+  # Front-end (React/Vite app)
+  - package-ecosystem: npm
+    directory: /audit_web_client
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      # Batch the low-risk updates into a single PR to cut noise. Majors stay
+      # as individual PRs so they get a deliberate review.
+      npm-minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  # Flask back-end (pip / requirements.txt — Toolforge installs this with pip)
+  - package-ecosystem: pip
+    directory: /audit_web_client/flask
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      pip-minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  # GitHub Actions used by the workflows in this repo
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions-all:
+        patterns:
+          - "*"

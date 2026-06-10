@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {
-  Box,
-  Button,
-  Card,
-  Chip,
-  Popover,
-  makeStyles,
-  IconButton,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Box, Button, Card, Chip, Popover, IconButton, Typography, useTheme } from '@mui/material';
+
+import { makeStyles } from 'tss-react/mui';
 
 import RevisionFilterControls from './RevisionFilterControls';
 import PageFilterControls from './PageFilterControls';
 import UserFilterControls from './UserFilterControls';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 
-import HelpIcon from '@material-ui/icons/Help';
+import HelpIcon from '@mui/icons-material/Help';
 
 // const userTypeOptions = [
 //   { key: 'all', desc: 'All users', },
@@ -31,7 +23,7 @@ import HelpIcon from '@material-ui/icons/Help';
 //   { key: 'bots', desc: 'Bots', },
 // ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {},
   actions: {
     justifyContent: 'flex-end'
@@ -42,19 +34,19 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UserFilterChip = ({ className, onChange, userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, preDefinedSelected, ...rest }) => {
+const UserFilterChip = ({ userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, preDefinedSelected }) => {
 
   return <UserFilterControls userTypeFilter={userTypeFilter} setUserTypeFilter={setUserTypeFilter} filteredUsernames={filteredUsernames} setFilteredUsernames={setFilteredUsernames} userTypeAnchorEl={userTypeAnchorEl} setUserTypeAnchorEl={setUserTypeAnchorEl} useStyles={useStyles} preDefinedSelected={preDefinedSelected} />
 
 };
 
-const PageFilterChip = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected, ...rest }) => {
+const PageFilterChip = ({ pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected }) => {
 
   return <PageFilterControls pageValues={pageValues} setPageValues={setPageValues} namespaceSelected={namespaceSelected} setNameSpaceSelected={setNameSpaceSelected} linkedToValues={linkedToValues} setLinkedToValues={setLinkedToValues} linkedFromValues={linkedFromValues} setLinkedFromValues={setLinkedFromValues} pageAnchorEl={pageAnchorEl} setPageAnchorEl={setPageAnchorEl} preDefinedSelected={preDefinedSelected}/>
 
 };
 
-const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, revisionAnchorEl, setRevisionAnchorEl, preDefinedSelected, ...rest}) => {
+const RevisionFilterChip = ({ onChange, revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, revisionAnchorEl, setRevisionAnchorEl, preDefinedSelected }) => {
 
   const theme = useTheme()
 
@@ -66,23 +58,10 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
     setRevisionAnchorEl(event.currentTarget);
   };
     
-  const handleRevisionPopoverClose = (event) => {
+  const handleRevisionPopoverClose = () => {
     setRevisionAnchorEl(null);
   };
 
-  const [pageHelpPopup, setPageHelpPopup] = useState();
-
-  const pageHelpOpen = Boolean(pageHelpPopup);
-  const helpID = pageHelpOpen ? 'simple-popover' : undefined;
-
-  const handleIconClick = (event) => {
-    setPageHelpPopup(event.currentTarget)
-  }
-
-  const handleIconClickClose = () => {
-    setPageHelpPopup(null)
-  }
-  
   return (
     <Box
       display="flex"
@@ -112,7 +91,7 @@ const RevisionFilterChip = ({className, onChange, revisionFilter, setRevisionFil
 };
 
 // all article edits
-const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+const PreDefinedFilterButton1 = ({style, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultUserFilters)
@@ -129,7 +108,7 @@ const PreDefinedFilterButton1 = ({style, setPreDefinedSelected, setFilteredUsern
 }
 
 // newcomer edits
-const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+const PreDefinedFilterButton2 = ({style, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultNewcomerUserFilters)
@@ -146,7 +125,7 @@ const PreDefinedFilterButton2 = ({style, setPreDefinedSelected, setFilteredUsern
 }
 
 // LGBT History edits
-const PreDefinedFilterButton3 = ({style, setPreDefinedSelected, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
+const PreDefinedFilterButton3 = ({style, setFilteredUsernames, setPageValues, setNameSpaceSelected, setLinkedFromValues, setLinkedToValues, setRevisionFilter, setMinorFilter, setUserTypeFilter}) => {
   const onClick = () => {
     setFilteredUsernames([])
     setUserTypeFilter(DefaultFilters.defaultUserFilters)
@@ -167,7 +146,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
     
   const theme = useTheme()
 
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   // all margins should be the same
   const predefinedButton1Style = preDefinedSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}

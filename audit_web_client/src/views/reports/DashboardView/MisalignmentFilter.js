@@ -2,16 +2,13 @@ import React, { useState, useRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import "../DashboardView/styles.css";
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { withStyles } from 'tss-react/mui';
 import { Tooltip as TT } from "react-svg-tooltip";
 
-import {
-  Box,
-  Tooltip,
-  makeStyles
-} from '@material-ui/core';
+import { Box, Tooltip } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 // function getWindowDimensions() {
 //   const { innerWidth: width, innerHeight: height } = window;
 //   return {
@@ -32,7 +29,7 @@ import {
 //   return windowDimensions;
 // }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {},
   actions: {
     justifyContent: 'flex-end'
@@ -83,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 // todo: get rid of data variable, all of that will be in counts variable
 // leaving data for now as it is entrenched in the misalignment filter
-const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, className, ...rest }) => {
+const MisalignmentFilter = ({ data, focusSelected, setFocusSelected }) => {
   const [strokecolor, setStrokeColor] = useState({
     'vlhp_box': "#eeeeee",
     'itm_box': "#eeeeee",
@@ -186,7 +183,7 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
   }
 
   function FlowchartSummarySVG(props) {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     let total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
     let total_nr = props.data["confrevs_nr"] + props.data["vlg_nr"] + props.data["vlhp_nr"];
@@ -199,7 +196,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
       height="120mm"
       version="1.1"
       viewBox="0 0 297 210"
-    aspectratio="1.0"
     >
       <g>
         <g
@@ -364,7 +360,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="15.2%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -381,7 +376,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="77.8%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -399,7 +393,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="25.8%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -416,7 +409,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="43%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -432,7 +424,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="53%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -448,7 +439,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="68.7%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -465,7 +455,7 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
 
 
   
-  const HtmlTooltip = withStyles((theme) => ({
+  const HtmlTooltip = withStyles(Tooltip, (theme) => ({
     tooltip: {
       backgroundColor: '#f5f5f9',
       color: 'rgba(0, 0, 0, 0.87)',
@@ -473,7 +463,7 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
       fontSize: theme.typography.pxToRem(12),
       border: '1px solid #dadde9',
     },
-  }))(Tooltip);
+  }));
 
   return (
   <Box>
