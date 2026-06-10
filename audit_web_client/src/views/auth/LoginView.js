@@ -9,15 +9,15 @@ import {
   Link,
   Divider,
   Typography,
-  makeStyles,
   Accordion,
   AccordionDetails,
-  AccordionSummary
-} from '@material-ui/core';
+  AccordionSummary,
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import Page from 'src/components/Page';
-import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
+import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
     paddingBottom: theme.spacing(3),
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LoginView = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const navigate = useNavigate();
 
   // TODO consider not showing the login button if the user is already logged in

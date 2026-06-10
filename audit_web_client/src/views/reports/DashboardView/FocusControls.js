@@ -16,13 +16,14 @@ import {
     AccordionDetails,
     AccordionSummary,
     Tooltip
-  } from '@material-ui/core';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
+  } from '@mui/material';
+import { withStyles } from 'tss-react/mui';
+import { makeStyles } from 'tss-react/mui';
+import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import MisalignmentFilter from "./MisalignmentFilter";
-import HelpIcon from '@material-ui/icons/Help';
+import HelpIcon from '@mui/icons-material/Help';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     root: {},
     actions: {
         justifyContent: 'flex-end'
@@ -32,14 +33,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const HtmlTooltip = withStyles((theme) => ({
+const HtmlTooltip = withStyles(Tooltip, (theme) => ({
   tooltip: {
     backgroundColor: '#f5f5f9',
     color: 'rgba(0, 0, 0, 0.87)',
     maxWidth: 220,
     border: '1px solid #dadde9',
   },
-}))(Tooltip);
+}));
 
 
 const FocusButton1 = ({style, setFocusSelected}) => {
@@ -119,7 +120,7 @@ const FocusControls = ({className, data, counts, focusSelected, setFocusSelected
     //const focusButton2Style = focusSelected === 2 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
     //const focusButton3Style = focusSelected === 3 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
 
-    const classes = useStyles();
+    const { classes } = useStyles();
 
 
     const [focusControlsPopup, setFocusControlsPopup] = useState();

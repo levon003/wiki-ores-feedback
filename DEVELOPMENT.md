@@ -32,8 +32,10 @@ Toolforge's MariaDB as its database. The React front-end is based directly on th
 
 ### Prepare for local development
 
- - Install `node` and `yarn` (`npm install -g yarn`).
- - From the `audit_web_client` directory, run `npm install`.
+ - Install a current `node` (the build is tested on Node 20+).
+ - From the `audit_web_client` directory, run `npm install --legacy-peer-deps`. The flag is
+   currently required by one unmaintained transitive dependency (`react-svg-tooltip`, which still
+   peers on React 16); see the Modernization TODOs.
  - We use the [Feature Branch Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow),
    generally speaking. No specific naming guidance for the branches, but `feature/<feature_name>`
    is a good choice.
@@ -69,8 +71,10 @@ Toolforge's MariaDB as its database. The React front-end is based directly on th
 
 All commands below are run from the `audit_web_client` directory.
 
- - Start the development backend: `yarn start-flask`
- - Start the development frontend: `yarn start`
+ - Start the development frontend (Vite, port 3000): `npm run dev` (or `npm start`)
+ - Start the development backend (Flask, port 5000): `npm run start-flask`
+ - Production build (outputs to `build/`): `npm run build`
+ - Lint: `npm run lint`
 
 #### Developing remotely
 
@@ -147,9 +151,10 @@ In the instructions below, replace `{deploying_username}` with your WikiTech use
 
 ### Other useful links
 
- - React tutorial: <https://reactjs.org/docs/hello-world.html>
- - React Hooks tutorial: <https://reactjs.org/docs/hooks-intro.html>
- - Material-UI: <https://material-ui.com/getting-started/usage/>
+ - React docs: <https://react.dev/>
+ - MUI (Material UI) docs: <https://mui.com/material-ui/getting-started/>
+ - Vite docs: <https://vitejs.dev/>
+ - tss-react (the `makeStyles` successor used here): <https://www.tss-react.dev/>
 
 ### FAQ
 
@@ -205,23 +210,35 @@ front-end stack and the folder layout are the highest-leverage cleanups.
 
 ### Front-end (`audit_web_client`)
 
-- [ ] **Migrate off Create React App.** `react-scripts@^3.4.4` is years out of support; CRA itself
-      is deprecated. Move to [Vite](https://vitejs.dev/) (or Next.js) for a maintained dev/build
-      toolchain.
-- [ ] **Upgrade React.** Currently `react@^16.14.0`. Move to React 18+ (and the new root API).
-- [ ] **Upgrade Material-UI.** Currently `@material-ui/*@^4.x`, which is now
-      [MUI](https://mui.com/) v5/v6 with a different package name (`@mui/material`) and styling
-      engine. This is the largest single front-end migration.
-- [ ] **Upgrade react-router.** Pinned to a `6.0.0-beta.0` pre-release; move to a stable v6/v7.
-- [ ] **Audit and de-duplicate charting libs.** The app currently depends on `@nivo/*`, `chart.js`
-      + `react-chartjs-2`, and `d3` / `d3-sankey` simultaneously. Consolidate where possible.
-- [ ] **Run `npm audit` / Dependabot.** `package-lock.json` is ~1.7 MB of transitively pinned,
-      aging dependencies.
+- [x] **Migrated off Create React App to [Vite](https://vitejs.dev/).** Build output still goes to
+      `build/` so `deploy.sh` is unchanged. Dev server still on port 3000; the old `setupProxy.js`
+      is now Vite's `server.proxy` in `vite.config.js`.
+- [x] **Upgraded React 16 → 19** (new `createRoot` entry point in `src/index.js`).
+- [x] **Upgraded Material-UI v4 → MUI v7.** `@material-ui/*` → `@mui/material` /
+      `@mui/icons-material`; `makeStyles`/`withStyles` migrated to [tss-react](https://www.tss-react.dev/);
+      `Hidden`/`Grid`/`ListItem button` updated to their v5+ replacements.
+- [x] **Upgraded react-router** `6.0.0-beta.0` → v7 (replaced the removed `activeClassName`).
+- [x] **Removed dead deps and Devias template cruft** (`chart.js`, `react-chartjs-2`, `d3`,
+      `d3-sankey`, `nprogress`, `react-scripts`, unused views/widgets). `@nivo/*` was bumped and
+      kept (the prediction Sankey). `react-helmet` → `react-helmet-async`.
+- [x] **Dependency vulnerabilities:** `npm install` now reports **0** (was 120 on the old tree).
+- [ ] **Drop `react-svg-tooltip`.** It's the one remaining unmaintained dep (peers on React ^16),
+      which is why `npm install` needs `--legacy-peer-deps`. Used in a single file; replace with an
+      MUI `Tooltip` or a small custom component, then drop the flag.
+- [ ] **Burn down the ESLint warning backlog.** `npm run lint` passes (0 errors) but ~90 pre-existing
+      warnings remain (unused vars, `react-hooks/exhaustive-deps`, unescaped entities, stray DOM
+      props such as `inputprops`). A few rules are temporarily set to `warn` in `eslint.config.js`;
+      promote them back to `error` as the backlog is cleared.
+- [ ] **Code-split the bundle.** The single JS chunk is ~745 kB (Vite warns >500 kB); consider
+      `manualChunks` or route-level dynamic `import()`.
 
 ### Back-end (`audit_web_client/flask`)
 
-- [ ] **Pin Python dependencies.** `flask/requirements.txt` is mostly unpinned (only
-      `sqlalchemy==1.4.*`). Pin versions and/or adopt a lockfile (`pip-tools`, `uv`, or Poetry).
+- [x] **Pinned Python dependencies** in `flask/requirements.txt` (were unpinned). SQLAlchemy is
+      held on the 1.4 series — see below.
+- [ ] **Upgrade SQLAlchemy 1.4 → 2.0.** The `api/` code targets the 1.4 API; 2.0 is a separate
+      breaking change. Not attempted here because the backend can't be exercised without the
+      Toolforge DB credentials.
 - [ ] **Offer `PyMySQL` as an alternative to `mysqlclient`** to avoid the recurring install pain
       (especially on Apple Silicon).
 - [ ] **Bump the Python runtime.** Deployment still targets `python3.9` on Toolforge; move to a
@@ -240,10 +257,11 @@ front-end stack and the folder layout are the highest-leverage cleanups.
 
 ### Repository-wide
 
-- [ ] **Add CI.** No automated tests, linting, or build checks run on push/PR. Wire up GitHub
-      Actions for at least lint + build of `audit_web_client`.
-- [ ] **Enforce existing lint/format config.** ESLint + Prettier are configured in `package.json`
-      but not enforced. Add a pre-commit hook and/or CI step.
+- [ ] **Add CI.** No automated tests run on push/PR. Wire up GitHub Actions to run `npm run lint`
+      and `npm run build` for `audit_web_client` (both are green today and make a good first gate).
+- [x] **Modernized the lint setup.** Replaced CRA's `eslint-config-react-app` with a flat
+      `eslint.config.js` (ESLint 9). `npm run lint` runs clean (0 errors). Still needs a pre-commit
+      hook / CI step to be *enforced* (folded into the CI item above).
 - [ ] **Package the Python pipeline.** Add a `pyproject.toml` (and a single dependency declaration)
       for the `src/` pipeline.
 - [ ] **Parameterize hardcoded paths.** ~80 files (across `src/`, `experiments/`, and even

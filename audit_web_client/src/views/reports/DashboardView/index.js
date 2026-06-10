@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import {
-  Container,
-  Grid,
-  makeStyles,
-  useTheme,
-  Paper,
-  Box
-} from '@material-ui/core';
+import { Container, Grid, useTheme, Paper, Box } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import clsx from 'clsx';
 import Page from 'src/components/Page';
 import RevisionViewer from './RevisionViewer';
@@ -14,18 +8,19 @@ import FilterControls from './FilterControls';
 import DefaultFilters from './DefaultFilters';
 import FocusControls from './FocusControls';
 import { DrawerContext } from 'src/App';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronRight';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import IconButton from '@mui/material/IconButton';
+import ChevronLeftIcon from '@mui/icons-material/ChevronRight';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 
 const drawerWidth = 240
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
     minHeight: '100%',
@@ -66,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Dashboard = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const theme = useTheme()
   // Temporary data here: 
   const [data, /*setData*/] =  useState({
@@ -352,8 +347,7 @@ const Dashboard = () => {
               spacing={1}
             >
               <Grid
-                item
-                xs={12}
+                size={12}
               >
                 <FilterControls 
                     onChange={handleStateUpdate}
@@ -379,15 +373,13 @@ const Dashboard = () => {
               </Grid>
 
               <Grid
-                item
-                xs={12}
+                size={12}
               >
                 <FocusControls counts={counts} data={data} focusSelected={focusSelected} setFocusSelected={setFocusSelected} />
               </Grid>
 
               <Grid
-                item
-                xs={12}
+                size={12}
               >
                 <RevisionViewer 
                   revisions={revisions}
@@ -424,7 +416,7 @@ const Dashboard = () => {
       }}
     >
       <div className={classes.drawerHeader}>
-        <IconButton onClick={handleDrawerClose}>
+        <IconButton onClick={handleDrawerClose} size="large">
           {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </div>
@@ -437,11 +429,14 @@ const Dashboard = () => {
         <List>
           {annotationHistory.length > 0 ? annotationHistory.map((history, index) => (
             <div key={history.custom_name + history.prediction_filter + history.revert_filter + index} >
-              <ListItem button onClick={() => handleGetAnnotationHistoryFilters(history.history_id)} key={history.custom_name}>
+              <ListItemButton onClick={() => handleGetAnnotationHistoryFilters(history.history_id)} key={history.custom_name}>
                 <ListItemText>
                   <b className="text-h2">{history.custom_name}</b><br></br>
                   <b className="text-h2">{history.prediction_filter === 'very_likely_good' ? "Unexpected Reverts" : history.prediction_filter === 'very_likely_bad' ? "Unexpected Consensus" : "Confusing Edits"}</b><br></br>
-                  <IconButton onClick={() => handleDeleteAnnotationHistory(history.history_id)} style={{padding: 0}}>
+                  <IconButton
+                    onClick={() => handleDeleteAnnotationHistory(history.history_id)}
+                    style={{padding: 0}}
+                    size="large">
                    <DeleteIcon/>
                   </IconButton>
                   <div>
@@ -451,7 +446,7 @@ const Dashboard = () => {
                     {history.num_damaging} Damaging {history.prediction_filter === 'very_likely_good' && `(${history.num_damaging} ORES Misclassifications)`}
                   </div>
                 </ListItemText>
-              </ListItem>
+              </ListItemButton>
             </div>
           ))
           :
@@ -460,7 +455,7 @@ const Dashboard = () => {
         <footer><Paper style={{position: "fixed", bottom: 0, right: 0, fontSize: 10}} elevation={3}>ORES-Inspect v0.2.1 <a href="https://github.com/levon003/wiki-ores-feedback/releases">(on GitHub)</a></Paper></footer>
       </div>
     </Drawer>
-  </div>
+    </div>
   );
 };
 

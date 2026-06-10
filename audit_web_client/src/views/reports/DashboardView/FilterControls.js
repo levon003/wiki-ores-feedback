@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {
-  Box,
-  Button,
-  Card,
-  Chip,
-  Popover,
-  makeStyles,
-  IconButton,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Box, Button, Card, Chip, Popover, IconButton, Typography, useTheme } from '@mui/material';
+
+import { makeStyles } from 'tss-react/mui';
 
 import RevisionFilterControls from './RevisionFilterControls';
 import PageFilterControls from './PageFilterControls';
 import UserFilterControls from './UserFilterControls';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 
-import HelpIcon from '@material-ui/icons/Help';
+import HelpIcon from '@mui/icons-material/Help';
 
 // const userTypeOptions = [
 //   { key: 'all', desc: 'All users', },
@@ -31,7 +23,7 @@ import HelpIcon from '@material-ui/icons/Help';
 //   { key: 'bots', desc: 'Bots', },
 // ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {},
   actions: {
     justifyContent: 'flex-end'
@@ -167,7 +159,7 @@ const FilterControls = ({ className, onChange, revisionFilter, setRevisionFilter
     
   const theme = useTheme()
 
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   // all margins should be the same
   const predefinedButton1Style = preDefinedSelected === 1 ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}

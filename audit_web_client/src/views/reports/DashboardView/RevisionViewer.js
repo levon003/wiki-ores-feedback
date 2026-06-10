@@ -1,22 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {
-  Box,
-  Card,
-  Popover,
-  IconButton,
-  makeStyles,
-  Divider,
-  Button
-} from '@material-ui/core';
+import { Box, Card, Popover, IconButton, Divider, Button } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { DrawerContext } from 'src/App';
 import RevisionView from './RevisionView';
 
-import HelpIcon from '@material-ui/icons/Help';
+import HelpIcon from '@mui/icons-material/Help';
 import { Oval } from 'react-loading-icons';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {},
   actions: {
     justifyContent: 'flex-end'
@@ -245,7 +238,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     return res
   }
 
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [displayLimit, /*setDisplayLimit*/] = useState(20);  // TODO Probably want to remember this as a user setting
   const [statusDescription, setStatusDescription] = useState(defaultPreloadMessage);
 
@@ -276,7 +269,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
     if (counts?.all?.all) {
       console.log(counts)
       let prediction_key = focusSelected.prediction_filter
-      if (!prediction_key in counts) { 
+      if (!(prediction_key in counts)) {
         console.warn("Unknown prediction key.")
       }
 
@@ -285,7 +278,7 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
         revert_key = "reverted_damaging"
       } else if (revert_key === "any") {
         revert_key = "all"
-      } else if (!revert_key in counts[prediction_key]) {
+      } else if (!(revert_key in counts[prediction_key])) {
         console.warn("Unknown revert key.")
       }
 

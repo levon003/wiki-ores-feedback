@@ -5,12 +5,13 @@ import {
   Checkbox,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Paper,
   useTheme
   // makeStyles
-} from '@material-ui/core';
+} from '@mui/material';
 import DefaultFilters from './DefaultFilters';
 
 // const useStyles = makeStyles((theme) => ({
@@ -49,7 +50,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
           </ListItem>
         }
       >
-        <ListItem key="largeAdditions" dense button onClick={handleRevisionToggle("largeAdditions")}> 
+        <ListItemButton key="largeAdditions" dense onClick={handleRevisionToggle("largeAdditions")}> 
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -59,8 +60,8 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
             />
           </ListItemIcon>
           <ListItemText id='revision-large-additions' primary="Large additions" secondary="(>= 1000 bytes)"/>
-        </ListItem>
-        <ListItem key="smallAdditions" dense button onClick={handleRevisionToggle("smallAdditions")}>
+        </ListItemButton>
+        <ListItemButton key="smallAdditions" dense onClick={handleRevisionToggle("smallAdditions")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -70,8 +71,8 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
             />
           </ListItemIcon>
           <ListItemText id='revision-small-addition' primary="Small additions" secondary="(>20 bytes)"/>
-        </ListItem>
-        <ListItem key="neutral" dense button onClick={handleRevisionToggle("neutral")}>
+        </ListItemButton>
+        <ListItemButton key="neutral" dense onClick={handleRevisionToggle("neutral")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -81,8 +82,8 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
             />
           </ListItemIcon>
           <ListItemText id='revision-size-0' primary="Near zero change" secondary="(between -20 and 20 bytes)"/>
-        </ListItem>
-        <ListItem key="smallRemovals" dense button onClick={handleRevisionToggle("smallRemovals")}>
+        </ListItemButton>
+        <ListItemButton key="smallRemovals" dense onClick={handleRevisionToggle("smallRemovals")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -92,8 +93,8 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
             />
           </ListItemIcon>
           <ListItemText id='revision-small-removal' primary="Small removals" secondary="(< -20 bytes)"/>
-        </ListItem>
-        <ListItem key="largeRemovals" dense button onClick={handleRevisionToggle("largeRemovals")}>
+        </ListItemButton>
+        <ListItemButton key="largeRemovals" dense onClick={handleRevisionToggle("largeRemovals")}>
           <ListItemIcon>
             <Checkbox 
             edge="start"
@@ -103,13 +104,13 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
             />
           </ListItemIcon>
           <ListItemText id='revision-size-0' primary="Large removals" secondary="(<= -1000 bytes)"/>
-        </ListItem>
+        </ListItemButton>
         <ListItem>
           <ListItemText>
             Minor or Major Edit
           </ListItemText>
         </ListItem>
-        <ListItem key="isMinor" dense button onClick={handleMinorToggle("isMinor")}>
+        <ListItemButton key="isMinor" dense onClick={handleMinorToggle("isMinor")}>
           <ListItemIcon>
             <Checkbox
             edge="start"
@@ -119,8 +120,8 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
             />
           </ListItemIcon>
           <ListItemText id='is-minor' primary="Minor edit"/>
-        </ListItem>
-        <ListItem key="isMajor" dense button onClick={handleMinorToggle("isMajor")}>
+        </ListItemButton>
+        <ListItemButton key="isMajor" dense onClick={handleMinorToggle("isMajor")}>
           <ListItemIcon>
             <Checkbox
             edge="start"
@@ -130,7 +131,7 @@ const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter
             />
           </ListItemIcon>
           <ListItemText id='is-major' primary="Major edit"/>
-        </ListItem>
+        </ListItemButton>
 
       </List>
       <Button

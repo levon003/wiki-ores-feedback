@@ -21,12 +21,12 @@ import {
   TextField,
   Tooltip,
   Paper,
-  makeStyles
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import { ResponsiveLine } from '@nivo/line';
 import { ResponsiveSankey } from '@nivo/sankey'
 import { ResponsiveBar } from '@nivo/bar'
-        
+
 const PredictionResponseFlowchart = ( { data } ) => {
 
   const handleClick = (source, target) => {

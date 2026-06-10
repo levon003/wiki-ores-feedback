@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import throttle from 'lodash/throttle';
@@ -20,12 +20,12 @@ import {
   IconButton,
   Paper,
   useTheme
-} from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import HelpIcon from '@material-ui/icons/Help'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import HelpIcon from '@mui/icons-material/Help'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
@@ -297,7 +297,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
       options={namespaces}
       disableCloseOnSelect
       getOptionLabel={(option) => option.namespace}
-      getOptionSelected={(option, value) => option.namespace === value.namespace}
+      isOptionEqualToValue={(option, value) => option.namespace === value.namespace}
       onChange={(event, newValues) => {
         setNameSpaceSelected(newValues)
       }}
@@ -372,7 +372,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
 
         return (
           <Grid container alignItems="center">
-            <Grid item xs>
+            <Grid size="grow">
               {parts.map((part, index) => (
                 <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                   {part.text}
@@ -442,7 +442,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
 
         return (
           <Grid container alignItems="center">
-            <Grid item xs>
+            <Grid size="grow">
               {parts.map((part, index) => (
                 <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                   {part.text}
@@ -512,7 +512,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
 
         return (
           <Grid container alignItems="center">
-            <Grid item xs>
+            <Grid size="grow">
               {parts.map((part, index) => (
                 <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                   {part.text}

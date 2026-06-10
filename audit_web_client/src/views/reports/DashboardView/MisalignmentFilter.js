@@ -2,16 +2,13 @@ import React, { useState, useRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import "../DashboardView/styles.css";
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { withStyles } from 'tss-react/mui';
 import { Tooltip as TT } from "react-svg-tooltip";
 
-import {
-  Box,
-  Tooltip,
-  makeStyles
-} from '@material-ui/core';
+import { Box, Tooltip } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 // function getWindowDimensions() {
 //   const { innerWidth: width, innerHeight: height } = window;
 //   return {
@@ -32,7 +29,7 @@ import {
 //   return windowDimensions;
 // }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {},
   actions: {
     justifyContent: 'flex-end'
@@ -186,7 +183,7 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
   }
 
   function FlowchartSummarySVG(props) {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     let total_R = props.data["confrevs_r"] + props.data["vlg_r"] + props.data["vlhp_r"];
     let total_nr = props.data["confrevs_nr"] + props.data["vlg_nr"] + props.data["vlhp_nr"];
@@ -465,7 +462,7 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
 
 
   
-  const HtmlTooltip = withStyles((theme) => ({
+  const HtmlTooltip = withStyles(Tooltip, (theme) => ({
     tooltip: {
       backgroundColor: '#f5f5f9',
       color: 'rgba(0, 0, 0, 0.87)',
@@ -473,7 +470,7 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
       fontSize: theme.typography.pxToRem(12),
       border: '1px solid #dadde9',
     },
-  }))(Tooltip);
+  }));
 
   return (
   <Box>

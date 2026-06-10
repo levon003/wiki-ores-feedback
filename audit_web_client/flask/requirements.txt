@@ -1,11 +1,16 @@
-flask
-Werkzeug
-click
-tqdm
-numpy
-pytz
-sqlalchemy==1.4.*
-mysqlclient
-pyopenssl
-mwoauth
-
+# Pinned at known-stable releases compatible with Python 3.9+ (the Toolforge
+# deployment runtime). Previously these were unpinned and floated to whatever
+# pip resolved at install time. Bump deliberately and re-test the backend.
+#
+# SQLAlchemy is intentionally held on the 1.4 series: the api/ code targets the
+# 1.4 API and a 2.0 upgrade is a separate, breaking change (see DEVELOPMENT.md).
+Flask==3.0.3
+Werkzeug==3.0.4
+click==8.1.7
+tqdm==4.66.5
+numpy==1.26.4
+pytz==2024.2
+SQLAlchemy==1.4.54
+mysqlclient==2.2.4
+pyOpenSSL==24.2.1
+mwoauth==0.4.0

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from 'tss-react/mui';
 import TopBar from '../DashboardLayout/TopBar';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     backgroundColor: theme.palette.background.default,
     display: 'flex',
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MainLayout = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   // TODO Uses the DashboardLayout TopBar; consider unifying and removing the MainLayout TopBar.
 

@@ -9,31 +9,31 @@ import {
   TextField,
   useTheme,
   Tooltip
-} from '@material-ui/core';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+} from '@mui/material';
+import { withStyles } from 'tss-react/mui';
+import { makeStyles } from 'tss-react/mui';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import "../../../../src/style.css"
 import moment from 'moment';
-import FlagIcon from '@material-ui/icons/Flag';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
+import FlagIcon from '@mui/icons-material/Flag';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import { Oval } from 'react-loading-icons';
-import ArrowBackIosIcon from '@material-ui/icons//ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons//ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material//ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material//ArrowForwardIos';
 import { LoggingContext } from '../../../App'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     width: '100%',
   },
   sticky: {
-    position: "-webkit-sticky",
-    position: "sticky",
+    position: ["-webkit-sticky", "sticky"],
   },
   actions: {
     justifyContent: 'flex-end',
@@ -53,14 +53,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HtmlTooltip = withStyles((theme) => ({
+const HtmlTooltip = withStyles(Tooltip, (theme) => ({
   tooltip: {
     backgroundColor: '#f5f5f9',
     color: 'rgba(0, 0, 0, 0.87)',
     maxWidth: 220,
     border: '1px solid #dadde9',
   },
-}))(Tooltip);
+}));
 
 const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
     if (typing || (userChangedNote && noteSuccess === null)) {
@@ -78,7 +78,7 @@ const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
 const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected,userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria, ...rest }) => {
   
   const revision = revisions[currRevisionIdx]
-  const classes = useStyles()
+  const { classes } = useStyles()
   const handleLogging = useContext(LoggingContext)
   const [revisionDiff, setRevisionDiff] = useState("Loading revision diff from the Wikipedia Compare API...")
   const [revisionMetadata, setRevisionMetadata] = useState({
@@ -146,7 +146,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
       })
       .then(res => res.json())
       .then(data => {
-        if (data.hasOwnProperty("error")) {
+        if (Object.hasOwn(data, "error")) {
           console.log(data.error.code, data.error.info)
           if (data.error.code === "nosuchrevid" || data.error.code === "missingcontent") {
             setRevisionDiff("Revision was revdeled (probably) after January 2020 or so. " + data.error.info + " (error code: " + data.error.code + ") You can try to <a href=\"https://en.wikipedia.org/w/index.php?diff=" + revision.rev_id.toString() + "\" target=\"_blank\" rel=\"noopener noreferrer\">view the revision on Wikipedia</a> for more info.")
@@ -186,7 +186,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         })
         .then(res => res.json())
         .then(data => {
-          if (data.hasOwnProperty("error")) {
+          if (Object.hasOwn(data, "error")) {
             console.log("revert", data.error.code, data.error.info)
             setRevertMetadata({
               ...revertMetadata,
@@ -462,17 +462,17 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           <tbody>
             <tr>
               <td id= "time" colSpan={2}>
-                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()}>
+                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.from_revid.toString()} rel="noreferrer">
                   Revision as of {formatTimestamp(revisionMetadata.from_timestamp)}</a> 
-                    (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.from_revid.toString()}>
+                    (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.from_revid.toString()} rel="noreferrer">
                     edit</a>)
               </td>
               <td id= "time" colSpan={2}>
-                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()}>
+                <a target="_blank" href={"https://en.wikipedia.org/w/index.php?oldid=" + revisionMetadata.to_revid.toString()} rel="noreferrer">
                   Revision as of {formatTimestamp(revisionMetadata.to_timestamp)}
                 </a> 
-                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()}>edit</a>) 
-                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()}>undo</a>)
+                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&oldid=" + revisionMetadata.to_revid.toString()} rel="noreferrer">edit</a>) 
+                (<a target="_blank" href={"https://en.wikipedia.org/w/index.php?&action=edit&undoafter=" + revisionMetadata.from_revid.toString() + "&undo=" + revisionMetadata.to_revid.toString()} rel="noreferrer">undo</a>)
               </td>
             </tr>
             <tr>
@@ -484,8 +484,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <td id= "parsecom" colSpan={2} dangerouslySetInnerHTML={{__html: revisionMetadata.to_parsedcomment}}/>
             </tr>
             <tr>
-              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()}>← Previous edit</a></td>
-              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()}>Next edit →</a></td>
+              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=prev&oldid=" +  revisionMetadata.from_revid.toString()} rel="noreferrer">← Previous edit</a></td>
+              <td id= "edit" colSpan={2}> <a target="_blank" href={"https://en.wikipedia.org/w/index.php?&diff=next&oldid=" +  revisionMetadata.to_revid.toString()} rel="noreferrer">Next edit →</a></td>
             </tr>
           </tbody>
           <tbody dangerouslySetInnerHTML={{__html: revisionDiff}}></tbody>
