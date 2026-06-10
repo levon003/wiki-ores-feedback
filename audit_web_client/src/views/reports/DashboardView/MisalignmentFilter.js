@@ -80,7 +80,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 // todo: get rid of data variable, all of that will be in counts variable
 // leaving data for now as it is entrenched in the misalignment filter
-const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, className, ...rest }) => {
+const MisalignmentFilter = ({ data, focusSelected, setFocusSelected }) => {
   const [strokecolor, setStrokeColor] = useState({
     'vlhp_box': "#eeeeee",
     'itm_box': "#eeeeee",
@@ -196,7 +196,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
       height="120mm"
       version="1.1"
       viewBox="0 0 297 210"
-    aspectratio="1.0"
     >
       <g>
         <g
@@ -361,7 +360,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="15.2%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -378,7 +376,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="77.8%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -396,7 +393,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="25.8%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -413,7 +409,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="43%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -429,7 +424,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="53%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"
@@ -445,7 +439,6 @@ const MisalignmentFilter = ({ data, counts, focusSelected, setFocusSelected, cla
           x="38.8%"
           y="68.7%"
           strokeWidth="0.7"
-          text="hello"
           display="inline"
           ry="0"
           className="box"

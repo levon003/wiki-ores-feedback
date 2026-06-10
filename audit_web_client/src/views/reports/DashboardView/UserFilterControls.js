@@ -26,7 +26,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DefaultFilters from './DefaultFilters';
 import Typography from 'src/theme/typography';
 
-const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, preDefinedSelected, ...rest}) => {
+const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsernames, setFilteredUsernames, userTypeAnchorEl, setUserTypeAnchorEl, useStyles, preDefinedSelected}) => {
   const classes = useStyles();
 
   const theme = useTheme()
@@ -134,28 +134,11 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
     setUserTypeAnchorEl(event.currentTarget);
   };
     
-  const handleClose = (event) => {
+  const handleClose = () => {
     setUserTypeAnchorEl(null);
   };
 
-  const [pageHelpPopup, setPageHelpPopup] = useState();
-
-  const pageHelpOpen = Boolean(pageHelpPopup);
-  const helpID = pageHelpOpen ? 'simple-popover' : undefined;
-
-  const handleIconClick = (event) => {
-    setPageHelpPopup(event.currentTarget)
-  }
-
-  const handleIconClickClose = () => {
-    setPageHelpPopup(null)
-  }
-    
-  const handleUsernameFilterChange = (event, value, reason) => {
-    setFilteredUsernames(value);
-  };
-    
-  const handleUserFilterReset = (event) => {
+  const handleUserFilterReset = () => {
     setFilteredUsernames([]);
     setUserTypeFilter(DefaultFilters.defaultUserFilters);
   };
@@ -284,9 +267,10 @@ const UserFilterControls = ({userTypeFilter, setUserTypeFilter, filteredUsername
                 />
             )}
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip label={option.user_name} {...getTagProps({ index })} />
-              ))
+              value.map((option, index) => {
+                const { key, ...tagProps } = getTagProps({ index });
+                return <Chip key={key} label={option.user_name} {...tagProps} />;
+              })
             }
             renderOption={(option) => {
               const matches = match(option.user_name, filteredUsernamesInputValue);

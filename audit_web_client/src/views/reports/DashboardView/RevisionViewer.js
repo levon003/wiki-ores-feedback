@@ -21,11 +21,7 @@ const useStyles = makeStyles()((theme) => ({
 
 const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFilter, minorFilter, preDefinedSelected, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, currRevisionIdx, setCurrRevisionIdx, setAnnotationHistory, focusSelected, userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria, ...rest }) => {
   const defaultPreloadMessage = "Loading and retrieving revision data. Please wait a moment."
-  // todo: this is not very efficient, but works. think of better way like useRef or something.
-  const numAnnotated = revisions.filter(revision => revision.correctness_type_data != null).length
-  const numDamaging = revisions.filter(revision => revision.correctness_type_data === "correct").length
-  const percentDisplay = numAnnotated === 0 ? 0 : Number(numDamaging / numAnnotated * 100).toFixed(2)
-  const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
+  const {setDrawerOpen} = useContext(DrawerContext)
 
   const [revisionAccordionExpanded, setRevisionAccordionExpanded] = useState(true)  // control accordion expansion in RevisionView
   
@@ -239,12 +235,8 @@ const RevisionViewer = ({ className, revisions, setRevisions, counts, revisionFi
   }
 
   const { classes } = useStyles();
-  const [displayLimit, /*setDisplayLimit*/] = useState(20);  // TODO Probably want to remember this as a user setting
-  const [statusDescription, setStatusDescription] = useState(defaultPreloadMessage);
+  const [_statusDescription, setStatusDescription] = useState(defaultPreloadMessage);
 
-  // Want state to track total available at multiple levels. Probably want to store it one state dictionary, since each should change only "one at a time"...
-  const [prefilteredTotal, /*setPrefilteredTotal*/] = useState(0);
-    
   useEffect(() => {
     // TODO Actually retrieve a set of revisions here by querying the backend
     // JK, we're actually doing this in index and passing them in.  

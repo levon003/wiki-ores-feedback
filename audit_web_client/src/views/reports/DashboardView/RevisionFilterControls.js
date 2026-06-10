@@ -8,8 +8,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Paper,
-  useTheme
+  Paper
   // makeStyles
 } from '@mui/material';
 import DefaultFilters from './DefaultFilters';
@@ -25,7 +24,7 @@ import DefaultFilters from './DefaultFilters';
 
 // }));
 
-const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter, setMinorFilter, className, onChange, ...rest }) => {
+const RevisionFilterControls = ({ revisionFilter, setRevisionFilter, minorFilter, setMinorFilter }) => {
 
   const handleRevisionToggle = (value) => () => {  
     var newState = { ...revisionFilter, [value]: !revisionFilter[value]};

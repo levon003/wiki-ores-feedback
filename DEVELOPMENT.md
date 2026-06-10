@@ -225,10 +225,13 @@ front-end stack and the folder layout are the highest-leverage cleanups.
 - [ ] **Drop `react-svg-tooltip`.** It's the one remaining unmaintained dep (peers on React ^16),
       which is why `.npmrc` sets `legacy-peer-deps=true`. Used in a single file; replace with an
       MUI `Tooltip` or a small custom component, then drop the dep and the `.npmrc` setting.
-- [ ] **Burn down the ESLint warning backlog.** `npm run lint` passes (0 errors) but ~90 pre-existing
-      warnings remain (unused vars, `react-hooks/exhaustive-deps`, unescaped entities, stray DOM
-      props such as `inputprops`). A few rules are temporarily set to `warn` in `eslint.config.js`;
-      promote them back to `error` as the backlog is cleared.
+- [x] **Cleared the ESLint backlog.** `npm run lint` is fully clean (0 errors, 0 warnings) and the
+      previously-relaxed rules are back at `error`. Dead code (unused imports, the abandoned
+      help-popup handlers, leftover state) was removed; cosmetic issues (unescaped entities, missing
+      list keys, stray SVG attributes) were fixed. The three fetch-on-change effects in
+      `RevisionView`/`index.js` keep curated dependency arrays with inline
+      `eslint-disable-next-line react-hooks/exhaustive-deps` (changing them risks refetch loops; left
+      for a behavior-aware pass).
 - [ ] **Code-split the bundle.** The single JS chunk is ~745 kB (Vite warns >500 kB); consider
       `manualChunks` or route-level dynamic `import()`.
 

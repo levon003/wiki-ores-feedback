@@ -33,7 +33,7 @@ const useStyles = makeStyles()((theme) => ({
     },
 }));
 
-const HtmlTooltip = withStyles(Tooltip, (theme) => ({
+const HtmlTooltip = withStyles(Tooltip, () => ({
   tooltip: {
     backgroundColor: '#f5f5f9',
     color: 'rgba(0, 0, 0, 0.87)',
@@ -93,7 +93,7 @@ const FocusButton3 = ({style, setFocusSelected}) => {
         <HtmlTooltip
         title={
         <React.Fragment>
-            <Typography>Edits that ORES wasn't sure about.</Typography>
+            <Typography>Edits that ORES wasn&apos;t sure about.</Typography>
         </React.Fragment>
         }>
             <Button className="text-h3" variant="outlined" onClick={onClick} style={style}>CONFUSING Edits</Button>

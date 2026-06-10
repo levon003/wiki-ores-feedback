@@ -30,7 +30,7 @@ import DefaultFilters from './DefaultFilters';
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />;
 
-const PageFilterControls = ({className, onChange, pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected, ...rest }) => {
+const PageFilterControls = ({ pageValues, setPageValues, namespaceSelected, setNameSpaceSelected, linkedToValues, setLinkedToValues, linkedFromValues, setLinkedFromValues, pageAnchorEl, setPageAnchorEl, preDefinedSelected }) => {
   const theme = useTheme()
 
   const pageButtonStyle = (pageValues.length !== 0 || namespaceSelected !== DefaultFilters.defaultNamespaceSelected || linkedToValues.length !== 0 || linkedFromValues.length !== 0) && preDefinedSelected === null ? {backgroundColor: theme.palette.primary.main, color: 'white', marginRight: '12px'} : {marginRight: '12px'}
@@ -54,8 +54,6 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
   const [linkedFromOpen, setLinkedFromOpen] = useState(false);
   const [linkedFromActiveQuery, setLinkedFromActiveQuery] = useState(false);
   const linkedFromLoading = linkedFromOpen && linkedFromActiveQuery;
-
-  const [pageHelpPopup, setPageHelpPopup] = useState();
 
   const pageFilterOpen = Boolean(pageAnchorEl);
   const id = pageFilterOpen ? 'simple-popover' : undefined;
@@ -91,7 +89,7 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
     setPageAnchorEl(null)
   }
 
-  const handlePageFilterReset = (event) => {
+  const handlePageFilterReset = () => {
     setNameSpaceSelected (DefaultFilters.defaultNamespaceSelected); 
     setPageValues([])
     setLinkedToValues([])
@@ -359,9 +357,10 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
           />
       )}
       renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
+        value.map((option, index) => {
+          const { key, ...tagProps } = getTagProps({ index });
+          return <Chip key={key} label={option.primary_text} {...tagProps} />;
+        })
       }
       renderOption={(option) => {
         const matches = match(option.primary_text, pageInputValue);
@@ -429,9 +428,10 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
           />
       )}
       renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
+        value.map((option, index) => {
+          const { key, ...tagProps } = getTagProps({ index });
+          return <Chip key={key} label={option.primary_text} {...tagProps} />;
+        })
       }
       renderOption={(option) => {
         const matches = match(option.primary_text, linkedToInputValue);
@@ -499,9 +499,10 @@ const PageFilterControls = ({className, onChange, pageValues, setPageValues, nam
           />
       )}
       renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option.primary_text} {...getTagProps({ index })} />
-        ))
+        value.map((option, index) => {
+          const { key, ...tagProps } = getTagProps({ index });
+          return <Chip key={key} label={option.primary_text} {...tagProps} />;
+        })
       }
       renderOption={(option) => {
         const matches = match(option.primary_text, linkedFromInputValue);

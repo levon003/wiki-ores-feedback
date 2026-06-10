@@ -160,8 +160,10 @@ const Dashboard = () => {
         handleLogging(focusSelected)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revisionFilter, minorFilter, userTypeFilter, filteredUsernames, pageValues, namespaceSelected, linkedToValues, linkedFromValues, preDefinedSelected, focusSelected])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (revisionFilter === DefaultFilters.defaultRevisionFilters && minorFilter === DefaultFilters.defaultMinorFilters && userTypeFilter === DefaultFilters.defaultUserFilters && filteredUsernames.length === 0 && pageValues.length === 0 && namespaceSelected === DefaultFilters.defaultNamespaceSelected && linkedToValues.length === 0 && linkedFromValues.length === 0) {
       // all article edits
@@ -177,6 +179,7 @@ const Dashboard = () => {
     }
   })
   
+  // eslint-disable-next-line no-unused-vars -- deprecated, intentionally kept for reference (see below)
   const handleMisalignmentFilterChange = (new_filter) => {
     // TODO this function is now deprecated; figuring out a better global logging solution
     // currently maintained in case the logic here is useful in creating the new function

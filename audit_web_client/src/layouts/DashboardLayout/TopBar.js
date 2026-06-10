@@ -41,16 +41,12 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-const TopBar = ({
-  className,
-  onMobileNavOpen,
-  ...rest
-}) => {
+const TopBar = () => {
   const { classes } = useStyles();
   const {drawerOpen, setDrawerOpen} = useContext(DrawerContext)
   const location = useLocation();
 
-  const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+  const username = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*=\s*([^;]*).*$)|^.*$/, "$1")
   const loggedIn = username !== ""
 
   // a bit hacky: only display the drawer button in the DashboardView

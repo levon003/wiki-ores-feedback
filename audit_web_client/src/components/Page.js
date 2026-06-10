@@ -20,6 +20,8 @@ const Page = forwardRef(({
   );
 });
 
+Page.displayName = 'Page';
+
 Page.propTypes = {
   children: PropTypes.node.isRequired,
   title: PropTypes.string

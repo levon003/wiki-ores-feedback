@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -27,7 +27,6 @@ const useStyles = makeStyles()((theme) => ({
 
 const LoginView = () => {
   const { classes } = useStyles();
-  const navigate = useNavigate();
 
   // TODO consider not showing the login button if the user is already logged in
 
@@ -55,7 +54,7 @@ const LoginView = () => {
                   
                   Thanks for trying ORES-Inspect! 
                   This tool is still under active development, 
-                  and we'd love to get your thoughts <a href="https://meta.wikimedia.org/w/index.php?title=Research_talk:ORES_Inspect:_A_technology_probe_for_machine_learning_audits_on_enwiki&action=edit">on our talk page</a>.
+                  and we&apos;d love to get your thoughts <a href="https://meta.wikimedia.org/w/index.php?title=Research_talk:ORES_Inspect:_A_technology_probe_for_machine_learning_audits_on_enwiki&action=edit">on our talk page</a>.
                   <br/><br/>
                   To start using ORES-Inspect, 
                   login with your English Wikipedia account credentials using the button at the bottom of this page. 
@@ -94,7 +93,7 @@ const LoginView = () => {
                   Viewing revisions in ORES-Inspect carries no risks beyond looking at <a href="https://en.wikipedia.org/wiki/Special:RecentChanges">Special:RecentChanges</a>. 
                   There is no compensation for using ORES-Inspect, but we hope you find the tool useful!  
                   If you want to be notified of any research findings that result from this work, 
-                  sign-up with your username on <a href="https://meta.wikimedia.org/wiki/Research:ORES_Inspect:_A_technology_probe_for_machine_learning_audits_on_enwiki">our research page</a> and we'll keep you updated.
+                  sign-up with your username on <a href="https://meta.wikimedia.org/wiki/Research:ORES_Inspect:_A_technology_probe_for_machine_learning_audits_on_enwiki">our research page</a> and we&apos;ll keep you updated.
                   <br /><br />
 
                   <Box style={{marginBottom:"10px"}}>&#9726; Who can I contact with feedback about ORES-Inspect?</Box>
@@ -107,7 +106,7 @@ const LoginView = () => {
                   <br />
 
                   This research has been reviewed and approved by an Institutional Review Board (IRB) within the Human Research Protections Program (HRPP). 
-                  To share feedback privately with the HRPP about your research experience, call the Research Participants' Advocate Line at 612.624.4490 or go to <a href="https://www.irb.umn.edu/report.html">www.irb.umn.edu/report.html</a>. 
+                  To share feedback privately with the HRPP about your research experience, call the Research Participants&apos; Advocate Line at 612.624.4490 or go to <a href="https://www.irb.umn.edu/report.html">www.irb.umn.edu/report.html</a>. 
                   You are encouraged to contact the HRPP if:<br/>
                   &#62; Your questions, concerns, or complaints are not being answered by the research team<br/>
                   &#62; You cannot reach the research team<br/>
@@ -127,12 +126,12 @@ const LoginView = () => {
                   <br/><br/>
                   By using this project, you agree that the volunteer administrators of this project will have access to any data you submit. This can include your IP address, your username/password combination for accounts created in Cloud Services services, and any other information that you send. The volunteer administrators of this project are bound by the Wikimedia Cloud Services Terms of Use, and are not allowed to share this information or use it in any non-approved way.
                   <br/><br/>
-                  Since access to this information is fundamental to the operation of Wikimedia Cloud Services, these terms regarding use of your data expressly override the Wikimedia Foundation's Privacy Policy as it relates to the use and access of your personal information.
+                  Since access to this information is fundamental to the operation of Wikimedia Cloud Services, these terms regarding use of your data expressly override the Wikimedia Foundation&apos;s Privacy Policy as it relates to the use and access of your personal information.
                   <br/><br/>
 
                   <Box style={{marginBottom:"10px"}}>&#9726; Who can access my data?</Box>
                   Your data will only be accessible to <a href="https://toolsadmin.wikimedia.org/tools/id/ores-inspect">maintainers of the ORES-Inspect tool</a>.
-                  We'd like to make it easy to export (or even to save directly to) a public enwiki page in the future: if that's something that interests you, please let us know.
+                  We&apos;d like to make it easy to export (or even to save directly to) a public enwiki page in the future: if that&apos;s something that interests you, please let us know.
                   <br/><br/>
 
                   <Box style={{marginBottom:"10px"}}>&#9726; When will my data be deleted?</Box>

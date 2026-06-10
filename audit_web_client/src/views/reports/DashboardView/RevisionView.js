@@ -28,7 +28,7 @@ import ArrowBackIosIcon from '@mui/icons-material//ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material//ArrowForwardIos';
 import { LoggingContext } from '../../../App'
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles()(() => ({
   root: {
     width: '100%',
   },
@@ -53,7 +53,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-const HtmlTooltip = withStyles(Tooltip, (theme) => ({
+const HtmlTooltip = withStyles(Tooltip, () => ({
   tooltip: {
     backgroundColor: '#f5f5f9',
     color: 'rgba(0, 0, 0, 0.87)',
@@ -75,7 +75,7 @@ const NotesLoadingIcon = ({ typing, userChangedNote, noteSuccess }) => {
     }
 }
 
-const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected,userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria, ...rest }) => {
+const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, setCurrRevisionIdx, accordionExpanded, setAccordionExpanded, revisionFilter, minorFilter, filteredUsernames, userTypeFilter, pageValues, linkedToValues, linkedFromValues, namespaceSelected, filter_summary, setAnnotationHistory, focusSelected,userHasAnnotatedWithinThisFilterCriteria, setUserHasAnnotatedWithinThisFilterCriteria }) => {
   
   const revision = revisions[currRevisionIdx]
   const { classes } = useStyles()
@@ -216,6 +216,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
 
     fetchRevisionDiff()
     return () => { ignoreFetchResult = true }
+    // Intentionally re-runs only when the displayed revision changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revision]);
   
   let prevUnannotatedDisabledCount = currRevisionIdx - 1
@@ -301,7 +303,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           }
         }
       })
-      .catch(data => {
+      .catch(() => {
         if (!ignoreFetchResult) {
           setNoteSuccess(false)
         }
@@ -322,9 +324,10 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
     return () => {
         document.removeEventListener("revisionViewComponentUnmount", doOnUnmount);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revision, typing, note, unsentNoteUpdate])
   
-  const handleAccordionExpansionToggle = (event, isExpanded) => {
+  const handleAccordionExpansionToggle = () => {
     setAccordionExpanded(!accordionExpanded);
   }
 
@@ -394,7 +397,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
         let copy = [...revisions]
         copy[currRevisionIdx] = {...copy[currRevisionIdx], correctness_type_data: data.correctness_type_data, note_data: data.note_data}
         setRevisions(copy)
-      }).catch(data => {
+      }).catch(() => {
         setButtonSuccess(false)
       });
     }
@@ -410,7 +413,8 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
           revisions.filter(revision => revision.correctness_type_data === "misclassification").length
         )
       }
-    }, [revisions])  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [revisions])
 
   const getUserLink = (user_text, user_id) => {
     if (user_text === "") {
@@ -736,7 +740,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
               <Button 
                 style={correctButtonStyle}
                 variant="outlined"
-                onClick={(event) => handleButtonClick('correct')}
+                onClick={() => handleButtonClick('correct')}
               >
                 <CloseIcon 
                   style={{paddingRight: 5}}
@@ -754,7 +758,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             <Button 
               style={misclassButtonStyle}
               variant="outlined"
-              onClick={(event) => handleButtonClick('misclassification')}
+              onClick={() => handleButtonClick('misclassification')}
             > 
               <CheckIcon 
                 style={{paddingRight: 5}}
@@ -765,7 +769,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             <Button 
               style={flagButtonStyle}
               variant="outlined"
-              onClick={(event) => handleButtonClick('flag')}
+              onClick={() => handleButtonClick('flag')}
               >
               <FlagIcon 
                 style={{paddingRight: 5}}
@@ -924,7 +928,7 @@ const RevisionView = ({ revisions, setRevisions, className, currRevisionIdx, set
             style= {{float: "left", marginTop: "5px"}}
         >
           {currRevisionIdx === revisions.length - 1 && (
-            <Box>You've reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
+            <Box>You&apos;ve reached the last revision for this set of filter criteria. Change the filters to get some new revisions.</Box>
           )}
 
           {/* Buttons */}
