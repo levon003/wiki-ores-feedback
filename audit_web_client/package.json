@@ -33,7 +33,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-feather": "^2.0.10",
-    "react-helmet-async": "^2.0.5",
+    "react-helmet-async": "^3.0.0",
     "react-loading-icons": "^1.1.0",
     "react-perfect-scrollbar": "^1.5.8",
     "react-router-dom": "^7.1.1",
