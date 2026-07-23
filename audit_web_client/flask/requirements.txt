@@ -10,7 +10,7 @@ click==8.4.2
 tqdm==4.69.0
 numpy==2.5.1
 pytz==2026.2
-SQLAlchemy==1.4.54
+SQLAlchemy==2.0.51
 mysqlclient==2.2.8
 pyOpenSSL==26.3.0
 mwoauth==0.4.0
