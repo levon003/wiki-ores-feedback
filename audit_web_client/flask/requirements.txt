@@ -5,11 +5,11 @@
 # SQLAlchemy is intentionally held on the 1.4 series: the api/ code targets the
 # 1.4 API and a 2.0 upgrade is a separate, breaking change (see DEVELOPMENT.md).
 Flask==3.1.3
-Werkzeug==3.1.8
+Werkzeug==3.1.9
 click==8.5.0
 tqdm==4.70.1
 numpy==2.5.3
-pytz==2026.3.post1
+pytz==2026.4
 SQLAlchemy==1.4.54
 mysqlclient==2.3.0
 pyOpenSSL==26.4.0
